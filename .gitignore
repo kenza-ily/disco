@@ -1,0 +1,5 @@
+.env
+.env.local
+sandbox/
+.vscode/
+__pycache__/
