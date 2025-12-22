@@ -65,6 +65,8 @@ setup-env:  # Setup environment variables from AWS secrets
 	AZURE_CLIENT_SECRET=$$(echo $$azure_sp_secret | jq -r '.AZURE_CLIENT_SECRET')\n\
 	AZURE_TENANT_ID=$$(echo $$azure_sp_secret | jq -r '.AZURE_TENANT_ID')\n\
 	AZURE_OPENAI_API_KEY=$$(echo $$azure_sandbox_secret | jq -r '.AZUREAI_API_KEY')\n\
-	AZURE_OPENAI_ENDPOINT=https://ai-pxlailabsbxhub741529278955.openai.azure.com/" > .env.local; \
+	AZURE_OPENAI_ENDPOINT=https://ai-pxlailabsbxhub741529278955.openai.azure.com/\n\
+	AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT=https://ai-pxlailabsbxhub741529278955.cognitiveservices.azure.com/\n\
+	AZURE_DOCUMENT_INTELLIGENCE_KEY=$$(echo $$azure_sandbox_secret | jq -r '.AZUREAI_API_KEY')" > .env.local; \
 	}
 	@echo ".env.local created successfully."

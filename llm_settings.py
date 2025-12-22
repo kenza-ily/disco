@@ -2,6 +2,8 @@ from pydantic_settings import BaseSettings
 from openai import AzureOpenAI, AsyncAzureOpenAI
 from typing import Any, TypeVar, Union
 from pathlib import Path
+from azure.ai.documentintelligence import DocumentIntelligenceClient
+from azure.core.credentials import AzureKeyCredential
 
 T = TypeVar('T')
 
@@ -16,6 +18,8 @@ class LLMSettings(BaseSettings):
     azure_api_version: str = "2024-02-01"
     azure_openai_endpoint: str
     azure_openai_api_key: str
+    azure_document_intelligence_endpoint: str
+    azure_document_intelligence_key: str
     max_retries_openai: int = 3
 
     model_config = {
@@ -45,6 +49,15 @@ def get_async_azure_openai_client() -> AsyncAzureOpenAI:
         azure_endpoint=settings.azure_openai_endpoint,
         api_key=settings.azure_openai_api_key,
         max_retries=settings.max_retries_openai,
+    )
+
+
+def get_azure_document_intelligence_client() -> DocumentIntelligenceClient:
+    settings = get_settings()
+    credential = AzureKeyCredential(settings.azure_document_intelligence_key)
+    return DocumentIntelligenceClient(
+        endpoint=settings.azure_document_intelligence_endpoint,
+        credential=credential
     )
 
 
