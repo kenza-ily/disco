@@ -6,10 +6,15 @@
 Testing OCR models vs VLMs and evaluate to which extent OCRs remain key parsing tools - and it which way VLMs are more suit to some tasks
 
 ### Research questions
-tbd
+- try ocr vs vlm parsing
+- try ocr vs vlm with prompt -> parsing
+- Parsing with OCR + VLM answering question
+- Parsing + QA all with VLM 
 
 ### Paper
 [Overleaf link](https://www.overleaf.com/project/691c47e001b29217e22fb39c)
+
+
 
 ## Datasets
 
