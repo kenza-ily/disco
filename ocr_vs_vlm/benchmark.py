@@ -121,13 +121,14 @@ class BenchmarkResult:
     tokens_used: Optional[int] = None
     error: Optional[str] = None
     timestamp: str = ""
+    language: Optional[str] = None  # Language for ICDAR dataset
     
     def to_dict(self) -> Dict:
         """Convert to dictionary for JSON serialization with image_path after sample_id."""
         result = asdict(self)
         # Reorder to put image_path right after sample_id
         ordered = {}
-        for key in ['sample_id', 'image_path', 'dataset', 'model', 'phase', 'ground_truth', 
+        for key in ['sample_id', 'image_path', 'dataset', 'model', 'phase', 'language', 'ground_truth', 
                     'prediction', 'prompt', 'inference_time_ms', 'tokens_used', 'error', 'timestamp']:
             if key in result:
                 ordered[key] = result[key]
@@ -145,7 +146,11 @@ class BenchmarkRunner:
             config: BenchmarkConfig instance
         """
         self.config = config
-        self.results_dir = Path(config.results_dir)
+        # Resolve results_dir relative to ocr_vs_vlm module
+        if Path(config.results_dir).is_absolute():
+            self.results_dir = Path(config.results_dir)
+        else:
+            self.results_dir = Path(__file__).parent / config.results_dir
         self.results_dir.mkdir(parents=True, exist_ok=True)
         
         # Initialize prompts directory
@@ -327,16 +332,15 @@ class BenchmarkRunner:
             List of BenchmarkResult objects
         """
         results = []
-        # Create phase folder with timestamp and phase 3 letter suffix
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        phase_folder_name = f"phase_{phase}"
+        # Create results filename with phase and phase 3 letter suffix
+        phase_file_name = f"phase_{phase}"
         if phase == 3 and self.config.phase_3_letter:
-            phase_folder_name = f"phase_3{self.config.phase_3_letter}"
+            phase_file_name = f"phase_3{self.config.phase_3_letter}"
         
-        output_dir = self.results_dir / dataset_name / model_name / f"{phase_folder_name}_{timestamp}"
+        output_dir = self.results_dir / dataset_name / model_name
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        results_file = output_dir / f"results.csv"
+        results_file = output_dir / f"{phase_file_name}_results.csv"
         
         # Load existing results if resuming
         existing_results = self._load_existing_results(results_file)
@@ -467,6 +471,9 @@ class BenchmarkRunner:
         
         elapsed_ms = (time.time() - start_time) * 1000
         
+        # Extract language from metadata if available
+        language = sample.metadata.get('language') if hasattr(sample, 'metadata') else None
+        
         return BenchmarkResult(
             sample_id=sample.sample_id,
             image_path=sample.image_path,
@@ -479,7 +486,8 @@ class BenchmarkRunner:
             inference_time_ms=elapsed_ms,
             tokens_used=tokens_used,
             error=error,
-            timestamp=datetime.now().isoformat()
+            timestamp=datetime.now().isoformat(),
+            language=language
         )
     
     def _call_ocr_model(self, model_name: str, image_path: str) -> str:
@@ -567,6 +575,7 @@ class BenchmarkRunner:
         dataset_paths = {
             'IAM': base_path / "IAM",
             'ICDAR': base_path / "ICDAR",
+            'ICDAR_mini': Path(__file__).parent / "datasets_subsets",  # ICDAR_mini is in datasets_subsets
             'PubLayNet': base_path / "PubLayNet",
         }
         
@@ -611,7 +620,7 @@ class BenchmarkRunner:
         
         # Define CSV column order
         fieldnames = [
-            'sample_id', 'image_path', 'dataset', 'model', 'phase', 'ground_truth',
+            'sample_id', 'image_path', 'dataset', 'model', 'phase', 'language', 'ground_truth',
             'prediction', 'prompt', 'inference_time_ms', 'tokens_used', 'error', 'timestamp'
         ]
         
@@ -638,6 +647,9 @@ class BenchmarkRunner:
                     row['inference_time_ms'] = float(row['inference_time_ms']) if row.get('inference_time_ms') else 0.0
                     row['tokens_used'] = int(row['tokens_used']) if row.get('tokens_used') and row['tokens_used'] != 'None' else None
                     row['phase'] = int(row['phase'])
+                    # language is optional, keep as string or None
+                    if 'language' not in row or not row.get('language'):
+                        row['language'] = None
                     results.append(BenchmarkResult(**row))
             
             return results
@@ -701,13 +713,13 @@ if __name__ == '__main__':
     """
     logger.info("Starting OCR vs VLM Benchmark")
     
-    # Create configuration - test with gpt-5-mini on ICDAR, 10 samples
+    # Create configuration - test with gpt-5-mini on ICDAR_mini
     config = create_benchmark_config(
-        datasets=['ICDAR'],  # ICDAR dataset
+        datasets=['ICDAR_mini'],  # ICDAR_mini dataset
         models=['gpt-5-mini'],  # Use gpt-5-mini
         phases=[2, 3],  # VLM phases only (baseline + context-aware)
         sample_limit=None,  # Full dataset
-        results_dir="results/phase_3a"  # Save as phase_3a (first prompt variant)
+        results_dir="datasets_subsets/results"  # Save to datasets_subsets/results
     )
     config.phase_3_letter = 'a'  # Set phase 3 letter suffix
     

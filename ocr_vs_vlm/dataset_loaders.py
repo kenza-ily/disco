@@ -210,9 +210,11 @@ class ICDARDataset(Dataset):
                 
                 # Extract metadata
                 languages = [entry['language'] for entry in anno]
+                unique_languages = list(set(languages))
                 metadata = {
                     'dataset': 'ICDAR',
-                    'languages': list(set(languages)),
+                    'languages': unique_languages,
+                    'language': ', '.join(unique_languages),  # Single string for easy access
                     'num_text_lines': len(anno),
                     'image_size': self._get_image_size(image_path),
                     'bounding_boxes': [entry['bbox'] for entry in anno],
@@ -277,6 +279,85 @@ class ICDARDataset(Dataset):
                 continue
         
         return annotations
+    
+    @staticmethod
+    def _get_image_size(image_path: Path) -> Tuple[int, int]:
+        """Get image dimensions."""
+        try:
+            with Image.open(image_path) as img:
+                return img.size
+        except Exception:
+            return (0, 0)
+
+
+class ICDARMiniDataset(Dataset):
+    """
+    ICDAR Mini Dataset loader - loads pre-sampled balanced ICDAR data.
+    
+    Loads from JSON files in datasets_subsets folder.
+    """
+    
+    def _load(self):
+        """Load ICDAR mini samples from JSON files."""
+        # Find the datasets_subsets folder
+        # Try relative to this file, then try common paths
+        possible_paths = [
+            Path(__file__).parent / "datasets_subsets",
+            Path(__file__).parent.parent / "ocr_vs_vlm" / "datasets_subsets",
+            self.dataset_root / "datasets_subsets" if self.dataset_root else None,
+        ]
+        
+        subsets_dir = None
+        for path in possible_paths:
+            if path and path.exists():
+                subsets_dir = path
+                break
+        
+        if not subsets_dir:
+            raise FileNotFoundError(
+                f"ICDAR_mini datasets_subsets folder not found. "
+                f"Tried: {[str(p) for p in possible_paths if p]}"
+            )
+        
+        # Load all language JSON files
+        json_files = sorted(subsets_dir.glob("icdar_mini_*.json"))
+        
+        if not json_files:
+            raise FileNotFoundError(f"No ICDAR_mini JSON files found in {subsets_dir}")
+        
+        # Skip the index file, load language files
+        for json_file in json_files:
+            if json_file.name == "icdar_mini_index.json":
+                continue
+            
+            try:
+                with open(json_file, 'r') as f:
+                    lang_data = json.load(f)
+                
+                language = lang_data.get('language', 'unknown')
+                
+                for sample_data in lang_data.get('samples', []):
+                    # Ensure image_path is absolute
+                    image_path = sample_data['image_path']
+                    if not Path(image_path).is_absolute():
+                        # Make it absolute if stored relatively
+                        image_path = str(Path(image_path))
+                    
+                    metadata = sample_data.get('metadata', {})
+                    metadata['dataset'] = 'ICDAR_mini'
+                    
+                    self.samples.append(Sample(
+                        sample_id=sample_data['sample_id'],
+                        image_path=image_path,
+                        ground_truth=sample_data['ground_truth'],
+                        metadata=metadata
+                    ))
+            
+            except Exception as e:
+                logger.warning(f"Failed to load {json_file}: {e}")
+                continue
+        
+        logger.info(f"Loaded {len(self.samples)} samples from ICDAR_mini")
     
     @staticmethod
     def _get_image_size(image_path: Path) -> Tuple[int, int]:
@@ -391,6 +472,7 @@ class DatasetRegistry:
     _DATASETS = {
         'IAM': IAMDataset,
         'ICDAR': ICDARDataset,
+        'ICDAR_mini': ICDARMiniDataset,
         'PubLayNet': PubLayNetDataset,
     }
     
@@ -546,3 +628,92 @@ if __name__ == '__main__':
             print(f"  Languages: {sample.metadata.get('languages', [])}")
     except Exception as e:
         print(f"Error: {e}")
+
+
+def create_icdar_mini(icdar_root: str, samples_per_language: int = 50) -> Dict:
+    """
+    Create a mini version of ICDAR dataset with balanced sampling per language.
+    
+    Args:
+        icdar_root: Root path to ICDAR dataset
+        samples_per_language: Number of samples to select per language
+    
+    Returns:
+        Dict mapping language -> List[Sample] with balanced representation
+    """
+    # Load full ICDAR dataset
+    icdar = DatasetRegistry.get_dataset('ICDAR', icdar_root)
+    
+    # Group samples by language
+    language_samples = {}
+    for sample in icdar:
+        languages = sample.metadata.get('languages', [])
+        # A sample can have multiple languages, assign to all
+        for lang in languages:
+            if lang not in language_samples:
+                language_samples[lang] = []
+            language_samples[lang].append(sample)
+    
+    # Sample up to N items per language
+    mini_dataset = {}
+    for lang, samples in language_samples.items():
+        # Randomly sample up to samples_per_language items
+        if len(samples) > samples_per_language:
+            import random
+            mini_dataset[lang] = random.sample(samples, samples_per_language)
+        else:
+            mini_dataset[lang] = samples
+    
+    return mini_dataset
+
+
+def save_icdar_mini_index(mini_dataset: Dict, output_dir: str):
+    """
+    Save ICDAR mini dataset index as JSON for reference.
+    
+    Args:
+        mini_dataset: Dict mapping language -> List[Sample]
+        output_dir: Directory to save index files
+    """
+    output_path = Path(output_dir)
+    output_path.mkdir(parents=True, exist_ok=True)
+    
+    # Save metadata for each language
+    for lang, samples in mini_dataset.items():
+        lang_file = output_path / f"icdar_mini_{lang}.json"
+        
+        lang_data = {
+            'language': lang,
+            'total_samples': len(samples),
+            'samples': []
+        }
+        
+        for sample in samples:
+            lang_data['samples'].append({
+                'sample_id': sample.sample_id,
+                'image_path': sample.image_path,
+                'ground_truth': sample.ground_truth,
+                'metadata': sample.metadata
+            })
+        
+        with open(lang_file, 'w') as f:
+            json.dump(lang_data, f, indent=2)
+        
+        logger.info(f"Saved {len(samples)} samples for language {lang} to {lang_file}")
+    
+    # Save master index
+    index_file = output_path / "icdar_mini_index.json"
+    index_data = {
+        'dataset': 'ICDAR_mini',
+        'total_languages': len(mini_dataset),
+        'languages': {lang: len(samples) for lang, samples in mini_dataset.items()},
+        'total_samples': sum(len(samples) for samples in mini_dataset.values())
+    }
+    
+    with open(index_file, 'w') as f:
+        json.dump(index_data, f, indent=2)
+    
+    logger.info(f"Saved ICDAR_mini index with {index_data['total_languages']} languages and {index_data['total_samples']} total samples")
+    
+    return index_file
+
