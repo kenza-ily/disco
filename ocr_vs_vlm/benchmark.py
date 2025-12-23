@@ -355,7 +355,7 @@ class BenchmarkRunner:
         
         # Process samples with progress bar
         with tqdm(total=len(samples_to_process), desc=f"Phase {phase} - {model_name}", 
-                  unit="sample", leave=True) as pbar:
+                  unit="sample", leave=True, file=sys.stdout, disable=False) as pbar:
             for idx, sample in enumerate(samples_to_process):
                 try:
                     # Generate result
@@ -366,13 +366,15 @@ class BenchmarkRunner:
                     
                     # Save incrementally every batch_size samples
                     if (idx + 1) % self.config.batch_size == 0:
+                        all_results = existing_results + results
                         self._save_phase_results_csv(
                             results_file,
-                            existing_results + results,
+                            all_results,
                             write_headers=(not csv_headers_written)
                         )
-                        logger.info(f"Checkpoint saved ({len(existing_results) + len(results)} total)")
+                        logger.info(f"Checkpoint saved ({len(all_results)} total)")
                         csv_headers_written = True
+                        existing_results = all_results  # Update existing results to include newly saved batch
                         results = []
                     
                     pbar.update(1)
@@ -719,7 +721,7 @@ if __name__ == '__main__':
         models=['gpt-5-mini'],  # Use gpt-5-mini
         phases=[2, 3],  # VLM phases only (baseline + context-aware)
         sample_limit=None,  # Full dataset
-        results_dir="datasets_subsets/results"  # Save to datasets_subsets/results
+        results_dir="results"  # Save to ocr_vs_vlm/results
     )
     config.phase_3_letter = 'a'  # Set phase 3 letter suffix
     

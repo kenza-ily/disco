@@ -299,12 +299,12 @@ class ICDARMiniDataset(Dataset):
     
     def _load(self):
         """Load ICDAR mini samples from JSON files."""
-        # Find the datasets_subsets folder
+        # Find the icdar_mini subfolder in datasets_subsets
         # Try relative to this file, then try common paths
         possible_paths = [
-            Path(__file__).parent / "datasets_subsets",
-            Path(__file__).parent.parent / "ocr_vs_vlm" / "datasets_subsets",
-            self.dataset_root / "datasets_subsets" if self.dataset_root else None,
+            Path(__file__).parent / "datasets_subsets" / "icdar_mini",
+            Path(__file__).parent.parent / "ocr_vs_vlm" / "datasets_subsets" / "icdar_mini",
+            self.dataset_root / "icdar_mini" if self.dataset_root else None,
         ]
         
         subsets_dir = None
@@ -315,7 +315,7 @@ class ICDARMiniDataset(Dataset):
         
         if not subsets_dir:
             raise FileNotFoundError(
-                f"ICDAR_mini datasets_subsets folder not found. "
+                f"ICDAR_mini icdar_mini folder not found. "
                 f"Tried: {[str(p) for p in possible_paths if p]}"
             )
         
