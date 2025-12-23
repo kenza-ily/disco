@@ -12,10 +12,15 @@ dependencies = [
     "azure-ai-documentintelligence>=1.0.0",
     "transformers>=4.0.0",
     "torch>=2.0.0",
+    "pillow>=10.0.0",
+    "protobuf>=3.20.0",
+    "sentencepiece>=0.1.99",
+    "pdf2image>=1.16.0",
     "langchain",
     "langchain-openai",
     "langchain-huggingface",
     "langchain-community",
+    "huggingface-hub>=0.0.0",
 ]
 
 [build-system]
