@@ -6,10 +6,26 @@
 Testing OCR models vs VLMs and evaluate to which extent OCRs remain key parsing tools - and it which way VLMs are more suit to some tasks
 
 ### Research questions
-- try ocr vs vlm parsing
-- try ocr vs vlm with prompt -> parsing
-- Parsing with OCR + VLM answering question
-- Parsing + QA all with VLM 
+
+Parsing:
+
+1. OCR vs. VLM direct parsing
+Compare structured field extraction from a document using:
+- OCR-based pipeline (e.g. Azure/Mistral OCR)
+- VLM-only extraction (e.g. GPT-4, Claude), directly prompted to parse fields from image
+
+2. OCR + VLM with prompt-based parsing
+- Use OCR to extract plain text → feed to VLM with structured extraction prompt
+Compare to VLM parsing from image directly
+Useful to test how much structure is gained/lost in OCR-only text
+
+QA:
+1. OCR + VLM QA
+OCR for raw text → VLM answers question based on that text
+Simulates traditional pipeline with reasoning LLM downstream
+2. End-to-end VLM QA
+VLM answers question directly from document image
+Tests multimodal reasoning and OCR+language integration
 
 ### Paper
 [Overleaf link](https://www.overleaf.com/project/691c47e001b29217e22fb39c)

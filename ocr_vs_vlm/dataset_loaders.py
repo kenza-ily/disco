@@ -1,11 +1,6 @@
 """
 Unified dataset loaders for OCR/VLM benchmarking.
 
-Supports:
-- IAM Handwriting Database
-- ICDAR 2019 MLT (Multi-Lingual Text)
-- PubLayNet (Document Layout)
-
 All loaders return a consistent interface: Sample(image_path, ground_truth, metadata)
 """
 
