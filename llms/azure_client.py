@@ -1,10 +1,12 @@
-from .llm_settings import get_settings, LLMModel
+from .llm_settings import get_settings, LLMModel, get_langchain_azure_openai
 from openai import AzureOpenAI, AsyncAzureOpenAI
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
 from typing import Any, TypeVar, Union
 from pathlib import Path
 from .azure_models import AVAILABLE_AZURE_MODELS
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import PydanticOutputParser
 
 T = TypeVar('T')
 
@@ -71,3 +73,43 @@ async def azure_openai_structured_response(
         raise ValueError("Failed to get a valid structured response from the model")
 
     return response.choices[0].message.parsed
+
+
+async def langchain_azure_openai_structured_response(
+    system_prompt: str,
+    user_input: Union[str, list[dict[str, Any]]],
+    pydantic_model: type[T],
+    model_name: str = "gpt-4",
+) -> T:
+    """Handle Azure OpenAI structured response using LangChain."""
+    if model_name not in AVAILABLE_AZURE_MODELS:
+        raise ValueError(f"Model '{model_name}' is not in the list of available Azure models. Available models: {AVAILABLE_AZURE_MODELS}")
+    
+    llm = get_langchain_azure_openai(model_name)
+    
+    # Create parser
+    parser = PydanticOutputParser(pydantic_object=pydantic_model)
+    
+    # Create prompt template
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system_prompt + "\n\n{format_instructions}"),
+        ("human", "{input}")
+    ])
+    
+    # Create chain
+    chain = prompt | llm | parser
+    
+    # Prepare input
+    if isinstance(user_input, str):
+        input_text = user_input
+    else:
+        # Convert list of dicts to string
+        input_text = "\n".join([msg.get("content", "") for msg in user_input if isinstance(msg, dict)])
+    
+    # Run chain
+    result = await chain.ainvoke({
+        "input": input_text,
+        "format_instructions": parser.get_format_instructions()
+    })
+    
+    return result

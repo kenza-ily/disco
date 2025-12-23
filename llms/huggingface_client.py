@@ -1,5 +1,6 @@
 from transformers import AutoModel, AutoTokenizer, AutoModelForCausalLM
-from .llm_settings import get_settings
+from .llm_settings import get_settings, get_langchain_huggingface_pipeline
+from langchain_core.prompts import PromptTemplate
 
 
 def load_huggingface_model(model_name: str, trust_remote_code: bool = True, dtype: str = "auto"):
@@ -26,6 +27,20 @@ def generate_text(prompt: str, model_name: str = "google/gemma-3-27b-it", max_le
     return tokenizer.decode(outputs[0], skip_special_tokens=True)
 
 
-# Example usage:
-# model = load_huggingface_model("deepseek-ai/DeepSeek-OCR")
-# text = generate_text("Hello, how are you?")
+def langchain_generate_text(prompt: str, model_name: str = "google/gemma-3-27b-it") -> str:
+    """Generate text using LangChain Hugging Face pipeline."""
+    llm = get_langchain_huggingface_pipeline(model_name)
+    
+    # Create prompt template
+    prompt_template = PromptTemplate(
+        input_variables=["prompt"],
+        template="{prompt}"
+    )
+    
+    # Create chain using pipe operator (LangChain v0.1+)
+    chain = prompt_template | llm
+    
+    # Run chain
+    result = chain.invoke({"prompt": prompt})
+    
+    return result
