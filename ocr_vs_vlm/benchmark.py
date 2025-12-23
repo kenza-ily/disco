@@ -12,6 +12,7 @@ Saves results incrementally for resumability and debugging.
 import json
 import logging
 import time
+import csv
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from pathlib import Path
@@ -22,6 +23,7 @@ from tqdm import tqdm
 
 from .dataset_loaders import DatasetRegistry, validate_dataset, load_image
 from .unified_model_api import UnifiedModelAPI, ModelRegistry
+from . import prompts as prompt_module
 
 # Create logs directory
 LOGS_DIR = Path(__file__).parent / "logs"
@@ -68,10 +70,11 @@ class BenchmarkConfig:
     
     # Phase control
     phases: List[int]  # [1, 2, 3] which phases to run
+    phase_3_letter: Optional[str] = None  # Letter suffix for phase 3 (a, b, c, etc.)
     
     # Sample control
     sample_limit: Optional[int] = None  # Max samples per dataset
-    batch_size: int = 10  # Batch API calls this many samples
+    batch_size: int = 50  # Save results every this many samples
     
     # Output paths
     results_dir: str = "results"
@@ -85,11 +88,19 @@ class BenchmarkConfig:
     @classmethod
     def from_dict(cls, config_dict: Dict) -> 'BenchmarkConfig':
         """Create config from dictionary."""
-        return cls(**config_dict)
+        # Extract phase_3_letter if present, set default to None
+        phase_3_letter = config_dict.pop('phase_3_letter', None)
+        config = cls(**config_dict)
+        config.phase_3_letter = phase_3_letter
+        return config
     
     def to_dict(self) -> Dict:
         """Convert config to dictionary."""
-        return asdict(self)
+        config_dict = asdict(self)
+        # Note: phase_3_letter is not included in asdict if it's a property
+        if hasattr(self, 'phase_3_letter'):
+            config_dict['phase_3_letter'] = self.phase_3_letter
+        return config_dict
 
 
 @dataclass
@@ -137,6 +148,10 @@ class BenchmarkRunner:
         self.results_dir = Path(config.results_dir)
         self.results_dir.mkdir(parents=True, exist_ok=True)
         
+        # Initialize prompts directory
+        self.prompts_dir = Path(__file__).parent / "prompts"
+        self.prompts_dir.mkdir(parents=True, exist_ok=True)
+        
         self.checkpoint_file = self.results_dir / config.checkpoint_file
         self.checkpoint = self._load_checkpoint()
         
@@ -145,6 +160,7 @@ class BenchmarkRunner:
         
         logger.info(f"BenchmarkRunner initialized")
         logger.info(f"Results directory: {self.results_dir}")
+        logger.info(f"Prompts directory: {self.prompts_dir}")
         logger.info(f"Config: {config.to_dict()}")
     
     def run_benchmark(self) -> Dict:
@@ -311,14 +327,21 @@ class BenchmarkRunner:
             List of BenchmarkResult objects
         """
         results = []
-        output_dir = self.results_dir / dataset_name / model_name
+        # Create phase folder with timestamp and phase 3 letter suffix
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        phase_folder_name = f"phase_{phase}"
+        if phase == 3 and self.config.phase_3_letter:
+            phase_folder_name = f"phase_3{self.config.phase_3_letter}"
+        
+        output_dir = self.results_dir / dataset_name / model_name / f"{phase_folder_name}_{timestamp}"
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        results_file = output_dir / f"phase_{phase}_results.json"
+        results_file = output_dir / f"results.csv"
         
         # Load existing results if resuming
         existing_results = self._load_existing_results(results_file)
         processed_ids = {r.sample_id for r in existing_results}
+        csv_headers_written = len(existing_results) > 0  # Track if headers written
         
         samples_to_process = [
             s for s in dataset if s.sample_id not in processed_ids
@@ -339,11 +362,13 @@ class BenchmarkRunner:
                     
                     # Save incrementally every batch_size samples
                     if (idx + 1) % self.config.batch_size == 0:
-                        self._save_phase_results(
+                        self._save_phase_results_csv(
                             results_file,
-                            existing_results + results
+                            existing_results + results,
+                            write_headers=(not csv_headers_written)
                         )
                         logger.info(f"Checkpoint saved ({len(existing_results) + len(results)} total)")
+                        csv_headers_written = True
                         results = []
                     
                     pbar.update(1)
@@ -366,13 +391,19 @@ class BenchmarkRunner:
         
         # Final save
         if results:
-            self._save_phase_results(
+            self._save_phase_results_csv(
                 results_file,
-                existing_results + results
+                existing_results + results,
+                write_headers=(not csv_headers_written)
             )
             logger.info(f"Phase {phase} saved ({len(existing_results) + len(results)} total)")
         
-        return existing_results + results
+        # Extract and save prompts for phase 3
+        all_results = existing_results + results
+        if phase == 3 and self.config.phase_3_letter:
+            self._extract_and_save_prompts(all_results, self.config.phase_3_letter)
+        
+        return all_results
     
     def _process_sample(self, sample, model_name: str, phase: int, dataset_name: str) -> BenchmarkResult:
         """
@@ -402,7 +433,7 @@ class BenchmarkRunner:
             
             elif phase == 2:
                 # Phase 2: VLM Baseline with generic prompt
-                prompt = "Extract all text from this document image"
+                prompt = prompt_module.get_phase_2_prompt()
                 prediction = self._call_vlm_model(model_name, sample.image_path, prompt)
             
             elif phase == 3:
@@ -525,33 +556,9 @@ class BenchmarkRunner:
         Returns:
             Context-aware prompt string
         """
-        prompt_parts = [
-            f"Dataset: {dataset_name}",
-            f"Task: Extract all text from this document image, preserving structure and layout"
-        ]
-        
-        # Add dataset-specific context
-        metadata = sample.metadata
-        
-        if 'languages' in metadata and metadata['languages']:
-            langs = ", ".join(metadata['languages'])
-            prompt_parts.append(f"Languages: {langs}")
-        
-        if 'num_text_lines' in metadata:
-            prompt_parts.append(f"Expected approximately {metadata['num_text_lines']} text lines")
-        
-        if dataset_name == 'IAM':
-            prompt_parts.append("This is handwritten text. Handle variations in writing style.")
-        
-        elif dataset_name == 'ICDAR':
-            prompt_parts.append("This is multi-lingual scene text. Preserve script types and directions.")
-        
-        elif dataset_name == 'PubLayNet':
-            prompt_parts.append("This is a document page. Preserve document structure and layout.")
-        
-        prompt_parts.append("Return ONLY the extracted text.")
-        
-        return "\n".join(prompt_parts)
+        return prompt_module.get_phase_3_prompt(
+            sample, dataset_name, self.config.phase_3_letter
+        )
     
     def _get_dataset_root(self, dataset_name: str) -> str:
         """Get dataset root directory path."""
@@ -568,17 +575,54 @@ class BenchmarkRunner:
         
         return str(dataset_paths[dataset_name])
     
-    def _save_phase_results(self, results_file: Path, results: List[BenchmarkResult]):
-        """Save phase results to JSON file."""
+    def _extract_and_save_prompts(self, results: List[BenchmarkResult], phase_letter: str):
+        """
+        Extract unique prompts from results and save to prompts folder.
+        
+        Args:
+            results: List of BenchmarkResult objects
+            phase_letter: Letter suffix (a, b, c, etc.)
+        """
+        # Extract unique non-empty prompts
+        unique_prompts = []
+        seen_prompts = set()
+        
+        for result in results:
+            if result.prompt and result.prompt.strip():
+                prompt_text = result.prompt.strip()
+                if prompt_text not in seen_prompts:
+                    unique_prompts.append(prompt_text)
+                    seen_prompts.add(prompt_text)
+        
+        # Save each unique prompt to a separate file
+        if unique_prompts:
+            prompt_file = self.prompts_dir / f"prompt{phase_letter}.txt"
+            with open(prompt_file, 'w') as f:
+                f.write(unique_prompts[0])  # Save the first (likely only) unique prompt
+            logger.info(f"Saved {len(unique_prompts)} unique prompt(s) to {prompt_file}")
+            
+            # Log if there were multiple unique prompts
+            if len(unique_prompts) > 1:
+                logger.warning(f"Found {len(unique_prompts)} unique prompts for phase {phase_letter}. Saved first one.")
+    
+    def _save_phase_results_csv(self, results_file: Path, results: List[BenchmarkResult], write_headers: bool = True):
+        """Save phase results to CSV file."""
         results_file.parent.mkdir(parents=True, exist_ok=True)
         
-        with open(results_file, 'w') as f:
-            json.dump(
-                [r.to_dict() for r in results],
-                f,
-                indent=2,
-                default=str  # Handle any non-serializable objects
-            )
+        # Define CSV column order
+        fieldnames = [
+            'sample_id', 'image_path', 'dataset', 'model', 'phase', 'ground_truth',
+            'prediction', 'prompt', 'inference_time_ms', 'tokens_used', 'error', 'timestamp'
+        ]
+        
+        with open(results_file, 'w', newline='') as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            
+            if write_headers:
+                writer.writeheader()
+            
+            for result in results:
+                writer.writerow(result.to_dict())
     
     def _load_existing_results(self, results_file: Path) -> List[BenchmarkResult]:
         """Load existing results if file exists (for resumability)."""
@@ -586,10 +630,17 @@ class BenchmarkRunner:
             return []
         
         try:
+            results = []
             with open(results_file, 'r') as f:
-                data = json.load(f)
+                reader = csv.DictReader(f)
+                for row in reader:
+                    # Convert string values to appropriate types
+                    row['inference_time_ms'] = float(row['inference_time_ms']) if row.get('inference_time_ms') else 0.0
+                    row['tokens_used'] = int(row['tokens_used']) if row.get('tokens_used') and row['tokens_used'] != 'None' else None
+                    row['phase'] = int(row['phase'])
+                    results.append(BenchmarkResult(**row))
             
-            return [BenchmarkResult(**item) for item in data]
+            return results
         except Exception as e:
             logger.warning(f"Failed to load existing results {results_file}: {e}")
             return []
@@ -652,12 +703,13 @@ if __name__ == '__main__':
     
     # Create configuration - test with gpt-5-mini on ICDAR, 10 samples
     config = create_benchmark_config(
-        datasets=['ICDAR'],  # Start with ICDAR only
+        datasets=['ICDAR'],  # ICDAR dataset
         models=['gpt-5-mini'],  # Use gpt-5-mini
         phases=[2, 3],  # VLM phases only (baseline + context-aware)
-        sample_limit=10,  # 10 samples for testing
-        results_dir="results"
+        sample_limit=None,  # Full dataset
+        results_dir="results/phase_3a"  # Save as phase_3a (first prompt variant)
     )
+    config.phase_3_letter = 'a'  # Set phase 3 letter suffix
     
     # Run benchmark
     runner = BenchmarkRunner(config)
