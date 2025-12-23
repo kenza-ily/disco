@@ -1,6 +1,5 @@
 .env
 .env.local
-sandbox/
 .vscode/
 __pycache__/
 /datasets

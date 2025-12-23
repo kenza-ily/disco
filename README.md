@@ -14,5 +14,43 @@ Playground to explore PoCs and research ideas
 - Azure Document Intelligence client for OCR and document processing
 
 ## Usage
-- `uv run python sandbox/llm_call.py` - Run LLM script and save output to `sandbox/output/output.md`
-- `uv run python sandbox/document_analysis.py` - Analyze PDF documents with Azure Document Intelligence
+
+### Authentication Setup
+Before running any scripts, ensure you have valid AWS credentials:
+
+```bash
+aws-login
+codeartifact-login
+make setup-env
+uv sync
+```
+
+### LLM Script
+Run a simple LLM call using Azure OpenAI:
+
+```bash
+uv run python sandbox/llm_call.py
+```
+
+**Output**: Saves response to `sandbox/output/output.md`
+
+### Document Analysis
+Analyze PDF documents using Azure Document Intelligence:
+
+```bash
+# Analyze a PDF in the datasets folder
+uv run python sandbox/document_analysis.py "datasets/your-document.pdf"
+
+# Or use an absolute path
+uv run python sandbox/document_analysis.py "/full/path/to/document.pdf"
+```
+
+**Outputs**:
+- `sandbox/output/document_analysis.json` - Detailed structured data with text and bounding boxes
+- `sandbox/output/document_text.txt` - Clean extracted text organized by page
+
+**Example**:
+```bash
+# Healthcare eBook analysis
+uv run python sandbox/document_analysis.py "datasets/Generative AI in Healthcare eBook.pdf"
+
