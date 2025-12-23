@@ -4,6 +4,7 @@ from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
 from typing import Any, TypeVar, Union
 from pathlib import Path
+from .azure_models import AVAILABLE_AZURE_MODELS
 
 T = TypeVar('T')
 
@@ -45,6 +46,9 @@ async def azure_openai_structured_response(
     pdf_path: Path | None = None,
 ) -> T:
     """Handle Azure OpenAI structured response using beta chat completions parse API."""
+    if model.name not in AVAILABLE_AZURE_MODELS:
+        raise ValueError(f"Model '{model.name}' is not in the list of available Azure models. Available models: {AVAILABLE_AZURE_MODELS}")
+    
     client = get_async_azure_openai_client()
 
     messages = [
