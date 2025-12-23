@@ -11,8 +11,8 @@ import argparse
 # Add parent directory to path to import llms
 sys.path.append('..')
 
-from llms.azure_client import get_azure_openai_client
-from llms.huggingface_client import generate_text
+from llms.llm_settings import get_langchain_azure_openai, get_langchain_huggingface_pipeline
+from llms.huggingface_client import langchain_generate_text
 
 def main():
     parser = argparse.ArgumentParser(description="Call an LLM with specified client and model")
@@ -23,25 +23,18 @@ def main():
     args = parser.parse_args()
     
     if args.client == "azure":
-        # Get the Azure OpenAI client
-        client = get_azure_openai_client()
+        # Get the LangChain Azure OpenAI client
+        llm = get_langchain_azure_openai(args.model)
         
         # Make the LLM call
-        response = client.chat.completions.create(
-            model=args.model,
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": args.prompt}
-            ],
-            max_tokens=150
-        )
+        response = llm.invoke(args.prompt)
         
         # Get the response content
-        output = response.choices[0].message.content
+        output = response.content
         
     elif args.client == "hf":
-        # Use Hugging Face
-        output = generate_text(args.prompt, model_name=args.model)
+        # Use LangChain Hugging Face
+        output = langchain_generate_text(args.prompt, model_name=args.model)
     
     # Save to output.md in the output subdirectory
     script_dir = os.path.dirname(os.path.abspath(__file__))

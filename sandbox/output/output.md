@@ -1,3 +1,10 @@
 # LLM Output
 
-Sure! Here’s a fun fact: The first artificial intelligence program ever written was developed in 1951 by Christopher Strachey. It was designed to play checkers on a Ferranti Mark I computer in Manchester, England! So, AI has been around for more than 70 years—much longer than many people realize.
+Client: azure
+Model: gpt-4
+Prompt: Hello, tell me a fun fact about AI
+
+Response:
+Hi! Here’s a fun fact about AI:
+
+The famous chess computer Deep Blue, which defeated world champion Garry Kasparov in 1997, could evaluate **200 million chess positions per second**—but it still couldn’t think creatively or strategize like a human. Today’s AI systems, like ChatGPT, aren’t limited to brute-force calculations, but can analyze language, generate art, and even write poetry!

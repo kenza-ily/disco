@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script to analyze a PDF document using Azure Document Intelligence
+Script to analyze a PDF document using LangChain Azure Document Intelligence
 """
 
 import sys
@@ -11,52 +11,46 @@ from pathlib import Path
 # Add parent directory to path to import llms
 sys.path.append('..')
 
-from llms.azure_client import get_azure_document_intelligence_client
+from llms.llm_settings import get_langchain_azure_document_intelligence_loader
 
 def analyze_document(pdf_path: str):
-    """Analyze a PDF document using Azure Document Intelligence."""
+    """Analyze a PDF document using LangChain Azure Document Intelligence."""
 
     # Check if file exists
     if not Path(pdf_path).exists():
         print(f"Error: File {pdf_path} does not exist")
         return
 
-    # Get the client
-    client = get_azure_document_intelligence_client()
-
-    # Open and analyze the document
-    with open(pdf_path, "rb") as f:
-        poller = client.begin_analyze_document(
-            model_id="prebuilt-read",  # Use the read model for general document analysis
-            body=f
-        )
-
-    # Wait for the operation to complete
-    result = poller.result()
-
+    # Get the LangChain loader
+    loader = get_langchain_azure_document_intelligence_loader(pdf_path)
+    
+    # Load documents
+    documents = loader.load()
+    
     # Extract text content
     output = {
         "filename": Path(pdf_path).name,
         "model": "prebuilt-read",
         "pages": []
     }
-
-    for page in result.pages:
+    
+    # Process each document (page)
+    for doc in documents:
+        # LangChain's Azure AI loader returns Document objects
+        # We need to parse the content to extract page information
+        content = doc.page_content
+        metadata = doc.metadata
+        
+        # The content is the extracted text, but we need to structure it like before
+        # For now, let's create a simple structure
         page_data = {
-            "page_number": page.page_number,
-            "width": page.width,
-            "height": page.height,
-            "unit": page.unit,
-            "lines": []
+            "page_number": metadata.get("page_number", 1),
+            "width": metadata.get("width"),
+            "height": metadata.get("height"),
+            "unit": metadata.get("unit", "inch"),
+            "lines": [{"text": line.strip(), "bounding_box": None} for line in content.split('\n') if line.strip()]
         }
-
-        for line in page.lines:
-            line_data = {
-                "text": line.content,
-                "bounding_box": line.polygon
-            }
-            page_data["lines"].append(line_data)
-
+        
         output["pages"].append(page_data)
 
     # Save to JSON file
