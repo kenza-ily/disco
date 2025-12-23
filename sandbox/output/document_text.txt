@@ -1,0 +1,1534 @@
+
+--- Page 1 ---
+aiai
+Al Accelerator
+Institute
+Generative AI
+in Healthcare
+EBOOK
+
+--- Page 2 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Contents
+3
+Introduction
+6
+Chapter 1: Opportunities & limitations of LLMs in healthcare
+13
+Chapter 2: Fail faster, heal smarter: How AI is rewiring pharma
+21
+Chapter 3: Building trust at scale: LLMOps for safe, compliant AI in healthcare
+31
+Chapter 4: Safe, small, and specialized: The future of pediatric AI
+40
+Chapter 5: From model to patient: How UHG builds trustworthy AI
+47
+Chapter 6: The future of generative AI in healthcare
+52
+Conclusion
+2
+
+--- Page 3 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Introduction
+I
+Generative AI is moving fast, and that speed is a good thing in many industries. But in healthcare,
+where decisions can impact lives, speed without caution isn't innovation; it's risk.
+This is a field where trust, nuance, and accountability matter. So, the question isn't just what Al can do,
+but what it should do, and how we ensure it strengthens, not strains, the systems we rely on.
+This eBook brings together insights from people tackling that challenge head-on. They're not theorizing
+from the sidelines but building and deploying AI tools in real clinical settings. Their focus? Not hype, but
+impact. Not novelty, but meaningful, measurable progress.
+We've structured this eBook around five key themes shaping the future of generative Al in healthcare:
+1
+Understanding where LLMs help and where they don't
+In clinical care, requests aren't always literal, and emotions often matter as much as symptoms. You'll
+explore where large language models (LLMs) can support clinicians, like summarizing records or
+simplifying instructions, and where they fall short, like interpreting complex intent or emotional nuance.
+2
+Turning failure into fuel in pharma
+Drug development is lengthy, expensive, and often unsuccessful. But failure doesn't have to be wasted.
+You'll see how Takeda uses Al to learn from every misstep, speeding up discovery, reducing risk, and
+making treatments more tailored and predictive.
+3
+Building trust through secure, compliant infrastructure
+Al in healthcare can't be a black box. One chapter dives into how a secure LLMOps (large language
+model operations) framework helped turn an informal documentation tool into a scalable, compliant
+solution, freeing clinician time while meeting the strictest regulatory standards.
+3
+
+--- Page 4 ---
+aiai
+Al Accelerator
+Institute
+Generative AI in Healthcare eBook
+Introduction
+I
+4
+Designing AI for paediatrics, not just adapting it
+Pediatric care has unique needs. At Great Ormond Street Hospital, teams build purpose-built, fine-
+tuned models that understand children's data and support overworked clinicians without cutting
+corners on oversight or ethics.
+5
+Scaling AI responsibly in a massive health system
+Drug development is lengthy, expensive, and often unsuccessful. But failure doesn't have to be wasted.
+You'll see how Takeda uses Al to learn from every misstep, speeding up discovery, reducing risk, and
+making treatments more tailored and predictive.
+4
+
+--- Page 5 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Key learnings
+This eBook is about practical progress, not hypothetical breakthroughs. It's a snapshot of how Al is quietly reshaping
+healthcare, not by replacing humans, but by helping them work smarter, faster, and with greater focus.
+You'll come away with:
+A clearer view of where LLMs can drive real value in healthcare and where they can't.
+Concrete lessons on designing AI tools that clinicians want to use.
+Insights on governance, compliance, and the infrastructure needed to support safe deployment.
+V
+Examples of how different healthcare organizations are putting generative AI to work, ethically, efficiently, and at scale.
+5
+
+--- Page 6 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Chapter 1
+Opportunities & limitations
+of LLMs in healthcare
+6
+
+--- Page 7 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Opportunities
+& limitations
+of LLMs in
+healthcare
+In healthcare, what a patient says is rarely the whole story, and that's exactly where artificial
+intelligence still falls short. Unlike consumer tech, where a request is often literal, clinical
+interactions are layered with fear, context, and unspoken concerns. When Al takes what's said at
+face value, it risks misunderstanding the nature of care.
+That's the warning from Tamara Saver, who highlights how large language models (LLMs) often miss
+the "why behind the why." A teenager asking for a CT scan, or a woman seeking a back x-ray at 3
+a.m., aren't just making medical requests; they're revealing more profound anxieties. A good doctor
+recognizes this and adjusts accordingly. Al, as it stands today, doesn't.
+This chapter explores where LLMs can deliver value in healthcare and where they can't. When the
+question is straightforward and the data structured, AI can retrieve records, summarize instructions,
+and surface insights with impressive speed.
+But when patient needs are emotional, complex, or evolving, Al falters. It can't interpret ambiguity. It
+can't empathize. And it certainly can't build the mental model a physician constructs instinctively.
+Yet Saver is no AI skeptic. Her work at Vituity shows how the correct implementation makes all the
+difference. A sepsis prediction model embedded invisibly into lab panels led to earlier diagnoses
+and saved lives.
+A reframed tool, pitched as an "Al Resident" rather than an all-knowing system, earned clinician
+trust and improved adoption. These examples prove successful healthcare Al isn't just about more
+innovative models. It's about seamless design, thoughtful deployment, and earning trust by acting
+as an assistant, not a replacement.
+The future of Al in healthcare doesn't depend on hype or abstraction; it depends on precision,
+humility, and understanding where these tools truly fit. When AI supports genuine human care, not
+just digital efficiency, it can make medicine faster and more humane.
+7
+
+--- Page 8 ---
+Opportunities
+& limitations
+of LLMs in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+1
+The problem: AI in healthcare needs clear intent
+A lot of AI failures in healthcare happen because systems misread the intent behind what
+patients or clinicians say. Large language models often take requests at face value, but any
+doctor will tell you: the hard part is figuring out what's really going on beneath the surface.
+Tamara Saver shares two examples that bring this to life:
+In one, a 16-year-old shows up in the ER asking for a CT scan. His parents
+had plugged his symptoms into ChatGPT and were worried it was
+appendicitis. But after talking with the patient, the doctor realizes it's not
+about sharp pain: it's months of ongoing nausea. Totally different issue,
+totally different path forward. The family was chasing one answer, but
+the clinical reality pointed somewhere else.
+In another, a woman comes in at 3 a.m. asking for a back x-ray.
+She's had pain for years. So why now? Turns out her brother was just
+diagnosed with cancer, and she's scared. She's not just looking for a
+scan, she's looking for reassurance.
+These stories highlight what AI can miss: the deeper meaning behind a question or request.
+Good care depends on understanding a person's full story, history, fears, and context, not just
+what they say out loud. Tamara Saver puts it well: skilled clinicians are trained to spot fear,
+doubt, and what's left unsaid. LLMs, for now, just aren't built to pick up on that kind of emotional
+and situational depth.
+8
+
+--- Page 9 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+2
+Where LLMs work and where they fail in healthcare
+Where LLMs excel
+Saver points out a few places where large language models really can add
+value in clinical settings:
+Searching structured medical data
+When the question is straightforward and tied to existing records, LLMs can
+be a big help. They can quickly pull up a patient's cardiac history, current
+medications, or past imaging reports. Thanks to semantic search, doctors
+can spot patterns and find results that would usually take time and manual
+effort to dig through.
+Creating patient-friendly communication
+AI can help draft discharge notes in plain language that patients actually
+understand. Take a dancer with a dislocated shoulder, for example; rather
+than generic rehab advice, AI can tailor the message to encourage recovery
+in a way that aligns with dance goals, making it more personal
+and motivating.
+Answering factual questions
+Patient portals get many simple queries like, "When's my next tetanus shot?"
+These don't require deep thinking, just quick and accurate answers. LLMs can
+handle that well, pulling from existing records with speed and precision.
+X
+Where LLMs fail
+But there are serious limits to what they can do:
+Understanding deeper intent
+LLMs can't read between the lines or offer empathy. If someone asks, "Do I
+have cancer?" the model might give factual info, but it won't catch the fear
+or emotional weight behind the question. Saver says it clearly: understanding
+the real reason behind a question is critical in healthcare. Right now, Al can't
+ask follow-ups or sense what's left unsaid.
+Building a full picture of the patient
+Doctors don't just listen, they interpret. Based on how a patient responds,
+they might realize that back pain is stress-related, posture-related, or
+something worse. LLMs don't have that kind of flexibility. They can't adjust
+on the fly or connect the dots in the same way.
+Handling unclear or incomplete info
+Clinicians ask follow-ups to resolve gaps or inconsistencies. LLMs sometimes
+fill in the blanks with confident guesses, which can be dangerous.
+Hallucinations, made-up studies, or misread clinical details aren't just
+inconvenient; they can break trust and put patients at risk if not caught.
+9
+
+--- Page 10 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+3
+Case studies: successful AI implementation in healthcare
+Saver highlights that even the best Al model won't succeed without smart implementation. Two real-world examples
+show how doing it right makes all the difference.
+Predicting sepsis before it's too late
+Sepsis is one of the top causes of death in hospitals. Most AI tools
+detect it after a patient is already in serious trouble. However,
+Vituity built a model that flags risk before symptoms show up, using
+trends in lab results.
+What's smart is how they introduced it. The risk score is added to
+the normal lab report instead of triggering an alarm or making
+doctors click through a new dashboard. No extra steps, no new
+system to learn.
+Doctors don't even realize they're using Al; they just see more useful
+lab data. This "invisible Al" setup helped them catch sepsis earlier,
+act faster, and save lives. Tamara Saver points out that adoption
+was seamless because it blended into existing workflows. No
+resistance, just results.
+The "Al Resident" that earned doctors' trust
+Getting doctors to trust AI is another hurdle, especially if it feels
+like a black box or comes off too sure of itself. But there's a clever
+workaround: speak their language.
+Vituity called its system an "Al Resident", a digital version of a junior
+doctor. Instead of saying "Al recommends," the message says, "Your Al
+Resident suggests ... pending your review."
+That small shift made a big impact. It felt familiar and collaborative,
+not bossy or rigid. Clinicians were more open to using it, which led to
+better uptake and better outcomes. As Saver explains, AI gains traction
+when it acts as backup, not a replacement for human judgment.
+Step-by-step:
+Test ordered
+data analyzed
+data analyzed
++ AI adds score
++ Doctor sees in normal report
+10
+
+--- Page 11 ---
+Opportunities
+& limitations
+of LLMs in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+4
+Next steps and future vision
+Saver's takeaway is simple: the future of Al in healthcare isn't about chasing buzzwords
+but getting it right. AI should support doctors, not try to take their place. That means
+careful integration, thorough testing, and using it only where it truly helps.
+Innovation should be driven by hope, not frustration. If the industry keeps refining, keeps
+listening to what clinicians need, and stays focused on what actually works, AI has the
+potential to make healthcare both smarter and more compassionate.
+"Al can be revolutionary, but only if we apply it where it actually works.
+Don't let the hype distract from real progress."
+11
+
+--- Page 12 ---
+Opportunities
+& limitations
+of LLMs in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Key takeaways
+Healthcare isn't a simple back-and-forth; it's layered and complex. For Al to be useful, it needs to
+understand more than just what's said on the surface.
+V
+LLMs work best when things are clear and the data is clean. They're great for:
+*
+Pulling info from medical records
+*
+Answering straightforward questions
+* Writing summaries that patients can actually understand
+But they start to fall apart when things get messy, like when intent isn't clear or the
+data is incomplete. That's when they struggle with:
+*
+Spotting subtle or complex diagnoses
+* Picking up on fear, anxiety, or unspoken concerns
+* Making sound decisions without human oversight
+How AI is built into the system matters. It should be:
+*
+Invisible when it can be, blending into existing workflows
+*
+Framed in a familiar way, like an "Al Resident", to build trust
+*
+Integrated into the tools doctors already use, not bolted on as an afterthought
+12
+
+--- Page 13 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Chapter 2
+Fail faster, heal smarter:
+How AI is rewiring pharma
+13
+
+--- Page 14 ---
+Fail faster,
+heal smarter:
+How AI is
+rewiring
+pharma
+aiai
+Al Accelerator
+Institute
+Generative AI in Healthcare eBook
+Bringing a new drug from concept to market is notoriously slow and expensive. In fact, the
+process can often take over a decade and cost billions of dollars, with most attempts still ending
+in failure.
+Despite the abundance of data generated through clinical trials, the pharmaceutical industry
+struggles to systematically capture and analyze these failures, frequently repeating past mistakes.
+According to Leo Barella, Chief Technology Officer at Takeda, pharma companies have
+traditionally operated with the cautious precision of risk-averse organizations like NASA. This
+mindset, Barella argues, hampers innovation, slows progress, and prevents the industry from
+achieving exponential growth.
+This chapter explores how Takeda is harnessing artificial intelligence to fundamentally rethink this
+model. Inspired by SpaceX's rapid iteration strategy, Barella advocates for an Al-driven approach
+that embraces failure as a critical source of learning.
+By systematically analyzing data from unsuccessful trials and leveraging generative AI for early-
+stage drug discovery, Takeda is converting past setbacks into valuable insights, accelerating drug
+development, and improving patient outcomes.
+Integrating AI-enabled real-time health monitoring and personalized medicine solutions promises
+to shift healthcare from reactive to proactive, significantly reducing misdiagnoses and adverse
+drug interactions.
+The implications of this approach extend well beyond pharma. Barella's insights underscore a
+pivotal shift in how healthcare sectors might harness AI to not only speed up innovation but also
+enhance patient care and safety.
+As AI-first thinking becomes mainstream, the pharmaceutical industry (and healthcare at large)
+stands poised on the brink of transformation. The question now is not if AI can reshape medicine,
+but how swiftly and effectively organizations can adapt to leverage these new capabilities.
+14
+
+--- Page 15 ---
+Fail faster,
+heal smarter:
+How AI is
+rewiring
+pharma
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+1
+The problem: Why pharma moves too slowly
+Bringing a new drug to market takes time, often over a decade, and billions of dollars. And still,
+most drug candidates don't make it. Pharma is an industry built on failure, yet it rarely learns
+from those failures meaningfully and systematically.
+One of the biggest roadblocks is poor data infrastructure. Clinical trials produce tons of valuable
+information, but much of it ends up siloed, ignored, or lost. When a trial fails, the lessons often
+vanish; no insights, improvements, just repeated mistakes.
+As Barella puts it, pharma tends to operate like NASA: highly controlled, risk-averse, and slow to
+move. In 2023, a single faulty gasket delayed the Artemis mission. In drug development, small
+issues often lead to cautious decisions that drag the process out even more.
+We still lean heavily on human judgment and one-off diagnostics, like annual checkups or single
+lab results. It's a reactive model, and it's slow. Failed trials and rejected drugs often aren't mined
+for insights, so we miss the chance to get better.
+Barella sums it up:
+"We manage science when we should be engineering it."
+Until pharma adopts a mindset of fast iteration and continuous learning, it'll keep moving at a
+crawl, missing out on the real potential for rapid progress.
+15
+
+--- Page 16 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+2
+The solution: Using AI to learn from failure
+Takeda is investing in AI to reshape how pharma handles failure, turning setbacks into smart, data-driven learning moments.
+The focus is on using AI to analyze why things go wrong and ensure those lessons drive progress.
+What pharma can learn from SpaceX
+Take a look at two very different approaches to space exploration: NASA
+vs. Spacex.
+NASA has a long track record of success, but operates with a zero-failure
+mindset. Everything is planned down to the last detail, and mistakes are
+avoided. In 2023, a single faulty gasket stopped the Artemis rocket rollout,
+proving how risk-averse the culture is.
+Spacex, on the other hand, leans into failure. Their rockets blow up during
+tests, and that's the point. Every crash is packed with data. Each test,
+even the failed ones, moves them forward faster.
+Pharma needs to think more like SpaceX. A failed clinical trial or rejected
+drug shouldn't be a dead end. It should be a rich source of insight.
+With AI, companies can track every part of the process, analyze what
+happened, and use that knowledge to make smarter choices next time.
+Failure isn't the enemy; it's fuel for faster innovation.
+"Pharma must think more like SpaceX: fail fast, learn faster,
+and improve continuously."
+AI-powered drug discovery
+Generative AI is changing how new drugs are discovered. These models
+can simulate how molecules interact with diseases, speeding up the
+process of identifying promising candidates in the early stages.
+AI also helps teams hold onto hard-earned knowledge. Even if a scientist
+leaves, the insights they've contributed don't walk out the door; Al
+systems keep that institutional memory intact.
+And with access to massive datasets, from genomics and metabolomics
+to clinical records, AI can spot hidden patterns and connections that
+would've been impossible to find manually.
+"We are an industry built on failure, but we lack a systematic
+way to remember and learn from it. Al can change that."
+16
+
+--- Page 17 ---
+Fail faster,
+heal smarter:
+How AI is
+rewiring
+pharma
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+3
+AI-powered personalized medicine
+Most drugs today are designed for the average patient, not the individual. It's efficient, but it
+often means treatments don't work as well as they could. And drug interactions are still one of
+the most overlooked causes of serious side effects, leading to thousands of preventable deaths
+every year.
+AI is shifting that approach. Instead of one-size-fits-all, it enables true personalization.
+Algorithms can predict how someone will respond to a drug based on their unique biology,
+medical history, and even lifestyle.
+AI can also flag potential drug interactions before they become dangerous, giving doctors and
+patients a heads-up.
+It's even possible to create "batch of one" medications, tailored to a person's specific genetic
+and biochemical makeup.
+And with connected sensors tracking real-time data, early signs of side effects can be caught
+and addressed quickly, before they spiral into something worse.
+The result? Less trial-and-error, fewer side effects, and way better outcomes.
+"Drug interaction fatalities in the U.S. are equivalent to a
+Boeing 747 crashing every single day. Al can help stop this."
+17
+
+--- Page 18 ---
+Fail faster,
+heal smarter:
+How AI is
+rewiring
+pharma
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+4
+Transforming pharma with AI-first thinking
+Takeda is reimagining how pharma works by weaving AI into every step of the process, from
+discovery to delivery.
+Drug discovery. Generative AI helps design and refine new molecules before anything even
+hits the lab, saving time and money upfront.
+Clinical trials. AI picks the right patient groups, predicts how things might play out, and
+adjusts trials on the fly to stay on track.
+/ Diagnostics. Instead of relying on outdated one-time tests, Al-powered wearables and real-
+time monitoring give a continuous, more accurate view of patient health.
+Personalized treatment. Algorithms fine-tune drug formulas and dosages to match each
+patient's biology, boosting safety and effectiveness.
+Regulatory compliance. Smart automation handles paperwork, keeps up with changing
+rules, and helps speed up the approval process.
+By putting AI at the core of everything, Takeda and the broader industry can stop moving in slow,
+cautious steps and start making real leaps. An AI-first mindset means faster decisions, better
+patient results, and a healthcare system that keeps getting smarter over time.
+18
+
+--- Page 19 ---
+Fail faster,
+heal smarter:
+How AI is
+rewiring
+pharma
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+5
+The problem: Why pharma moves too slowly
+"We aren't competing against other pharma companies. We are competing
+against disease, and Al will be our most powerful weapon in that fight."
+With AI, real-time diagnostics, and personalized medicine all coming together, the chance to truly
+transform patient care has never been bigger. By learning from failure, using smart automation, and
+focusing on individualized insights, pharma can shift from a reactive model to one that's proactive,
+precise, and genuinely patient-first.
+Takeda is already on this path. The company is using AI to analyze failures across its research teams,
+turning every missed opportunity into a lesson that fuels future breakthroughs.
+Generative AI is helping develop more targeted treatments faster, while wearables and AI-powered
+diagnostics are making real-time, always-on health monitoring a reality.
+At the same time, Takeda is teaming up with top AI and health tech partners to help shape the future
+of medicine. These cross-industry collaborations are key to solving tough problems and making sure
+innovation actually improves lives.
+Barella's vision for Al in pharma is both bold and grounded:
+Speed up drug development so life-saving treatments get to patients sooner.
+Boost diagnostic accuracy through continuous data and smarter pattern recognition.
+Make care safer with predictive tools that catch dangerous drug interactions before they happen.
+Move healthcare from reactive to proactive-intervening before symptoms even show up.
+This isn't some far-off vision. It's already happening. The question isn't whether Al is ready; it's
+whether the industry is ready to keep up.
+"If Al can generate Hollywood movies, why can't it generate life-saving molecules?"
+19
+
+--- Page 20 ---
+Fail faster,
+heal smarter:
+How AI is
+rewiring
+pharma
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Key takeaways
+Failure isn't a dead end; it's a valuable learning tool. With Al, pharma can study
+what went wrong and use that insight to do better next time.
+$
+Investing in AI and digital health should be just as important as funding new
+drug research. Both are critical to the future of medicine.
+AI-powered sensors and real-time diagnostics allow catching health issues
+early, shifting care from reactive fixes to proactive prevention.
+To stay ahead, the pharma industry needs to embed AI throughout the entire
+development process, from discovering new molecules to delivering
+personalized treatments.
+20
+
+--- Page 21 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Chapter 3
+Building trust at scale:
+LLMOps for safe,
+compliant AI in healthcare
+21
+
+--- Page 22 ---
+Building trust
+at scale:
+LLMOps for safe,
+compliant AI in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Artificial intelligence holds enormous potential for healthcare, but deploying it in environments
+governed by HIPAA, HITRUST, and NIST is like building a rocket in a minefield. One wrong move
+and sensitive patient data, clinician trust, or regulatory compliance could be at risk.
+For Jeff McDonald, who leads both technology and security at Vituity, that challenge came into
+sharp focus during a routine internal review. A physician had already used a generative AI tool for
+documentation safely and effectively, but outside any formal policy framework. It was a wake-up
+call that revealed a widespread industry gap: while the appetite for AI grew fast, the guardrails
+weren't there.
+Rather than clamp down, McDonald leaned in. By applying the principles of LLMOps, a structured
+approach to managing large language models across their entire lifecycle, he helped transform a
+shadow project into a secure, compliant, and scalable AI documentation platform.
+Infrastructure such as code, automated compliance enforcement, multi-agent architectures,
+and human-in-the-loop design became the building blocks of a system that didn't just satisfy
+regulators; it used those standards as a foundation for innovation.
+This chapter explores how Vituity makes generative AI safe for the emergency room. From
+reducing documentation time by hours per shift to embedding compliance deep in the dev
+pipeline, McDonald's approach reframes regulation not as red tape, but as a competitive
+advantage. And with hallucination-aware design and domain-specific agents, it points toward a
+future where AI becomes a reliable partner in care, not a liability.
+Vituity's model offers more than a technical success story. It shows how large language models,
+when handled with the right mix of caution and ambition, can transform frontline medicine without
+compromising what matters most: safety, trust, and care.
+22
+
+--- Page 23 ---
+Building trust
+at scale:
+LLMOps for safe,
+compliant AI in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+1
+The problem: AI in a tightly regulated
+healthcare world
+During a routine internal review, McDonald came across a Vituity physician using an LLM to help
+with clinical documentation. The setup was technically compliant; it de-identified data and kept a
+human in the loop, but it highlighted a bigger issue. There was no clear policy or framework for using
+generative AI in clinical care.
+This lack of structure isn't unique to Vituity; it's common across healthcare. And yet, the need for Al is
+real. Emergency physicians, for example, only spend about 25% of their shift actually treating patients.
+Another 25% goes to documentation and admin work.
+One physician had even built their own Al tool to help with charting, but it wasn't scalable, and it didn't
+fully meet enterprise compliance standards.
+The big question is: how do you safely scale AI in one of the most tightly regulated industries out there?
+The compliance requirements are very demanding:
+HIPAA demands strict safeguards for patient data
+*
+HITRUST includes over 650 security controls
+*
+NIST 800-53 sets the bar for federal-level cybersecurity
+And on top of that, you've got the unpredictability of LLMs.
+They can hallucinate, carry hidden biases, and introduce
+security risks. Without clear oversight and guardrails,
+generative AI can end up doing more harm than good
+in clinical settings.
+HIPAA
+HITRUST
+NIST 800-53
+23
+
+--- Page 24 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+2
+The solution: Building a secure LLMOps pipeline
+Instead of shutting down the physician's homegrown Al tool, McDonald saw an opportunity. With oversight of engineering, app
+development, and product teams, he proposed a better path: take what worked and rebuild it at scale, securely, professionally,
+and fully compliant. That vision became the foundation for an AI documentation platform powered by LLMOps.
+The key? Infrastructure as Code (IaC). Rather than setting up servers
+manually, every piece of infrastructure was written in code. That meant
+environments were consistent, version-controlled, and had compliance
+baked in from day one, not patched in after the fact.
+V
+It reduced human error by avoiding an ad-hoc setup.
+It boosted security through automated, standardized deployments.
+>
+It sped up development by making testing and rollback quick and easy.
+Automation was central to everything. Traditional compliance relies on
+manual checks and audits. McDonald's approach made compliance part of
+the build process. Every safeguard, encryption, access logging, and session
+timeouts, was coded into the system from the start.
+Encryption and logging were enforced automatically.
+Session timeouts and access controls came standard.
+Continuous monitoring replaced the outdated, once-in-a-while audits.
+As McDonald put it:
+"We don't just comply with regulations; we use them to make
+our Al system stronger."
+HIPAA, HITRUST, and NIST weren't seen as roadblocks; they became
+the blueprint. By working within these frameworks, the team built an AI
+environment that was more secure, scalable, and future-proof than
+anything they could've created outside of them.
+24
+
+--- Page 25 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+3
+Making AI safe for healthcare: The role of LLMOps
+McDonald and his team built a complete LLMOps framework, an evolution of DevOps and MLOps to bring stability to the
+unpredictable world of generative AI. Still, they were designed specifically for large language models in clinical settings.
+This wasn't a plug-and-play solution. It was built around five specialized pipelines, each designed to handle a different
+part of the system:
+Development pipeline. Borrowing from traditional software
+development, this pipeline applied strict testing and quality checks-not
+just to code, but to prompts, data flows, and AI outputs.
+V
+Infrastructure pipeline. Managed entirely through Infrastructure as
+Code (IaC), this ensured cloud environments could be quickly deployed,
+version-controlled, and closely monitored.
+>
+Administration pipeline. Before the AI touched any real patient data, it
+was stress-tested in a sandbox. This let the team evaluate outputs and
+catch issues early.
+Execution pipeline. Once live, the system stayed under close watch.
+Human-in-the-loop oversight meant that any strange or risky behavior
+could be caught and fixed in real time.
+R&D pipeline. This is where the system learned and improved.
+Real-world feedback was used to retrain and refine the models, without
+ever compromising compliance or performance.
+"Large language models are wild and unpredictable. But with the right
+LLMOps framework, they can be tamed for enterprise healthcare."
+5 specialized pipelines
+Development
+pipeline
+Infrastructure
+pipeline
+Administration
+pipeline
+Execution
+pipeline
+R&D
+pipeline
+25
+
+--- Page 26 ---
+Building trust
+at scale:
+LLMOps for safe,
+compliant AI in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+4
+AI-powered physician documentation:
+A real-world use case
+One of the biggest stress points in healthcare is documentation, especially for emergency room
+doctors, who are constantly juggling notes, forms, and records, often with little time and zero
+margin for error.
+That's where Vituity brought its Al system to life. They built an LLM-powered documentation tool
+grounded in LLMOps, designed specifically for speed, security, and physician support. It runs in a
+fully secure, HIPAA-compliant environment and follows a "physician-first" approach:
+V
+LLMs help draft clinical notes, turning free-text input into structured documentation.
+Doctors stay in full control, reviewing, editing, and approving everything before it's finalized.
+Sensitive data stays protected, with complete audit trails and compliance built in.
+The results were immediate.
+Doctors started saving two to three hours per shift, time they could now spend with patients
+instead of paperwork. The quality and consistency of documentation improved, which helped
+internal workflows and made audits smoother.
+And because the system was built with compliance from the ground up, there were no security
+trade-offs, just better outcomes and less burnout.
+Streamlined workflow
+¥.K
+E
+V
+Input
+Draft
+Review
+Finalized
+26
+
+--- Page 27 ---
+Building trust
+at scale:
+LLMOps for safe,
+compliant AI in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+5
+The challenge of AI hallucinations and trust in LLMs
+Even with the project's success, McDonald didn't lose sight of the risks. Large language models have a
+well-known flaw: they can produce confident, polished responses that are just plain wrong, a problem
+known as hallucination.
+To keep things safe, the team set clear boundaries. The Al wasn't allowed to diagnose or suggest
+treatments. Its job focused on summarizing and formatting charts, areas where it could add value
+without entering dangerous territory.
+McDonald also introduced a multi-agent setup. Instead of relying on one big, catch-all model, the
+system used multiple smaller agents, each focused on a specific task. One might handle clinical notes,
+and another would check for compliance. This approach made the results more accurate and, more
+importantly, easier to trace.
+And the human-in-the-loop model stayed in place the whole time. No AI-generated content ever
+made it into a patient's chart without a doctor reviewing it first.
+These guardrails weren't just about safety; they were about trust. The system earned confidence
+without compromising care by limiting AI to the right tasks, specializing its functions, and keeping
+physicians in control.
+E
+Q
+Drafting
+Compliance
+check
+Clinical summary
+validation
+27
+
+--- Page 28 ---
+Building trust
+at scale:
+LLMOps for safe,
+compliant AI in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+6
+Impact on healthcare
+McDonald and his team pulled off something rare in healthcare IT by building AI into a secure, well-
+structured system. They created a tool that's both powerful and safe. The platform helped reduce
+physician burnout, sped up clinical workflows, and stayed fully compliant with all regulatory standards.
+Just as important, it laid out a path others can follow. The LLMOps framework, rooted in automation,
+strong governance, and clinical oversight, can be adapted by hospitals and health systems
+everywhere. It proves that with the right approach, Al doesn't have to be a risk. It can be a real asset.
+Time saved: "2-3 hours per shift"
+Q
+Burnout
+Compliance
+Documentation
+consistency
+28
+
+--- Page 29 ---
+Building trust
+at scale:
+LLMOps for safe,
+compliant AI in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+7
+Next steps and future vision
+Al in healthcare isn't just another enterprise tool; it has to be held to a higher standard. That means
+strict governance, constant monitoring, and rock-solid accountability. But with the right foundation,
+built on LLMOps principles, AI can be a game-changer.
+As Jeff McDonald puts it,
+"Regulations don't slow us down. They force us to build Al systems that
+are safer, stronger, and more resilient."
+Looking ahead, McDonald and his team plan to:
+V
+Roll out AI documentation tools to more departments and hospitals.
+Evolve multi-agent AI systems to boost accuracy and reduce hallucinations.
+Expand compliance automation to make regulatory tasks faster and easier.
+The vision is clear: Al that's innovative and built to last in the real world of healthcare.
+Milestones
++
+More
+hospitals
+Advanced
+agent models
+Automated
+compliance
+tracking
+29
+
+--- Page 30 ---
+Building trust
+at scale:
+LLMOps for safe,
+compliant AI in
+healthcare
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Key takeaways
+AI in healthcare has to be built with security, compliance, and human oversight
+baked in from day one.
+LLMOps offers a clear, structured way to safely and responsibly bring
+generative AI into clinical settings.
+V
+When done right, AI can take a big load off physicians, freeing them up to
+focus more on what matters most: caring for patients.
+30
+
+--- Page 31 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Chapter 4
+Safe, small, and specialized:
+The future of pediatric AI
+31
+
+--- Page 32 ---
+aiai
+Al Accelerator
+Institute
+Generative AI in Healthcare eBook
+Safe, small, and
+specialized:
+The future of
+pediatric AI
+Paediatric healthcare is rich in data, but much of it remains locked away in unstructured formats,
+buried in free-text MRI reports, pathology results, and consultation notes. Despite the potential for
+life-saving insights, this complexity, combined with the scarcity and specificity of paediatric cases,
+makes it difficult for traditional AI systems to deliver meaningful results.
+At Great Ormond Street Hospital (GOSH), this challenge is amplified by clinician burnout and
+documentation overload, where doctors routinely work overtime to keep pace with administrative
+demands. Yet applying Al isn't as simple as plugging in a commercial model; most are trained on
+adult data and falter in the nuanced world of child healthcare.
+In this chapter, Pavithra Rajendran and Shiren Patel explore how GOSH is reshaping this landscape
+using small, fine-tuned language models (SLMs) that are purpose-built for paediatric care.
+Through its DRIVE innovation unit, the hospital has developed a suite of LLM-powered pipelines that
+extract key insights from unstructured data, assist with documentation, and maintain clinician
+oversight at every step.
+From contextual name extraction in MRI reports to real-time summarization of doctor-patient
+conversations, GOSH is turning the limitations of generic AI into a case for specialization.
+By anchoring every tool in transparency, human validation, and ethical governance, GOSH isn't just
+using Al; it's redefining what responsible Al looks like in a paediatric context. The result is reduced
+clinician workload, faster patient communication, and models clinicians can trust.
+As Al continues to evolve, GOSH's work serves as a blueprint for how healthcare innovation can
+remain deeply human, even when powered by machines. The future of paediatric medicine won't be
+built on off-the-shelf AI but on systems designed with children, clinicians, and context at their core.
+32
+
+--- Page 33 ---
+Safe, small, and
+specialized:
+The future of
+pediatric AI
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+1
+The problem: Unlocking paediatric healthcare data
+Pediatric healthcare is packed with valuable data, but most of it goes untapped. At GOSH, every child's
+journey generates a wealth of information: appointments, scans, lab results, and surgeries.
+However, a lot of this data is unstructured. MRI results show up as free text, pathology reports are filled
+with dense medical jargon, and consultation notes vary wildly depending on who writes them.
+That inconsistency makes it hard to extract insights. On top of that, most AI models, especially ones
+trained on adult data, don't perform well in pediatric settings. The datasets are smaller, less uniform,
+and often involve rare conditions uncommon in broader populations. So, general-purpose models
+usually fall short when applied at a place like GOSH.
+Clinician burnout only adds to the problem. Doctors can spend hours just documenting cases, often
+after hours. It's time-consuming, draining, and takes time away from patient care. It also slows down
+communication with families.
+GOSH set out to solve this challenge with LLMs: unlocking the value of pediatric data, reducing the
+burden on clinicians, and doing it all without compromising patient safety.
+33
+
+--- Page 34 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+2
+The solution: Building LLM-based data pipelines
+To tackle these challenges, GOSH built a set of LLM-powered pipelines with three main goals in mind:
+Pull insights from unstructured medical texts, such as MRI reports
+and pathology results.
+/ Lighten the documentation load for clinicians with Al-assisted
+drafting and summaries.
+Keep patient safety and fairness front and center through strong
+human oversight and contextual checks.
+These initiatives are led by GOSH's DRIVE innovation unit, which
+develops AI tools while making sure they meet strict clinical, ethical,
+and regulatory standards.
+A big part of GOSH's approach is knowing that one-size-fits-all Al won't
+cut it. Instead of using large, general-purpose models, they rely on small,
+fine-tuned language models (SLMs) built specifically for pediatric care.
+These models are easier to control, simpler to validate, and better suited
+for environments where trust, accuracy, and safety are critical.
+GOSH's SLM-powered pipelines
+INPUTS
+Free-text data
+Pipelines: MRI parsing, documentation aid, summaries
+OUPUTS
+Faster, safer, clearer insights
+3 key goals:
+DATA EXTRACTION
+DOCUMENTATION SUPPORT
+CLINICIAN OVERSIGHT
+34
+
+--- Page 35 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+3
+LLM use cases in paediatric healthcare
+Use case 1:
+Pulling context-based info from MRI reports
+One of the first big challenges was digging through more than ten years
+of cardiac MRI reports to pull patient identifiers. Rule-based systems
+didn't cut it. Report formats varied, names were inconsistent, and key
+metadata was often missing, making rigid pattern-matching useless.
+GOSH built a lightweight LLM trained to identify names using
+context clues to solve it. With smart prompt design and cues like
+titles, departments, and section headers, the model learned to tell
+the difference between patient names and clinician names, with
+impressive accuracy.
+They used saliency heat maps to validate the model's decisions,
+showing exactly which parts of the text it focused on. That made it
+easier to confirm the model was doing the right thing and safe to
+deploy in a real-world setting.
+Use case 2:
+Summarizing complex histopathology reports
+Histopathology reports are among the most complex documents in
+healthcare: dense, technical, and challenging for non-specialists to
+understand quickly. GOSH needed a way to extract the key diagnosis
+fast, without sacrificing accuracy.
+They trained a compact LLM (TinyLlama Chat) to do just that. The
+model generates a one-sentence summary of each report's main
+finding, giving clinicians a helpful starting point for review.
+But they didn't just trust the output blindly. The team used natural
+language inference models to check the summaries for consistency
+and accuracy. With the right context, the model reliably captured the
+main diagnosis with minimal hallucination.
+35
+
+--- Page 36 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+3
+LLM use cases in paediatric healthcare
+Use case 3:
+Automating clinical documentation with ambient AI
+The most transformative use case was ambient AI. Like many hospitals,
+GOSH faces an ongoing challenge: doctors work long hours to finish
+notes and letters. The goal was to cut down that burden by capturing
+real-time clinical conversations and generating drafts automatically.
+Now, the system records consultations and uses an LLM to produce
+structured summaries and patient letters. Clinicians still review and
+approve everything before it's finalized, keeping clinical control in place.
+The impact has been enormous: less time spent on documentation,
+faster patient communication, and better work-life balance for
+clinicians. Looking ahead, GOSH plans to expand the system to handle
+things like lab test orders directly from transcripts, pushing automation
+even further.
+STEP 1:
+Consultation
+STEP 2:
+AI transcription + draft generation
+STEP 3:
+Doctor review
+STEP 4:
+Final record + patient letter
+36
+
+--- Page 37 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Safe, small, and
+specialized:
+The future of
+pediatric AI
+4
+Impact on healthcare
+With these LLM-powered tools in place, GOSH has seen clear improvements across the board:
+Clinicians now spend less time on paperwork and more time with patients.
+Complex reports are easier to navigate, with key info pulled out faster.
+AI is used responsibly, with strong human oversight built into every workflow.
+Al isn't here to replace clinicians; it's here to support them. Every model is continuously refined, tested
+for transparency, and tailored to meet the specific needs of pediatric care.
+"Paediatric healthcare data is unique. Al solutions built for adults don't always
+work. We need specialized models to truly make an impact." - Pavithra Rajendran
+"Trust is earned in healthcare Al. Every step we take must be validated by clinicians
+to ensure patient safety." - Shiren Patel
+=
+E
+V
+Time
+saved
+Reports
+simplified
+Trust
+maintained
+Burnout
+reduced
+37
+
+--- Page 38 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Safe, small, and
+specialized:
+The future of
+pediatric AI
+5
+Next steps and future vision
+Great Ormond Street Hospital's work with LLMs sets a new standard for how Al should be used in
+pediatric care. By building AI tools that are tailored, trustworthy, and grounded in clinician oversight,
+GOSH isn't just pushing the tech forward; they're showing what responsible, ethical Al in healthcare
+really looks like.
+AI in pediatrics has to be designed with care, context, and caution. Gains in speed and accuracy are
+valuable, but only if they lead to better outcomes for children.
+This isn't about dropping generic Al into a hospital setting. It's about recognizing that pediatric data is
+different, as are the ethical responsibilities that come with it.
+At GOSH, every AI model is backed by human oversight, tested in a real-world context, and held to the
+highest ethical standards.
+Tailored to kids
+Human oversight
+Context-aware design
+38
+
+--- Page 39 ---
+Safe, small, and
+specialized:
+The future of
+pediatric AI
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Key takeaways
+W
+AI needs to be built specifically for pediatric care; models trained on adult
+data just don't work well with children's cases.
+Smaller, fine-tuned language models (SLMs) can be incredibly effective when
+focused on the right medical tasks.
+But human oversight is non-negotiable. AI should support clinicians, not
+replace them.
+At GOSH, their AI governance framework keeps everything grounded in safety
+and equity, with strict standards for privacy and fairness, and human-in-the-
+loop checks every step of the way.
+39
+
+--- Page 40 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Chapter 5
+From model to patient:
+How UHG builds trustworthy AI
+40
+
+--- Page 41 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+In healthcare, the promise of artificial intelligence is immense, but so is the risk of getting it
+wrong. AI can perpetuate bias, compromise safety, and erode patient trust when deployed
+without oversight. For Jason Haupt and the UnitedHealth Group (UHG) team, the challenge
+isn't just building powerful models; it's ensuring they're fair, ethical, and medically sound
+before reaching a patient.
+UHG created a Machine Learning Review Board to meet this challenge; a rare blend of legal, clinical,
+and technical experts charged with reviewing every AI model in production. By the end of its first
+year, the board had reviewed over 500 models, with 97% requiring changes before deployment.
+But far from being a roadblock, this governance model has become a strategic asset, guiding teams
+to safer, more innovative implementations.
+This chapter explores how UHG integrates AI across its vast healthcare ecosystem, from voice
+bots that help patients refill life-saving medications, to natural language search that makes
+finding the right doctor easier, to AI assistants that help clinicians and call center reps work more
+efficiently. Each tool is built on real-world testing, rigorous evaluation, and a deep commitment
+to human-centered care.
+At UnitedHealth Group, Al doesn't replace healthcare professionals; it empowers them. Whether
+supporting nurses in the field with real-time decision tools or giving doctors more time with patients
+by automating administrative tasks, UHG's approach shows that operational Al, when done
+responsibly, can drive real outcomes at scale.
+As Al continues to evolve, Haupt's work is a powerful reminder: innovation must walk hand in hand
+with integrity in healthcare. When governance becomes a guide, not a gatekeeper, AI transforms
+from a technical experiment into a deeply human solution.
+41
+From model
+to patient:
+How UHG builds
+trustworthy AI
+
+--- Page 42 ---
+From model
+to patient:
+How UHG builds
+trustworthy AI
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+1
+The problem: Making AI work responsibly
+in healthcare
+UnitedHealth Group runs one of the most complex healthcare systems in the world, and with that
+scale comes serious responsibility. When it comes to using Al, it's not just about building smarter
+models. It's about making sure those models are safe, ethical, and fair for everyone.
+In 2022, UHG made that commitment official by launching a Machine Learning Review Board. The
+board brings together legal experts, compliance leaders, medical doctors, and machine learning
+professionals, all with equal say. Their job is to review every AI model before it goes into production.
+By the end of that year, they'd reviewed more than 500.
+The process is challenging for a reason. Around 97% of models are sent back for changes,
+sometimes minor tweaks, occasionally complete overhauls. The board takes a "mitigation-first"
+approach, focusing on risks like bias and fairness before anything gets deployed.
+For example, if a national dataset doesn't represent Latino patients in Texas, the model must
+undergo extra testing to ensure it works equitably.
+And while the board is thorough, it's not there to block progress. As Haupt puts it, governance can
+either be the troll under the bridge or the Sherpa that helps you reach the summit. At UHG, it's
+definitely the Sherpa.
+AI works better in teams, just like doctors do
+Legal
+Clinical
+Compliance
+ML Experts
+AI MODEL APPROVAL
+42
+
+--- Page 43 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+2
+The solution: Real-world AI applications across UHG
+The review board is just one piece of UHG's broader Al strategy. Haupt shared several examples of how Al is used daily to support
+patients, clinicians, and operations, with a strong focus on human-centered design.
+Voice bots that help with medication adherence
+One simple but powerful use case is AI voice bots that remind patients
+to refill critical medications. The bot asks a yes-or-no question, and the
+patient confirms if they need a refill. It may sound basic, but it solves
+a big problem: people missing meds due to forgetfulness or everyday
+challenges.
+Of course, there are hurdles. For example, the system can have trouble
+understanding patients who speak English as a second language. To
+make sure no one is left behind, the Al includes a smart "off-ramp"; if
+the bot isn't confident in the response, it immediately transfers the call
+to a human rep. That balance keeps the experience accessible while
+still using automation effectively.
+Smarter provider search
+Finding the right doctor can be overwhelming. Most patients don't
+know what specialist they need or how to describe their symptoms
+in medical language. UHG's solution is a natural language Al search.
+Now, patients can just type in something like "stomach pain" and get
+matched with the right providers.
+The tool powers tens of millions of searches and offers cost estimates,
+helping patients understand what they'll owe before they get care.
+AI support for call center teams
+UHG handles more than 300 million calls a year, so supporting call
+center reps is crucial. To help, AI tools transcribe calls in real time,
+surface helpful info, and auto-generate summaries.
+On average, these summaries save 20-30 seconds per call, which
+really adds up. But more importantly, they let staff focus on the people
+they're helping instead of on documentation. That means faster
+support, less burnout, and better job satisfaction.
+Real-time clinical support at the point of care
+Take Lisa, a home health nurse visiting a Medicare patient named Ruth.
+Before the visit, Lisa gets an Al-generated risk profile based on Ruth's
+lab results, meds, and history. During the visit, Lisa adds that Ruth uses
+nicotine, and the AI instantly updates her diabetes risk score.
+That real-time insight helps Lisa make better decisions on the spot.
+After the visit, the Al also creates a summary to reduce Lisa's admin
+burden and keep the whole care team in the loop.
+These real-world tools show how AI, when done right, can reduce
+friction, improve outcomes, and support, not replace, the humans at
+the center of care.
+43
+
+--- Page 44 ---
+From model
+to patient:
+How UHG builds
+trustworthy AI
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+3
+Impact on healthcare
+Jason Haupt's work at UnitedHealth Group shows what's possible when Al is applied thoughtfully
+in healthcare. The results speak for themselves:
+Higher efficiency. Doctors, nurses, and support staff spend less time on admin tasks and
+more time actually caring for patients.
+Better outcomes. AI helps catch risks earlier and makes care more personalized.
+Improved access. Voice bots and smart search tools make it easier for patients to get the
+help they need.
+None of this happens by accident. It results from intentional design, strong governance, and a
+clear focus on fairness. Every AI model is evaluated not just on how well it performs, but on how it
+affects real people's lives.
+"The most empowering part of my job is ensuring every Al model meets our ethical
+and medical standards before it reaches production."
+"Al is not just about efficiency. It's about improving people's lives, whether it's
+helping a nurse make a better decision or giving a doctor more time with patients."
+Burnout
+Time on admin
+Decision support
+Patient access
+-
+44
+
+--- Page 45 ---
+From model
+to patient:
+How UHG builds
+trustworthy AI
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+4
+Next steps and future vision
+At its best, Al isn't here to replace doctors or nurses. It's here to help them do what they do best:
+care for people. At UnitedHealth Group, Jason Haupt and his team are proving what it looks like
+to make healthcare smarter. By weaving AI into core systems while keeping human needs front
+and center, they're building a future where care is more responsive, equitable, and effective.
+AI might start with code, but its impact is personal. When designed thoughtfully and governed
+responsibly, it becomes a real force for good in healthcare.
+Looking ahead, AI will play an even bigger role in both patient and provider experiences, not just
+at UnitedHealth Group, but across the industry. Expect more AI-driven touchpoints throughout
+the healthcare journey, from more precise billing explanations to better cost transparency. These
+tools will help patients navigate care with more confidence and less stress.
+AI will keep working behind the scenes so that healthcare professionals can support their work,
+not replace it. Nurses, call center reps, and physicians will be equipped with intelligent tools that
+make their jobs easier and more impactful.
+The result? More seamless, coordinated, and human-centered care.
+But as AI continues to grow, leaders have to stay alert. These systems must be evaluated
+constantly, not just for performance, but for how well they align with both business goals and
+human needs. That's how we unlock Al's full potential in healthcare.
++
+Pre-care
+(search, cost)
+During care
+(real-time risk analysis)
+Post-care
+(billing, summaries)
+45
+
+--- Page 46 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+From model
+to patient:
+How UHG builds
+trustworthy AI
+Key takeaways
++
+AI in healthcare has to be built responsibly from the ground up with fairness and bias
+mitigation at the core.
+Operational AI tools like provider search, voice bots, and support for call center
+teams are already running at scale, making a real difference for millions of people.
+Generative Al isn't here to replace healthcare professionals but to support them. It's
+helping improve decisions, reduce admin work, and give care teams more time to
+focus on patients.
+46
+
+--- Page 47 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Chapter 6
+The future of generative AI
+in healthcare
+47
+
+--- Page 48 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+The future of
+generative Al
+in healthcare
+How far can LLMs go in clinical care?
+Will AI ever make decisions on its own?
+And what breakthroughs and guardrails do we need to move forward responsibly?
+If there's one thing we've learned, it's that success in healthcare Al depends just as much on
+people as it does on the tech.
+1
+The biggest barriers are not technical
+Most of the challenges in bringing Al into healthcare aren't about whether the models work;
+they're about regulation, trust, ethics, and making sure Al fits into how clinicians actually work.
+At UnitedHealth Group, every AI model goes through a formal review. Their Machine Learning
+Review Board evaluates each one before it goes live, as 97% require some kind of change.
+"The most empowering part of my job is ensuring every Al model meets our ethical and medical
+standards before it reaches production," says Jason Haupt, Chief Data Scientist at Optum.
+Josh Tamara Saver put it plainly: "Doctors don't reject Al because it can't think like them; they
+reject it when it behaves like it doesn't understand them."
+Getting it right means introducing AI correctly by framing it properly, integrating it into workflows,
+and earning trust.
+Compare technical vs. non-technical barriers:
+Technical
+20% (e.g., model accuracy, integration)
+Non-technical (trust, ethics, workflow fit)
+100%
+48
+
+--- Page 49 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+The future of
+generative Al
+in healthcare
+2
+Multi-agent AI and specialization over scale
+Big general-purpose models may be impressive, but they often miss the mark in specialized
+areas like pediatrics or emergency medicine. In practice, smaller, more focused models tend to
+perform better.
+At Great Ormond Street Hospital, for example, custom AI tools trained on pediatric data are
+already being used to summarize complex pathology reports and pull insights from over a
+decade of MRI scans.
+"Pediatric healthcare data is unique. Al solutions built for adults don't always work,"
+says Pavithra Rajendran.
+Instead of relying on one big model, multi-agent systems are emerging as a smarter approach,
+breaking tasks into smaller pieces, each handled by a specialist agent. One model might handle
+documentation, another compliance, and another transcription.
+Just like healthcare relies on teams of specialists, AI is evolving into a collaborative network of
+task-specific tools.
+AI works better in teams, just like doctors do
+E
+V
+V
+Documentation
+Compliance
+Transcription
+Decision
+Support
+49
+
+--- Page 50 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+The future of
+generative Al
+in healthcare
+3
+Will AI replace doctors?
+Short answer: No.
+Al will take over some of the busywork but won't replace clinical judgment. Its role is to support,
+not lead. The most effective AI tools act like junior doctors; they offer input, but the final call stays
+with the clinician.
+Josh Tamara Saver warns,
+"The real danger isn't Al making decisions, it's clinicians assuming they don't have
+to." That's why Vituity introduced the idea of the Al Resident: a supportive assistant
+that always defers to the doctor.
+We're already seeing this in action. At Takeda and UHG, Al-powered documentation tools are
+helping providers reclaim hours without changing the clinician's role.
+In one example, a home health nurse named Lisa uses real-time AI risk scores to guide her
+decisions. She's still in charge, just better equipped.
+50
+
+--- Page 51 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+The future of
+generative Al
+in healthcare
+4
+Ethical dilemmas ahead
+As AI gets more advanced, the ethical questions get more complex:
+Who's responsible if Al-generated content leads to harm?
+How do we validate fairness in training data in populations that are underrepresented?
+What's the safeguard against confident hallucinations that could mislead care?
+"Trust is earned in healthcare Al," said Shiren Patel of GOSH. "Every step we take
+must be validated by clinicians to ensure patient safety."
+Transparency, ongoing monitoring, and full audit trails aren't optional; they're mandatory.
+At GOSH's DRIVE unit and Optum's Al review board, teams are already building governance
+playbooks to ensure safety and accountability.
+The next big challenge? Scaling these frameworks without cutting corners.
+51
+
+--- Page 52 ---
+aiai
+Al Accelerator
+Institute
+Generative AI in Healthcare eBook
+Conclusion
+52
+
+--- Page 53 ---
+Generative AI in Healthcare eBook
+aiai
+Al Accelerator
+Institute
+Conclusion
+Whether building lab-integrated sepsis predictors or AI residents that chart in the
+background, one principle holds true: the most successful AI is the kind that quietly
+helps, not loudly interrupts.
+Real progress in generative Al won't come from technical breakthroughs alone. It will
+come from understanding people: how clinicians make decisions, what patients fear,
+and how healthcare really happens.
+"Al can be revolutionary, but only if we apply it where it actually works.
+Don't let the hype distract from real progress," said Josh Tamara Saver.
+That's the future worth building.
+The future of AI in healthcare is human-centered. Systems must adapt to how
+clinicians work, not the reverse.
+Regulatory, ethical, and trust-based barriers will decide adoption. Accuracy
+alone won't win over healthcare professionals.
+Smaller, specialized, multi-agent systems will outperform large general models
+in clinical environments.
+Al won't replace clinicians but will redefine how care is delivered. The
+transformation is already underway.
+53
+
+--- Page 54 ---
+Generative AI in Healthcare eBook
+aici
+Al Accelerator
+Institute
+Our Producers
+Marisa Garanhel
+Copywriter
+Marisa is our Copywriter here at AIAI who
+loves crafting content to keep readers
+informed, entertained, and enthralled.
+She's always open to feedback and would
+be thrilled to hear from you!
+LinkedIn
+Jordan Dunne
+Co-Founder of AI Accelerator Institute
+Jordan, Co-Founder AIAI, is a firm
+believer in a data-driven future led by
+AI & is passionate about connecting AI
+experts and machine scientists from
+around the world.
+Linkedin
+Jon Sayer
+Senior Graphic Designer at The Alliance
+Jon is our talented Graphic Designer
+who specializes in fulfilling all our design
+needs. He's in charge of creating the
+layout and incorporating visual elements
+in this report and is always eager to hear
+your thoughts on his designs!
+Linkedin
+
+--- Page 55 ---
+aiai
+Al Accelerator
+Institute
+Thank you for
+reading
+in X f
