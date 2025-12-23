@@ -8,10 +8,10 @@ import os
 import json
 from pathlib import Path
 
-# Add parent directory to path to import llm_settings
+# Add parent directory to path to import llms
 sys.path.append('..')
 
-from llm_settings import get_azure_document_intelligence_client
+from llms.azure_client import get_azure_document_intelligence_client
 
 def analyze_document(pdf_path: str):
     """Analyze a PDF document using Azure Document Intelligence."""
