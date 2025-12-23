@@ -5,3 +5,5 @@ __pycache__/
 /datasets
 /sandbox/output
 /ignore
+/ocr_vs_vlm/logs
+/ocr_vs_vlm/results

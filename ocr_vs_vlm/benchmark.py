@@ -18,19 +18,44 @@ from pathlib import Path
 from typing import Dict, List, Optional, Callable, Any
 import sys
 
-from dataset_loaders import DatasetRegistry, validate_dataset, load_image
-from api_calls import call_ocr, call_vlm
+from tqdm import tqdm
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),
-        logging.FileHandler('benchmark.log')
-    ]
-)
+from .dataset_loaders import DatasetRegistry, validate_dataset, load_image
+from .unified_model_api import UnifiedModelAPI, ModelRegistry
+
+# Create logs directory
+LOGS_DIR = Path(__file__).parent / "logs"
+LOGS_DIR.mkdir(exist_ok=True)
+
+# Configure logging with multiple handlers
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.handlers.clear()
+
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
+
+benchmark_log = logging.FileHandler(LOGS_DIR / 'benchmark.log')
+benchmark_log.setLevel(logging.DEBUG)
+benchmark_log.setFormatter(formatter)
+logger.addHandler(benchmark_log)
+
+benchmark_run = logging.FileHandler(LOGS_DIR / 'benchmark_run.txt')
+benchmark_run.setLevel(logging.INFO)
+benchmark_run.setFormatter(formatter)
+logger.addHandler(benchmark_run)
+
+benchmark_output = logging.FileHandler(LOGS_DIR / 'benchmark_output.log')
+benchmark_output.setLevel(logging.INFO)
+benchmark_output.setFormatter(formatter)
+logger.addHandler(benchmark_output)
 
 
 @dataclass
@@ -72,10 +97,10 @@ class BenchmarkResult:
     """Result from a single sample evaluation."""
     
     sample_id: str
+    image_path: str
     dataset: str
     model: str
     phase: int
-    image_path: str
     ground_truth: str
     prediction: Optional[str] = None
     prompt: Optional[str] = None
@@ -87,8 +112,15 @@ class BenchmarkResult:
     timestamp: str = ""
     
     def to_dict(self) -> Dict:
-        """Convert to dictionary for JSON serialization."""
-        return asdict(self)
+        """Convert to dictionary for JSON serialization with image_path after sample_id."""
+        result = asdict(self)
+        # Reorder to put image_path right after sample_id
+        ordered = {}
+        for key in ['sample_id', 'image_path', 'dataset', 'model', 'phase', 'ground_truth', 
+                    'prediction', 'prompt', 'inference_time_ms', 'tokens_used', 'error', 'timestamp']:
+            if key in result:
+                ordered[key] = result[key]
+        return ordered
 
 
 class BenchmarkRunner:
@@ -107,6 +139,9 @@ class BenchmarkRunner:
         
         self.checkpoint_file = self.results_dir / config.checkpoint_file
         self.checkpoint = self._load_checkpoint()
+        
+        # Initialize unified model API
+        self.api = UnifiedModelAPI()
         
         logger.info(f"BenchmarkRunner initialized")
         logger.info(f"Results directory: {self.results_dir}")
@@ -283,7 +318,7 @@ class BenchmarkRunner:
         
         # Load existing results if resuming
         existing_results = self._load_existing_results(results_file)
-        processed_ids = {r['sample_id'] for r in existing_results}
+        processed_ids = {r.sample_id for r in existing_results}
         
         samples_to_process = [
             s for s in dataset if s.sample_id not in processed_ids
@@ -291,42 +326,43 @@ class BenchmarkRunner:
         
         logger.info(f"      Processing {len(samples_to_process)} samples (skipping {len(processed_ids)} existing)")
         
-        # Process samples
-        for idx, sample in enumerate(samples_to_process):
-            # Progress
-            progress = f"[{idx+1}/{len(samples_to_process)}]"
-            logger.debug(f"{progress} {sample.sample_id}")
-            
-            try:
-                # Generate result
-                result = self._process_sample(
-                    sample, model_name, phase, dataset_name
-                )
-                results.append(result)
-                
-                # Save incrementally every batch_size samples
-                if (idx + 1) % self.config.batch_size == 0:
-                    self._save_phase_results(
-                        results_file,
-                        existing_results + results
+        # Process samples with progress bar
+        with tqdm(total=len(samples_to_process), desc=f"Phase {phase} - {model_name}", 
+                  unit="sample", leave=True) as pbar:
+            for idx, sample in enumerate(samples_to_process):
+                try:
+                    # Generate result
+                    result = self._process_sample(
+                        sample, model_name, phase, dataset_name
                     )
-                    logger.info(f"{progress} Checkpoint saved ({len(existing_results) + len(results)} total)")
-                    results = []
-            
-            except Exception as e:
-                logger.warning(f"Failed to process {sample.sample_id}: {e}")
-                # Create error result
-                error_result = BenchmarkResult(
-                    sample_id=sample.sample_id,
-                    dataset=dataset_name,
-                    model=model_name,
-                    phase=phase,
-                    image_path=sample.image_path,
-                    ground_truth=sample.ground_truth,
-                    error=str(e),
-                    timestamp=datetime.now().isoformat()
-                )
-                results.append(error_result)
+                    results.append(result)
+                    
+                    # Save incrementally every batch_size samples
+                    if (idx + 1) % self.config.batch_size == 0:
+                        self._save_phase_results(
+                            results_file,
+                            existing_results + results
+                        )
+                        logger.info(f"Checkpoint saved ({len(existing_results) + len(results)} total)")
+                        results = []
+                    
+                    pbar.update(1)
+                
+                except Exception as e:
+                    logger.warning(f"Failed to process {sample.sample_id}: {e}")
+                    # Create error result
+                    error_result = BenchmarkResult(
+                        sample_id=sample.sample_id,
+                        image_path=sample.image_path,
+                        dataset=dataset_name,
+                        model=model_name,
+                        phase=phase,
+                        ground_truth=sample.ground_truth,
+                        error=str(e),
+                        timestamp=datetime.now().isoformat()
+                    )
+                    results.append(error_result)
+                    pbar.update(1)
         
         # Final save
         if results:
@@ -353,11 +389,13 @@ class BenchmarkRunner:
         """
         start_time = time.time()
         prediction = None
-        prompt = None
+        prompt: Optional[str] = None
         error = None
         tokens_used = None
         
-        try:
+        def execute_phase():
+            """Execute the API call for this phase."""
+            nonlocal prediction, prompt
             if phase == 1:
                 # Phase 1: OCR Baseline
                 prediction = self._call_ocr_model(model_name, sample.image_path)
@@ -375,6 +413,9 @@ class BenchmarkRunner:
             else:
                 raise ValueError(f"Unknown phase: {phase}")
         
+        try:
+            execute_phase()
+        
         except Exception as e:
             logger.warning(f"API call failed for {sample.sample_id}: {e}")
             error = str(e)
@@ -385,12 +426,7 @@ class BenchmarkRunner:
                     logger.info(f"  Retry {retry+1}/{self.config.max_retries}")
                     try:
                         time.sleep(2 ** retry)  # Exponential backoff
-                        
-                        if phase == 1:
-                            prediction = self._call_ocr_model(model_name, sample.image_path)
-                        else:
-                            prediction = self._call_vlm_model(model_name, sample.image_path, prompt)
-                        
+                        execute_phase()
                         error = None
                         logger.info(f"  Retry succeeded")
                         break
@@ -402,10 +438,10 @@ class BenchmarkRunner:
         
         return BenchmarkResult(
             sample_id=sample.sample_id,
+            image_path=sample.image_path,
             dataset=dataset_name,
             model=model_name,
             phase=phase,
-            image_path=sample.image_path,
             ground_truth=sample.ground_truth,
             prediction=prediction,
             prompt=prompt,
@@ -417,7 +453,7 @@ class BenchmarkRunner:
     
     def _call_ocr_model(self, model_name: str, image_path: str) -> str:
         """
-        Call OCR model with timeout.
+        Call OCR model.
         
         Args:
             model_name: OCR model name
@@ -427,25 +463,20 @@ class BenchmarkRunner:
             Extracted text
         
         Raises:
-            TimeoutError: If API call exceeds timeout
-            Exception: Any API error
+            Exception: If API call fails
         """
-        # Map model names to api_calls function names
-        # For now, directly call based on model_name
-        # In real implementation, may need mapping layer
-        
         try:
             # Validate model is an OCR model
-            ocr_models = ['azure_intelligence', 'donut', 'deepseek_ocr', 'mistral_ocr']
-            if model_name not in ocr_models:
-                raise ValueError(f"{model_name} is not an OCR model")
+            if model_name not in ModelRegistry.list_ocr_models():
+                raise ValueError(f"{model_name} is not an OCR model. Available: {ModelRegistry.list_ocr_models()}")
             
-            # Call API
-            documents = call_ocr(image_path, model=model_name)
+            # Call unified API
+            response = self.api.process(image_path, model=model_name)
             
-            # Extract text from LangChain documents
-            texts = [doc.page_content for doc in documents]
-            return "\n".join(texts)
+            if response.error:
+                raise Exception(response.error)
+            
+            return response.content
         
         except Exception as e:
             logger.error(f"OCR call failed: {e}")
@@ -453,7 +484,7 @@ class BenchmarkRunner:
     
     def _call_vlm_model(self, model_name: str, image_path: str, query: str) -> str:
         """
-        Call VLM model with timeout.
+        Call VLM model.
         
         Args:
             model_name: VLM model name
@@ -464,18 +495,20 @@ class BenchmarkRunner:
             Model response
         
         Raises:
-            TimeoutError: If API call exceeds timeout
-            Exception: Any API error
+            Exception: If API call fails
         """
         try:
             # Validate model is a VLM
-            vlm_models = ['gpt5_mini', 'gpt5_nano', 'claude_sonnet', 'claude_haiku', 'qwen_vl']
-            if model_name not in vlm_models:
-                raise ValueError(f"{model_name} is not a VLM model")
+            if model_name not in ModelRegistry.list_vlm_models():
+                raise ValueError(f"{model_name} is not a VLM model. Available: {ModelRegistry.list_vlm_models()}")
             
-            # Call API
-            result = call_vlm(image_path, model=model_name, query=query)
-            return result
+            # Call unified API
+            response = self.api.process(image_path, model=model_name, query=query)
+            
+            if response.error:
+                raise Exception(response.error)
+            
+            return response.content
         
         except Exception as e:
             logger.error(f"VLM call failed: {e}")
@@ -617,12 +650,12 @@ if __name__ == '__main__':
     """
     logger.info("Starting OCR vs VLM Benchmark")
     
-    # Create configuration
+    # Create configuration - test with gpt-5-mini on ICDAR, 10 samples
     config = create_benchmark_config(
         datasets=['ICDAR'],  # Start with ICDAR only
-        models=['azure_intelligence', 'gpt5_mini', 'claude_haiku'],
-        phases=[1, 2, 3],
-        sample_limit=5,  # Small limit for testing
+        models=['gpt-5-mini'],  # Use gpt-5-mini
+        phases=[2, 3],  # VLM phases only (baseline + context-aware)
+        sample_limit=10,  # 10 samples for testing
         results_dir="results"
     )
     
