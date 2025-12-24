@@ -715,15 +715,14 @@ if __name__ == '__main__':
     """
     logger.info("Starting OCR vs VLM Benchmark")
     
-    # Create configuration - test with gpt-5-mini on ICDAR_mini
+    # Create configuration - test with mistral_document_ai on ICDAR_mini
     config = create_benchmark_config(
-        datasets=['ICDAR_mini'],  # ICDAR_mini dataset
-        models=['gpt-5-mini'],  # Use gpt-5-mini
-        phases=[2, 3],  # VLM phases only (baseline + context-aware)
-        sample_limit=None,  # Full dataset
-        results_dir="results"  # Save to ocr_vs_vlm/results
+        datasets=['ICDAR_mini'],
+        models=['mistral_document_ai'],  # ← Use Mistral Document AI via Azure baseline API
+        phases=[1],  # Phase 1 = OCR baseline
+        results_dir="results"
     )
-    config.phase_3_letter = 'a'  # Set phase 3 letter suffix
+    # config.phase_3_letter = 'a'  # Set phase 3 letter suffix
     
     # Run benchmark
     runner = BenchmarkRunner(config)

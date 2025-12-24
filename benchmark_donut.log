@@ -1,0 +1,17 @@
+2025-12-24 10:53:16 - __main__ - INFO - Starting OCR vs VLM Benchmark
+2025-12-24 10:53:16 - __main__ - INFO - BenchmarkRunner initialized
+2025-12-24 10:53:16 - __main__ - INFO - Results directory: /Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results
+2025-12-24 10:53:16 - __main__ - INFO - Prompts directory: /Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/prompts
+2025-12-24 10:53:16 - __main__ - INFO - Config: {'datasets': ['ICDAR_mini'], 'models': ['azure_intelligence'], 'phases': [1], 'phase_3_letter': None, 'sample_limit': None, 'batch_size': 50, 'results_dir': 'results', 'checkpoint_file': 'checkpoint.json', 'timeout_seconds': 60, 'retry_failed': True, 'max_retries': 2}
+2025-12-24 10:53:16 - __main__ - INFO - 
+======================================================================
+2025-12-24 10:53:16 - __main__ - INFO - Processing dataset: ICDAR_mini
+2025-12-24 10:53:16 - __main__ - INFO - ======================================================================
+2025-12-24 10:53:16 - __main__ - INFO - Dataset validated. Checks: {'instantiation': True, 'sample_loadable': True}
+2025-12-24 10:53:16 - __main__ - INFO - Loaded 500 samples from ICDAR_mini
+2025-12-24 10:53:16 - __main__ - INFO - 
+  Model: azure_intelligence
+2025-12-24 10:53:16 - __main__ - INFO -     Phase 1
+2025-12-24 10:53:16 - __main__ - WARNING - Failed to load existing results /Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/azure_intelligence/phase_1_results.csv: 'phase'
+2025-12-24 10:53:16 - __main__ - INFO -       Processing 500 samples (skipping 0 existing)
+Phase 1 - azure_intelligence:   0%|          | 0/500 [00:00<?, ?sample/s]Phase 1 - azure_intelligence:   0%|          | 1/500 [00:15<2:09:59, 15.63s/sample]Phase 1 - azure_intelligence:   0%|          | 2/500 [00:20<1:17:38,  9.36s/sample]

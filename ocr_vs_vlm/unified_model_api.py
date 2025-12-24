@@ -11,10 +11,13 @@ All responses use Pydantic for consistent output formatting.
 import base64
 import logging
 import os
+import re
 from io import BytesIO
 from pathlib import Path
 from typing import Optional, List
 from enum import Enum
+import json
+import requests
 
 # Load environment variables from .env.local if it exists
 from dotenv import load_dotenv
@@ -26,6 +29,34 @@ from openai import AzureOpenAI
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.core.credentials import AzureKeyCredential
 import pdf2image
+
+# Lazy imports for optional dependencies
+try:
+    import anthropic
+except ImportError:
+    anthropic = None
+
+try:
+    from accelerate import Accelerator
+except ImportError:
+    Accelerator = None
+
+try:
+    from transformers import (
+        DonutProcessor,
+        VisionEncoderDecoderModel,
+        AutoModel,
+        AutoTokenizer,
+        AutoProcessor,
+        Qwen2VLForConditionalGeneration,
+    )
+except ImportError:
+    DonutProcessor = None
+    VisionEncoderDecoderModel = None
+    AutoModel = None
+    AutoTokenizer = None
+    AutoProcessor = None
+    Qwen2VLForConditionalGeneration = None
 
 logger = logging.getLogger(__name__)
 
@@ -100,21 +131,21 @@ class ModelRegistry:
             "requires": ["azure_openai_endpoint", "azure_openai_api_key", "azure_api_version"],
             "description": "GPT-5 nano - Ultra-fast vision LLM"
         },
-        "mistral": {
-            "type": ModelType.VLM,
-            "requires": ["azure_openai_endpoint", "azure_openai_api_key", "azure_api_version"],
-            "description": "Mistral - Open vision LLM"
-        },
-        "claude_sonnet": {
-            "type": ModelType.VLM,
-            "requires": ["anthropic_api_key"],
-            "description": "Claude Sonnet 4.5 - High-accuracy vision LLM"
-        },
-        "claude_haiku": {
-            "type": ModelType.VLM,
-            "requires": ["anthropic_api_key"],
-            "description": "Claude Haiku 4.5 - Fast vision LLM"
-        },
+        # "mistral": {
+        #     "type": ModelType.VLM,
+        #     "requires": ["azure_openai_endpoint", "azure_openai_api_key", "azure_api_version"],
+        #     "description": "Mistral - Open vision LLM"
+        # },
+        # "claude_sonnet": {
+        #     "type": ModelType.VLM,
+        #     "requires": ["anthropic_api_key"],
+        #     "description": "Claude Sonnet 4.5 - High-accuracy vision LLM"
+        # },
+        # "claude_haiku": {
+        #     "type": ModelType.VLM,
+        #     "requires": ["anthropic_api_key"],
+        #     "description": "Claude Haiku 4.5 - Fast vision LLM"
+        # },
         "qwen_vl": {
             "type": ModelType.VLM,
             "requires": [],
@@ -182,7 +213,6 @@ class UnifiedModelAPI:
     
     def _load_env_config(self) -> dict:
         """Load configuration from environment variables."""
-        import os
         return {
             "azure_openai_api_key": os.getenv("AZURE_OPENAI_API_KEY"),
             "azure_openai_endpoint": os.getenv("AZURE_OPENAI_ENDPOINT"),
@@ -287,15 +317,14 @@ class UnifiedModelAPI:
     
     def _ocr_azure_intelligence(self, image_path: str) -> ModelResponse:
         """Azure Document Intelligence OCR."""
-        from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
-        
         with open(image_path, "rb") as f:
             document_data = f.read()
         
+        # Call with body parameter using the correct API signature
         poller = self.document_intelligence_client.begin_analyze_document(
-            "prebuilt-read",
-            document=document_data,
-            content_type="image/jpeg"
+            model_id="prebuilt-read",
+            body=document_data,
+            content_type="application/octet-stream"
         )
         result = poller.result()
         
@@ -312,81 +341,172 @@ class UnifiedModelAPI:
         )
     
     def _ocr_mistral_document_ai(self, image_path: str) -> ModelResponse:
-        """Mistral Document AI via Azure OpenAI."""
-        # Load and encode image
-        image = Image.open(image_path).convert("RGB")
-        img_bytes = BytesIO()
-        image.save(img_bytes, format="PNG")
-        img_base64 = base64.b64encode(img_bytes.getvalue()).decode("utf-8")
-        
-        # Call Mistral Document AI
-        response = self.azure_openai_client.chat.completions.create(
-            model="mistral-document-ai-2505",
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Extract all text from this document image. Return ONLY the extracted text."
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{img_base64}"
-                            }
-                        }
-                    ]
+        """Mistral Document AI via direct API endpoint."""
+        try:
+            # Load and encode image to base64
+            with open(image_path, "rb") as f:
+                image_bytes = f.read()
+            
+            image_data = base64.b64encode(image_bytes).decode("utf-8")
+            
+            # Detect mime type from file extension
+            suffix = Path(image_path).suffix.lower()
+            mime_type_map = {
+                ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg",
+                ".png": "image/png",
+                ".gif": "image/gif",
+                ".webp": "image/webp",
+                ".pdf": "application/pdf",
+            }
+            mime_type = mime_type_map.get(suffix, "image/jpeg")
+            
+            # Create data URL for the document
+            document_url = f"data:{mime_type};base64,{image_data}"
+            
+            # Call Mistral OCR API via Azure endpoint
+            endpoint = self.config.get("azure_openai_endpoint")
+            api_key = self.config.get("azure_openai_api_key")
+            
+            if not endpoint or not api_key:
+                raise ValueError("Azure endpoint or API key not configured")
+            
+            # Remove trailing slash from endpoint to avoid double slash
+            endpoint = endpoint.rstrip("/")
+            endpoint_url = f"{endpoint}/providers/mistral/azure/ocr"
+            
+            headers = {
+                "Content-Type": "application/json",
+                "api-key": api_key.strip(),
+            }
+            
+            payload = {
+                "model": "mistral-document-ai-2505",
+                "document": {
+                    "type": "document_url",
+                    "document_url": document_url
                 }
-            ],
-            max_tokens=4000
-        )
+            }
+            
+            logger.info(f"Calling Mistral OCR API: {endpoint_url}")
+            response = requests.post(
+                endpoint_url,
+                headers=headers,
+                json=payload,
+                timeout=60
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"API response: {response.status_code} - {response.text[:500]}")
+            
+            response.raise_for_status()
+            
+            result = response.json()
+            logger.debug(f"Mistral API response keys: {result.keys()}")
+            
+            # Extract text from the response - Mistral returns markdown in pages
+            extracted_text = ""
+            if "pages" in result:
+                for page in result["pages"]:
+                    if "markdown" in page:
+                        extracted_text += page["markdown"] + "\n"
+            elif "content" in result:
+                extracted_text = result["content"]
+            elif "text" in result:
+                extracted_text = result["text"]
+            
+            return ModelResponse(
+                model_name="mistral_document_ai",
+                model_type=ModelType.OCR,
+                content=extracted_text.strip(),
+                source=image_path,
+            )
         
-        return ModelResponse(
-            model_name="mistral_document_ai",
-            model_type=ModelType.OCR,
-            content=response.choices[0].message.content,
-            source=image_path,
-            tokens_used=response.usage.total_tokens,
-        )
+        except Exception as e:
+            logger.error(f"Mistral OCR API call failed: {e}")
+            raise
     
     def _ocr_donut(self, image_path: str) -> ModelResponse:
-        """Donut OCR from Hugging Face."""
-        from transformers import DonutProcessor, VisionEncoderDecoderModel
+        """Donut OCR from Hugging Face with GPU support."""
+        if Accelerator is None:
+            raise ImportError("Donut requires 'accelerate' package. Install with: pip install accelerate")
+        if DonutProcessor is None or VisionEncoderDecoderModel is None:
+            raise ImportError("Donut requires 'transformers' package. Install with: pip install transformers")
         
         # Load image
+        logger.info(f"📷 Loading image: {image_path}")
         file_ext = Path(image_path).suffix.lower()
         if file_ext == ".pdf":
             images = pdf2image.convert_from_path(image_path, first_page=1, last_page=1)
             image = images[0]
         else:
             image = Image.open(image_path).convert("RGB")
+        logger.info(f"✓ Image loaded")
         
-        # Load model
-        processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base")
-        model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base")
+        # Load model (cache these to avoid reloading)
+        if not hasattr(self, '_donut_processor'):
+            logger.info(f"📥 Loading Donut processor...")
+            self._donut_processor = DonutProcessor.from_pretrained("naver-clova-ix/donut-base-finetuned-cord-v2")
+            logger.info(f"✓ Processor loaded")
         
-        # Process
+        if not hasattr(self, '_donut_model'):
+            logger.info(f"📥 Loading Donut model...")
+            self._donut_model = VisionEncoderDecoderModel.from_pretrained("naver-clova-ix/donut-base-finetuned-cord-v2")
+            logger.info(f"✓ Model loaded")
+        
+        processor = self._donut_processor
+        model = self._donut_model
+        
+        # Get device from Accelerator (handles MacBook GPU automatically)
+        if not hasattr(self, '_donut_device'):
+            logger.info(f"🚀 Detecting device (GPU/CPU)...")
+            self._donut_device = Accelerator().device
+            logger.info(f"✓ Using device: {self._donut_device}")
+            model.to(self._donut_device)
+        
+        device = self._donut_device
+        
+        # Process image
+        logger.info(f"🔄 Processing image...")
         pixel_values = processor(image, return_tensors="pt").pixel_values
+        
+        # Prepare decoder inputs
         task_prompt = "<s_cord-v2>"
         decoder_input_ids = processor.tokenizer(
             task_prompt, add_special_tokens=False, return_tensors="pt"
         ).input_ids
+        
+        # Generate with device handling
+        logger.info(f"🤖 Running inference on {device}...")
         outputs = model.generate(
-            pixel_values, decoder_input_ids=decoder_input_ids, max_length=768
+            pixel_values.to(device),
+            decoder_input_ids=decoder_input_ids.to(device),
+            max_length=model.decoder.config.max_position_embeddings,
+            pad_token_id=processor.tokenizer.pad_token_id,
+            eos_token_id=processor.tokenizer.eos_token_id,
+            use_cache=True,
+            bad_words_ids=[[processor.tokenizer.unk_token_id]],
+            return_dict_in_generate=True,
         )
-        result = processor.batch_decode(outputs, skip_special_tokens=True)[0]
+        
+        # Process output
+        logger.info(f"📝 Decoding output...")
+        sequence = processor.batch_decode(outputs.sequences)[0]
+        sequence = sequence.replace(processor.tokenizer.eos_token, "").replace(processor.tokenizer.pad_token, "")
+        sequence = re.sub(r"<.*?>", "", sequence, count=1).strip()  # remove first task start token
+        logger.info(f"✓ Extraction complete")
         
         return ModelResponse(
             model_name="donut",
             model_type=ModelType.OCR,
-            content=result,
+            content=sequence,
             source=image_path,
         )
     
     def _ocr_deepseek(self, image_path: str) -> ModelResponse:
         """DeepSeek-OCR from Hugging Face."""
-        from transformers import AutoModel, AutoTokenizer
+        if AutoModel is None or AutoTokenizer is None:
+            raise ImportError("DeepSeek-OCR requires 'transformers' package. Install with: pip install transformers")
         
         image = Image.open(image_path).convert("RGB")
         
@@ -435,7 +555,7 @@ class UnifiedModelAPI:
                     ]
                 }
             ],
-            max_completion_tokens=2000
+            max_completion_tokens=4000  # GPT-5 models can handle complex document analysis
         )
         
         return ModelResponse(
@@ -472,7 +592,7 @@ class UnifiedModelAPI:
                     ]
                 }
             ],
-            max_tokens=2000
+            max_tokens=4000  # Mistral can handle extended responses
         )
         
         return ModelResponse(
@@ -486,9 +606,7 @@ class UnifiedModelAPI:
     
     def _vlm_claude(self, image_path: str, model_id: str, query: Optional[str]) -> ModelResponse:
         """Claude vision LLM."""
-        try:
-            import anthropic
-        except ImportError:
+        if anthropic is None:
             raise ImportError("Claude requires 'anthropic' package. Install with: pip install anthropic")
         
         client = anthropic.Anthropic(api_key=self.config.get("anthropic_api_key"))
@@ -513,7 +631,7 @@ class UnifiedModelAPI:
         
         response = client.messages.create(
             model=model_id,
-            max_tokens=2000,
+            max_tokens=4000,  # Claude models support extended outputs for complex documents
             messages=[
                 {
                     "role": "user",
@@ -543,9 +661,7 @@ class UnifiedModelAPI:
     
     def _vlm_qwen(self, image_path: str, query: Optional[str]) -> ModelResponse:
         """Qwen-VL open vision LLM."""
-        try:
-            from transformers import AutoProcessor, Qwen2VLForConditionalGeneration
-        except ImportError:
+        if AutoProcessor is None or Qwen2VLForConditionalGeneration is None:
             raise ImportError("Qwen-VL requires transformers. Install with: pip install transformers")
         
         if not query:
@@ -574,7 +690,7 @@ class UnifiedModelAPI:
         image_inputs, video_inputs = processor.process_images([image])
         inputs = processor(text=text, images=image_inputs, videos=video_inputs, return_tensors="pt")
         
-        generated_ids = model.generate(**inputs, max_new_tokens=1000)
+        generated_ids = model.generate(**inputs, max_new_tokens=2000)  # Allow extended outputs
         generated_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
         
         return ModelResponse(
