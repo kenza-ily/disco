@@ -1,5 +1,3 @@
-Dataset: ICDAR_mini
+Dataset: IAM_mini
 Task: Extract all text from this document image, preserving structure and layout
-Languages: Arabic, Latin
-Expected approximately 10 text lines
 Return ONLY the extracted text.

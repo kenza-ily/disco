@@ -104,13 +104,9 @@ class IAMDataset(Dataset):
             for image_path in sorted(dir_path.glob("*.png")):
                 sample_id = f"iam_{dir_path.name}_{image_path.stem}"
                 
-                # For now, ground truth is either from .txt file with same name,
-                # or we extract from database metadata if available
-                # Since IAM typically requires registration, we'll make this optional
-                
-                ground_truth = self._get_iam_ground_truth(image_path)
-                if ground_truth is None:
-                    continue  # Skip if no ground truth available
+                # Try to load ground truth if available, otherwise use empty string
+                # Ground truth will be populated by models during evaluation
+                ground_truth = self._get_iam_ground_truth(image_path) or ""
                 
                 metadata = {
                     'dataset': 'IAM',
@@ -369,6 +365,192 @@ class ICDARMiniDataset(Dataset):
             return (0, 0)
 
 
+class IAMMiniDataset(Dataset):
+    """
+    IAM Mini Dataset loader - loads pre-sampled IAM handwriting data.
+    
+    Loads from JSON files in datasets_subsets folder.
+    
+    Supports optional automatic cropping to extract only handwritten text,
+    removing the printed reference text to ensure fair VLM evaluation.
+    """
+    
+    def __init__(self, dataset_root: Path, crop_handwritten_only: bool = False, **kwargs):
+        """
+        Initialize IAMMiniDataset.
+        
+        Args:
+            dataset_root: Root directory of dataset
+            crop_handwritten_only: If True, automatically extract handwritten portions only
+            **kwargs: Additional arguments passed to parent Dataset
+        """
+        self.crop_handwritten_only = crop_handwritten_only
+        super().__init__(dataset_root, **kwargs)
+    
+    def _load(self):
+        """Load IAM mini samples from folder structure."""
+        # Find the iam_mini subfolder in datasets_subsets
+        # Try relative to this file, then try common paths
+        possible_paths = [
+            Path(__file__).parent / "datasets_subsets" / "iam_mini",
+            Path(__file__).parent.parent / "ocr_vs_vlm" / "datasets_subsets" / "iam_mini",
+            self.dataset_root / "iam_mini" if self.dataset_root else None,
+        ]
+        
+        subsets_dir = None
+        for path in possible_paths:
+            if path and path.exists():
+                subsets_dir = path
+                break
+        
+        if not subsets_dir:
+            raise FileNotFoundError(
+                f"IAM_mini iam_mini folder not found. "
+                f"Tried: {[str(p) for p in possible_paths if p]}"
+            )
+        
+        # Load from the new folder structure with index.json
+        index_file = subsets_dir / "iam_mini_index.json"
+        
+        # If new structure exists (iam_mini_index.json), use it
+        if index_file.exists():
+            try:
+                with open(index_file, 'r') as f:
+                    index_data = json.load(f)
+                
+                for sample_data in index_data.get('samples', []):
+                    sample_id = sample_data['sample_id']
+                    folder = sample_data['folder']
+                    
+                    # Get handwritten image path (the main content image)
+                    handwritten_path = subsets_dir / folder / "handwritten.png"
+                    
+                    if not handwritten_path.exists():
+                        logger.debug(f"Image not found for {sample_id}: {handwritten_path}")
+                        continue
+                    
+                    metadata = sample_data.get('metadata', {})
+                    metadata['dataset'] = 'IAM_mini'
+                    metadata['folder'] = folder
+                    metadata['line2'] = metadata.get('line2')  # Already detected during reorganization
+                    metadata['crop_valid'] = metadata.get('crop_valid', True)  # Pre-cropped images are valid
+                    
+                    self.samples.append(Sample(
+                        sample_id=sample_id,
+                        image_path=str(handwritten_path),  # Use handwritten image by default
+                        ground_truth=sample_data.get('ground_truth', ''),
+                        metadata=metadata
+                    ))
+            
+            except Exception as e:
+                raise FileNotFoundError(f"Failed to load {index_file}: {e}")
+        
+        else:
+            # Fall back to old iam_mini.json format
+            json_file = subsets_dir / "iam_mini.json"
+            if not json_file.exists():
+                raise FileNotFoundError(f"No iam_mini_index.json or iam_mini.json found in {subsets_dir}")
+            
+            try:
+                with open(json_file, 'r') as f:
+                    data = json.load(f)
+                
+                for sample_data in data.get('samples', []):
+                    # Ensure image_path is absolute
+                    image_path = sample_data['image_path']
+                    if not Path(image_path).is_absolute():
+                        # Make it absolute if stored relatively
+                        image_path = str(Path(image_path))
+                    
+                    metadata = sample_data.get('metadata', {})
+                    metadata['dataset'] = 'IAM_mini'
+                    
+                    # If cropping enabled, detect Line 2 boundary
+                    crop_metadata = {}
+                    if self.crop_handwritten_only:
+                        try:
+                            from .line2_detection import find_line2, validate_crop
+                            line2 = find_line2(image_path)
+                            crop_metadata['line2'] = line2
+                            crop_metadata['crop_valid'] = validate_crop(image_path, line2)
+                        except Exception as e:
+                            logger.debug(f"Could not detect Line 2 for {image_path}: {e}")
+                            crop_metadata['line2'] = None
+                            crop_metadata['crop_valid'] = False
+                    
+                    metadata.update(crop_metadata)
+                    
+                    self.samples.append(Sample(
+                        sample_id=sample_data['sample_id'],
+                        image_path=image_path,
+                        ground_truth=sample_data.get('ground_truth', ''),
+                        metadata=metadata
+                    ))
+            
+            except Exception as e:
+                raise FileNotFoundError(f"Failed to load {json_file}: {e}")
+        
+        mode_str = "(handwritten pre-cropped)" if len(self.samples) > 0 and (subsets_dir / index_file.name).exists() else ""
+        logger.info(f"Loaded {len(self.samples)} samples from IAM_mini {mode_str}")
+    
+    def __getitem__(self, idx: int) -> Sample:
+        """
+        Get a sample, optionally cropping to handwritten portion only.
+        
+        If crop_handwritten_only is enabled, returns a Sample with:
+        - image_path: Temporary path to cropped handwritten-only image
+        - metadata: Includes 'line2' and 'crop_valid' fields
+        
+        Args:
+            idx: Sample index
+        
+        Returns:
+            Sample with potentially cropped image
+        """
+        sample = self.samples[idx]
+        
+        if not self.crop_handwritten_only or sample.metadata.get('line2') is None:
+            return sample
+        
+        # Crop to handwritten portion
+        try:
+            from .line2_detection import crop_handwritten_only
+            
+            line2 = sample.metadata['line2']
+            hw_img = crop_handwritten_only(sample.image_path, line2)
+            
+            # Save cropped image to temporary file
+            import tempfile
+            temp_dir = Path(tempfile.gettempdir()) / "iam_cropped"
+            temp_dir.mkdir(exist_ok=True)
+            
+            stem = Path(sample.image_path).stem
+            temp_path = temp_dir / f"{stem}_hw.png"
+            hw_img.save(temp_path)
+            
+            # Return sample with cropped image path
+            cropped_sample = Sample(
+                sample_id=sample.sample_id,
+                image_path=str(temp_path),
+                ground_truth=sample.ground_truth,
+                metadata=sample.metadata
+            )
+            return cropped_sample
+        
+        except Exception as e:
+            logger.warning(f"Failed to crop sample {sample.sample_id}: {e}")
+            return sample
+    
+    @staticmethod
+    def _get_image_size(image_path: Path) -> Tuple[int, int]:
+        """Get image dimensions."""
+        try:
+            with Image.open(image_path) as img:
+                return img.size
+        except Exception:
+            return (0, 0)
+
+
 class PubLayNetDataset(Dataset):
     """
     PubLayNet Document Layout Dataset loader.
@@ -473,6 +655,7 @@ class DatasetRegistry:
         'IAM': IAMDataset,
         'ICDAR': ICDARDataset,
         'ICDAR_mini': ICDARMiniDataset,
+        'IAM_mini': IAMMiniDataset,
         'PubLayNet': PubLayNetDataset,
     }
     

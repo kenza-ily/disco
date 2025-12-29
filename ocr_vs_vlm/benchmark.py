@@ -578,6 +578,7 @@ class BenchmarkRunner:
             'IAM': base_path / "IAM",
             'ICDAR': base_path / "ICDAR",
             'ICDAR_mini': Path(__file__).parent / "datasets_subsets",  # ICDAR_mini is in datasets_subsets
+            'IAM_mini': Path(__file__).parent / "datasets_subsets",  # IAM_mini is in datasets_subsets
             'PubLayNet': base_path / "PubLayNet",
         }
         
@@ -711,22 +712,45 @@ def create_benchmark_config(
 
 if __name__ == '__main__':
     """
-    Example benchmark execution.
+    IAM_mini Dataset benchmark with GPT mini and nano models on phases 2 and 3a.
+    Results include 'prediction' column with model outputs for post-processing comparison.
+    Each model saves results to its own folder: results/<model_name>/
     """
-    logger.info("Starting OCR vs VLM Benchmark")
+    logger.info("=" * 80)
+    logger.info("Starting IAM_mini Benchmark with GPT mini and nano (phases 2 & 3a)")
+    logger.info("=" * 80)
     
-    # Create configuration - test with mistral_document_ai on ICDAR_mini
-    config = create_benchmark_config(
-        datasets=['ICDAR_mini'],
-        models=['mistral_document_ai'],  # ← Use Mistral Document AI via Azure baseline API
-        phases=[1],  # Phase 1 = OCR baseline
-        results_dir="results"
-    )
-    # config.phase_3_letter = 'a'  # Set phase 3 letter suffix
+    models = ['gpt-5-mini', 'gpt-5-nano']
     
-    # Run benchmark
-    runner = BenchmarkRunner(config)
-    summary = runner.run_benchmark()
+    for model_name in models:
+        logger.info(f"\n{'='*80}")
+        logger.info(f"RUNNING MODEL: {model_name.upper()}")
+        logger.info(f"{'='*80}\n")
+        
+        # Create per-model results directory
+        model_results_dir = f"results/{model_name}"
+        
+        # Create configuration for this model
+        config = create_benchmark_config(
+            datasets=['IAM_mini'],  # Use IAM_mini dataset
+            models=[model_name],  # Single model per run
+            phases=[2, 3],  # Phase 2 = VLM baseline, Phase 3 = VLM + Context
+            sample_limit=None,  # Use all IAM_mini samples
+            results_dir=model_results_dir
+        )
+        
+        config.phase_3_letter = 'a'  # Phase 3a
+        
+        # Run benchmark with progress bars
+        runner = BenchmarkRunner(config)
+        summary = runner.run_benchmark()
+        
+        logger.info(f"\n{'='*80}")
+        logger.info(f"Summary for {model_name}:")
+        logger.info(f"{'='*80}")
+        logger.info(json.dumps(summary, indent=2))
     
-    logger.info(f"\nBenchmark Summary:")
-    logger.info(json.dumps(summary, indent=2))
+    logger.info(f"\n{'='*80}")
+    logger.info("All models completed!")
+    logger.info(f"Results saved to: results/<model_name>/")
+    logger.info(f"{'='*80}")
