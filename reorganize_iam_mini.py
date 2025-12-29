@@ -43,7 +43,7 @@ def reorganize_iam_mini():
     
     # Import Line 2 detection
     try:
-        from ocr_vs_vlm.line2_detection import find_line2, crop_handwritten_only, crop_printed_only
+        from ocr_vs_vlm.datasets_subsets.iam_mini.line2_detection import find_line2, crop_handwritten_only, crop_printed_only
     except ImportError:
         logger.error("Could not import line2_detection module. Make sure it's in ocr_vs_vlm/")
         return False

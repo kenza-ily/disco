@@ -469,7 +469,7 @@ class IAMMiniDataset(Dataset):
                     crop_metadata = {}
                     if self.crop_handwritten_only:
                         try:
-                            from .line2_detection import find_line2, validate_crop
+                            from .datasets_subsets.iam_mini.line2_detection import find_line2, validate_crop
                             line2 = find_line2(image_path)
                             crop_metadata['line2'] = line2
                             crop_metadata['crop_valid'] = validate_crop(image_path, line2)
@@ -514,7 +514,7 @@ class IAMMiniDataset(Dataset):
         
         # Crop to handwritten portion
         try:
-            from .line2_detection import crop_handwritten_only
+            from .datasets_subsets.iam_mini.line2_detection import crop_handwritten_only
             
             line2 = sample.metadata['line2']
             hw_img = crop_handwritten_only(sample.image_path, line2)
