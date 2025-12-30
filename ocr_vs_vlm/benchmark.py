@@ -439,12 +439,17 @@ class BenchmarkRunner:
             
             elif phase == 2:
                 # Phase 2: VLM Baseline with generic prompt
-                prompt = prompt_module.get_phase_2_prompt()
+                prompt = prompt_module.get_phase_2_prompt(dataset_name)
                 prediction = self._call_vlm_model(model_name, sample.image_path, prompt)
             
             elif phase == 3:
-                # Phase 3: VLM + Context-aware prompt
+                # Phase 3: VLM + Intermediate context-aware prompt
                 prompt = self._build_context_aware_prompt(sample, dataset_name)
+                prediction = self._call_vlm_model(model_name, sample.image_path, prompt)
+            
+            elif phase == 4:
+                # Phase 4: VLM + Detailed context-aware prompt
+                prompt = prompt_module.get_phase_4_prompt(sample, dataset_name, self.config.phase_3_letter)
                 prediction = self._call_vlm_model(model_name, sample.image_path, prompt)
             
             else:
@@ -580,6 +585,7 @@ class BenchmarkRunner:
             'ICDAR_mini': Path(__file__).parent / "datasets_subsets",  # ICDAR_mini is in datasets_subsets
             'IAM_mini': Path(__file__).parent / "datasets_subsets",  # IAM_mini is in datasets_subsets
             'PubLayNet': base_path / "PubLayNet",
+            'VOC2007': Path("/Users/kenzabenkirane/Documents/GitHub/research-playground/datasets/VOC2007"),
         }
         
         if dataset_name not in dataset_paths:

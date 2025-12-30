@@ -371,8 +371,12 @@ class IAMMiniDataset(Dataset):
     
     Loads from JSON files in datasets_subsets folder.
     
-    Supports optional automatic cropping to extract only handwritten text,
-    removing the printed reference text to ensure fair VLM evaluation.
+    Each sample contains:
+    - handwritten.png: The handwritten text image (input to VLM for prediction)
+    - printed.png: The printed reference text (ground truth image)
+    
+    The VLM should read the handwritten image and produce text that matches
+    what appears in the printed reference.
     """
     
     def __init__(self, dataset_root: Path, crop_handwritten_only: bool = False, **kwargs):
@@ -422,23 +426,27 @@ class IAMMiniDataset(Dataset):
                     sample_id = sample_data['sample_id']
                     folder = sample_data['folder']
                     
-                    # Get handwritten image path (the main content image)
+                    # Handwritten image = input for VLM prediction
                     handwritten_path = subsets_dir / folder / "handwritten.png"
+                    # Printed image = ground truth reference
+                    printed_path = subsets_dir / folder / "printed.png"
                     
                     if not handwritten_path.exists():
-                        logger.debug(f"Image not found for {sample_id}: {handwritten_path}")
+                        logger.debug(f"Handwritten image not found for {sample_id}: {handwritten_path}")
                         continue
                     
                     metadata = sample_data.get('metadata', {})
                     metadata['dataset'] = 'IAM_mini'
                     metadata['folder'] = folder
-                    metadata['line2'] = metadata.get('line2')  # Already detected during reorganization
-                    metadata['crop_valid'] = metadata.get('crop_valid', True)  # Pre-cropped images are valid
+                    # Store printed image path for ground truth reference
+                    metadata['printed_image_path'] = str(printed_path) if printed_path.exists() else None
+                    metadata['handwritten_image_path'] = str(handwritten_path)
+                    metadata['crop_valid'] = True  # Pre-cropped images are valid
                     
                     self.samples.append(Sample(
                         sample_id=sample_id,
-                        image_path=str(handwritten_path),  # Use handwritten image by default
-                        ground_truth=sample_data.get('ground_truth', ''),
+                        image_path=str(handwritten_path),  # VLM reads handwritten image
+                        ground_truth='',  # Text ground truth - empty, use printed_image_path for image-based GT
                         metadata=metadata
                     ))
             
@@ -644,6 +652,115 @@ class PubLayNetDataset(Dataset):
         return "\n".join(texts) if texts else ""
 
 
+class VOC2007Dataset(Dataset):
+    """
+    VOC2007 Medical Lab Reports Dataset loader.
+    
+    Structure:
+    - JPEGImages/*.jpg (images)
+    - labels_src.json (annotations with Chinese text)
+    
+    This dataset contains Simplified Chinese medical laboratory reports.
+    Each image has multiple text annotations in table format.
+    """
+    
+    def _load(self):
+        """Load VOC2007 images and annotations."""
+        images_dir = self.dataset_root / "JPEGImages"
+        labels_file = self.dataset_root / "labels_src.json"
+        
+        if not images_dir.exists():
+            raise FileNotFoundError(f"VOC2007 images directory not found: {images_dir}")
+        
+        if not labels_file.exists():
+            raise FileNotFoundError(f"VOC2007 labels file not found: {labels_file}")
+        
+        # Load annotations
+        try:
+            with open(labels_file, 'r', encoding='utf-8') as f:
+                annotations = json.load(f)
+        except Exception as e:
+            raise ValueError(f"Failed to load labels_src.json: {e}")
+        
+        # Build filename -> annotation mapping
+        filename_to_annotation = {}
+        for entry in annotations:
+            filename = entry.get('filename')
+            if filename:
+                filename_to_annotation[filename] = entry
+        
+        # Process each image
+        for image_path in sorted(images_dir.glob("*.jpg")):
+            filename = image_path.name
+            
+            if filename not in filename_to_annotation:
+                logger.debug(f"No annotation for {filename}")
+                continue
+            
+            entry = filename_to_annotation[filename]
+            sample_id = f"voc2007_{image_path.stem}"
+            
+            # Extract all text from annotations
+            ground_truth = self._extract_ground_truth(entry)
+            
+            metadata = {
+                'dataset': 'VOC2007',
+                'language': 'zh-CN',  # Simplified Chinese
+                'document_type': 'medical_lab_report',
+                'num_annotations': len(entry.get('annotations', [])),
+                'image_size': self._get_image_size(image_path),
+            }
+            
+            self.samples.append(Sample(
+                sample_id=sample_id,
+                image_path=str(image_path),
+                ground_truth=ground_truth,
+                metadata=metadata
+            ))
+    
+    def _extract_ground_truth(self, entry: Dict) -> str:
+        """
+        Extract all text from annotations.
+        
+        Args:
+            entry: Annotation entry with 'annotations' list
+        
+        Returns:
+            Concatenated text preserving structure (Unicode Chinese)
+        """
+        texts = []
+        annotations = entry.get('annotations', [])
+        
+        # Sort by table_no, then by y position (top to bottom), then x (left to right)
+        sorted_annotations = sorted(
+            annotations,
+            key=lambda a: (
+                int(a.get('table_no', 0)),
+                int(a.get('cell_row', 0)),
+                int(a.get('cell_line', 0)),
+                float(a.get('y', 0)),
+                float(a.get('x', 0))
+            )
+        )
+        
+        for anno in sorted_annotations:
+            text = anno.get('text', '').strip()
+            if text:
+                texts.append(text)
+        
+        # Join texts - use newline for structure
+        return '\n'.join(texts)
+    
+    @staticmethod
+    def _get_image_size(image_path: Path) -> Tuple[int, int]:
+        """Get image dimensions."""
+        try:
+            with Image.open(image_path) as img:
+                return img.size
+        except Exception:
+            return (0, 0)
+
+
 class DatasetRegistry:
     """
     Central registry for dataset instantiation.
@@ -657,6 +774,7 @@ class DatasetRegistry:
         'ICDAR_mini': ICDARMiniDataset,
         'IAM_mini': IAMMiniDataset,
         'PubLayNet': PubLayNetDataset,
+        'VOC2007': VOC2007Dataset,
     }
     
     @classmethod
@@ -747,6 +865,16 @@ def validate_dataset(dataset_name: str, root: str) -> Dict:
             results['checks']['data_dir_exists'] = data_dir.exists()
             if data_dir.exists():
                 results['checks']['parquet_files'] = len(list(data_dir.glob("*.parquet")))
+        
+        elif dataset_name == 'VOC2007':
+            images_dir = root_path / "JPEGImages"
+            labels_file = root_path / "labels_src.json"
+            
+            results['checks']['JPEGImages_exists'] = images_dir.exists()
+            results['checks']['labels_src_exists'] = labels_file.exists()
+            
+            if images_dir.exists():
+                results['checks']['images_count'] = len(list(images_dir.glob("*.jpg")))
         
         # Try to instantiate
         try:

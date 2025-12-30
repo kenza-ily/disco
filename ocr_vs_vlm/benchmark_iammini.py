@@ -1,20 +1,24 @@
 """
-IAM_mini Fairness Benchmark: Separate evaluation on handwritten vs printed images
+IAM_mini Comprehensive Benchmark: Fair OCR/VLM Evaluation
 
-This benchmark evaluates VLM models on the IAM_mini dataset with fairness controls:
+Evaluates OCR and VLM models on the IAM_mini dataset with fairness controls:
 1. Handwritten Phase: Models read only the handwritten portion (fair evaluation)
 2. Printed Phase: Models read only the printed reference text (oracle evaluation)
 
 This prevents models from "cheating" by reading the printed reference text during
 fair handwritten evaluation.
 
+Phase Configuration:
+- OCR models (azure_intelligence, donut, mistral_document_ai): Phase 1 only
+- VLM models (gpt-5-mini, gpt-5-nano): Phases 2 & 3
+
 Results structure:
-- ocr_vs_vlm/results/IAM_mini/<date>/<model>/handwritten_phase_X.csv
-- ocr_vs_vlm/results/IAM_mini/<date>/<model>/printed_phase_X.csv
+- ocr_vs_vlm/results/IAM_mini/<model>/phase_X_results.csv
 """
 
 import json
 import logging
+import sys
 import time
 import csv
 from dataclasses import asdict, dataclass
@@ -26,7 +30,7 @@ import sys
 from tqdm import tqdm
 
 from ocr_vs_vlm.dataset_loaders import DatasetRegistry, validate_dataset
-from ocr_vs_vlm.unified_model_api import UnifiedModelAPI, ModelRegistry
+from ocr_vs_vlm.unified_model_api import UnifiedModelAPI, ModelRegistry, ModelType
 from ocr_vs_vlm import prompts as prompt_module
 
 # Logs will be configured per run with the results directory
@@ -37,40 +41,62 @@ def _configure_logging(results_dir: Path):
     """Configure logging to write to results directory."""
     logger.handlers.clear()
     
-    formatter = logging.Formatter(
+    # Simple formatter for console (more readable)
+    console_formatter = logging.Formatter(
+        '%(asctime)s [%(levelname)s] %(message)s',
+        datefmt='%H:%M:%S'
+    )
+    
+    # Detailed formatter for file
+    file_formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
         datefmt='%Y-%m-%d %H:%M:%S'
     )
     
+    # Console handler - INFO and above
     console_handler = logging.StreamHandler(sys.stdout)
     console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(formatter)
+    console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
     
+    # File handler - DEBUG and above
     benchmark_log = logging.FileHandler(results_dir / 'benchmark_iammini.log')
     benchmark_log.setLevel(logging.DEBUG)
-    benchmark_log.setFormatter(formatter)
+    benchmark_log.setFormatter(file_formatter)
     logger.addHandler(benchmark_log)
 
 
 @dataclass
 class BenchmarkResult:
-    """Result from a single sample evaluation."""
+    """Result from a single sample evaluation.
+    
+    For IAM_mini:
+    - ground_truth: Text extracted from printed.png (the reference)
+    - prediction: Text extracted from handwritten.png (what we're evaluating)
+    """
     
     sample_id: str
-    image_path: str
+    image_path: str  # Path to handwritten image (input for prediction)
+    printed_image_path: str  # Path to printed image (input for ground truth)
     dataset: str
     model: str
     phase: int
-    image_type: str  # 'handwritten' or 'printed'
-    ground_truth: str
-    prediction: Optional[str] = None
+    
+    # Ground truth from printed image, prediction from handwritten image
+    ground_truth: Optional[str] = None  # Extracted from printed.png
+    prediction: Optional[str] = None  # Extracted from handwritten.png
+    
+    # Prompts used (for VLM models)
     prompt: Optional[str] = None
     
-    # Metadata
-    inference_time_ms: float = 0.0
+    # Inference metrics
+    ground_truth_inference_time_ms: float = 0.0  # Time to extract from printed
+    prediction_inference_time_ms: float = 0.0  # Time to extract from handwritten
     tokens_used: Optional[int] = None
-    error: Optional[str] = None
+    
+    # Error tracking
+    ground_truth_error: Optional[str] = None
+    prediction_error: Optional[str] = None
     timestamp: str = ""
     
     def to_dict(self) -> Dict:
@@ -78,34 +104,35 @@ class BenchmarkResult:
         result = asdict(self)
         # Reorder for readability
         ordered = {}
-        for key in ['sample_id', 'image_path', 'dataset', 'model', 'phase', 'image_type',
-                    'ground_truth', 'prediction', 'prompt', 'inference_time_ms', 'tokens_used',
-                    'error', 'timestamp']:
+        for key in ['sample_id', 'image_path', 'printed_image_path', 'dataset', 'model', 'phase',
+                    'ground_truth', 'prediction', 'prompt',
+                    'ground_truth_inference_time_ms', 'prediction_inference_time_ms',
+                    'tokens_used', 'ground_truth_error', 'prediction_error', 'timestamp']:
             if key in result:
                 ordered[key] = result[key]
         return ordered
 
 
 class IAMMiniVLMBenchmark:
-    """Benchmark VLM models on IAM_mini with fairness controls."""
+    """Comprehensive benchmark for OCR and VLM models on IAM_mini with fairness controls."""
     
-    def __init__(self, models: List[str], phases: List[int] = None, sample_limit: Optional[int] = None):
+    def __init__(self, models: List[str], sample_limit: Optional[int] = None):
         """
         Initialize IAM_mini benchmark.
         
         Args:
-            models: List of model names (e.g., ['gpt-5-mini', 'gpt-5-nano'])
-            phases: List of phases to run (default [2, 3])
-            sample_limit: Max samples to process per image type
+            models: List of model names to evaluate
+            sample_limit: Max samples to process per dataset
         """
         self.models = models
-        self.phases = phases or [2, 3]
         self.sample_limit = sample_limit
         
-        # Create results directory with date
-        date_str = datetime.now().strftime("%Y%m%d")
-        self.results_dir = Path(__file__).parent / "results" / "IAM_mini" / date_str
+        # Create results directory
+        self.results_dir = Path(__file__).parent / "results" / "IAM_mini"
         self.results_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Store log file path
+        self.log_file = self.results_dir / "benchmark_iammini.log"
         
         # Configure logging to this results directory
         _configure_logging(self.results_dir)
@@ -113,69 +140,96 @@ class IAMMiniVLMBenchmark:
         # Initialize API
         self.api = UnifiedModelAPI()
         
-        # Initialize prompts directory
-        self.prompts_dir = Path(__file__).parent / "prompts"
-        self.prompts_dir.mkdir(parents=True, exist_ok=True)
-        
-        logger.info(f"IAMMiniVLMBenchmark initialized")
-        logger.info(f"Models: {models}")
-        logger.info(f"Phases: {self.phases}")
+        logger.info(f"=" * 70)
+        logger.info(f"IAMMini Benchmark Initialized")
+        logger.info(f"=" * 70)
+        logger.info(f"Models to evaluate: {models}")
+        logger.info(f"Sample limit: {sample_limit if sample_limit else 'All samples'}")
         logger.info(f"Results directory: {self.results_dir}")
+        logger.info(f"Log file: {self.log_file}")
     
     def run(self) -> Dict:
         """
-        Run full benchmark (handwritten then printed for each model).
+        Run full benchmark across all models with appropriate phases.
         
         Returns:
             Summary of execution
         """
         start_time = time.time()
+        logger.info(f"\n{'#'*70}")
+        logger.info(f"# BENCHMARK START")
+        logger.info(f"{'#'*70}")
+        logger.info(f"Results directory: {self.results_dir}")
+        logger.info(f"Log file: {self.log_file}")
+        logger.info(f"Models to evaluate: {self.models}")
+        logger.info(f"Sample limit: {self.sample_limit}")
+        logger.info(f"{'#'*70}\n")
+        
         summary = {
             'start_time': datetime.now().isoformat(),
             'models': self.models,
-            'phases': self.phases,
             'by_model': {},
         }
         
-        # Load IAM_mini dataset (will use handwritten images)
+        # Load IAM_mini dataset
         dataset_root = Path(__file__).parent / "datasets_subsets"
         
         try:
             # Validate dataset
+            logger.info("Validating dataset...")
             validation = validate_dataset('IAM_mini', str(dataset_root))
             if not validation['valid']:
                 logger.error(f"Dataset validation failed: {validation}")
                 return summary
             
-            logger.info(f"Dataset validated: {validation['checks']}")
+            logger.info(f"✓ Dataset validated")
             
             # Load dataset
+            logger.info("Loading dataset...")
             dataset = DatasetRegistry.get_dataset(
                 'IAM_mini',
                 str(dataset_root),
                 sample_limit=self.sample_limit
             )
-            logger.info(f"Loaded {len(dataset)} samples from IAM_mini")
+            logger.info(f"✓ Loaded {len(dataset)} samples from IAM_mini")
+            
+            # Show sample distribution
+            logger.info(f"\nSample distribution:")
+            hw_samples = sum(1 for s in dataset if 'handwritten' in str(s.image_path).lower())
+            pr_samples = sum(1 for s in dataset if 'printed' in str(s.image_path).lower())
+            logger.info(f"  - Handwritten images: {hw_samples}")
+            logger.info(f"  - Printed images: {pr_samples}")
             
             # Run each model
-            for model_name in self.models:
-                logger.info(f"\n{'='*70}")
-                logger.info(f"RUNNING MODEL: {model_name.upper()}")
-                logger.info(f"{'='*70}\n")
-                
-                try:
-                    model_summary = self._run_model(model_name, dataset)
-                    summary['by_model'][model_name] = model_summary
-                except Exception as e:
-                    logger.error(f"Error with model {model_name}: {e}")
-                    summary['by_model'][model_name] = {'error': str(e)}
+            logger.info(f"\nStarting evaluation of {len(self.models)} models...\n")
+            
+            with tqdm(total=len(self.models), desc="Models", unit="model", leave=True,
+                     bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]',
+                     file=sys.stdout) as model_pbar:
+                for model_name in self.models:
+                    try:
+                        model_summary = self._run_model(model_name, dataset)
+                        summary['by_model'][model_name] = model_summary
+                        model_pbar.update(1)
+                    except Exception as e:
+                        logger.error(f"✗ Error with model {model_name}: {e}")
+                        summary['by_model'][model_name] = {'error': str(e)}
+                        model_pbar.update(1)
         
         except Exception as e:
-            logger.error(f"Failed to load dataset: {e}")
+            logger.error(f"✗ Failed to load dataset: {e}")
             return summary
         
         summary['end_time'] = datetime.now().isoformat()
         summary['total_time_seconds'] = time.time() - start_time
+        
+        # Final summary
+        logger.info(f"\n{'#'*70}")
+        logger.info(f"# BENCHMARK COMPLETE")
+        logger.info(f"{'#'*70}")
+        logger.info(f"Total time: {summary['total_time_seconds']:.1f} seconds")
+        logger.info(f"Results saved to: {self.results_dir}")
+        logger.info(f"{'#'*70}\n")
         
         # Save execution summary
         summary_file = self.results_dir / "execution_summary.json"
@@ -187,7 +241,10 @@ class IAMMiniVLMBenchmark:
     
     def _run_model(self, model_name: str, dataset) -> Dict:
         """
-        Run all phases for one model on both handwritten and printed images.
+        Run appropriate phases for one model based on its type.
+        
+        - OCR models: Phase 1 only (basic extraction, no prompt)
+        - VLM models: Phases 2 & 3 (with prompts)
         
         Args:
             model_name: Model name
@@ -199,148 +256,187 @@ class IAMMiniVLMBenchmark:
         model_dir = self.results_dir / model_name
         model_dir.mkdir(parents=True, exist_ok=True)
         
+        logger.info(f"\n{'='*70}")
+        logger.info(f"EVALUATING MODEL: {model_name}")
+        logger.info(f"{'='*70}")
+        
+        model_type = ModelRegistry.get_model_type(model_name)
+        logger.info(f"Model type: {model_type.name}")
+        
+        # Determine phases based on model type
+        if model_type == ModelType.OCR:
+            # OCR models: Phase 1 only (basic extraction)
+            phases = [1]
+        else:
+            # VLM models: Phases 2 & 3 (with prompts)
+            phases = [2, 3]
+        logger.info(f"Phases to run: {phases}")
+        
         model_summary = {
             'name': model_name,
-            'handwritten': {},
-            'printed': {},
+            'type': str(model_type),
+            'phases_completed': {}
         }
         
-        # Evaluate on handwritten images first
-        logger.info(f"\n{'─'*70}")
-        logger.info(f"Evaluating on HANDWRITTEN images (fair evaluation)")
-        logger.info(f"{'─'*70}\n")
-        
-        try:
-            handwritten_results = self._evaluate_on_images(
-                model_name, dataset, image_type='handwritten'
-            )
-            model_summary['handwritten'] = {
-                'status': 'completed',
-                'samples_processed': sum(
-                    len(results) for results in handwritten_results.values()
-                )
-            }
-            logger.info(f"Handwritten evaluation completed")
-        except Exception as e:
-            logger.error(f"Error evaluating handwritten: {e}")
-            model_summary['handwritten'] = {'status': 'failed', 'error': str(e)}
-        
-        # Evaluate on printed images
-        logger.info(f"\n{'─'*70}")
-        logger.info(f"Evaluating on PRINTED images (oracle evaluation)")
-        logger.info(f"{'─'*70}\n")
-        
-        try:
-            printed_results = self._evaluate_on_images(
-                model_name, dataset, image_type='printed'
-            )
-            model_summary['printed'] = {
-                'status': 'completed',
-                'samples_processed': sum(
-                    len(results) for results in printed_results.values()
-                )
-            }
-            logger.info(f"Printed evaluation completed")
-        except Exception as e:
-            logger.error(f"Error evaluating printed: {e}")
-            model_summary['printed'] = {'status': 'failed', 'error': str(e)}
+        # Run each phase
+        for phase in phases:
+            logger.info(f"\n{'─'*70}")
+            logger.info(f"Phase {phase}")
+            logger.info(f"{'─'*70}")
+            
+            try:
+                phase_results = self._run_phase(model_name, phase, dataset)
+                model_summary['phases_completed'][phase] = {
+                    'status': 'completed',
+                    'samples_processed': len(phase_results)
+                }
+                logger.info(f"✓ Phase {phase} completed: {len(phase_results)} samples processed")
+            except Exception as e:
+                logger.error(f"✗ Phase {phase} failed: {e}")
+                model_summary['phases_completed'][phase] = {'status': 'failed', 'error': str(e)}
         
         return model_summary
     
-    def _evaluate_on_images(self, model_name: str, dataset, image_type: str) -> Dict[int, List[BenchmarkResult]]:
+    def _run_phase(self, model_name: str, phase: int, dataset) -> List[BenchmarkResult]:
         """
-        Evaluate model on either handwritten or printed images across all phases.
+        Run single phase across all samples.
+        
+        For each sample:
+        1. Extract GROUND TRUTH from printed image (clean typed text)
+        2. Extract PREDICTION from handwritten image (what we're evaluating)
+        
+        This allows fair comparison:
+        - Ground truth: what the model CAN read (printed text)
+        - Prediction: what the model TRIES to read (handwritten text)
         
         Args:
-            model_name: Model name
-            dataset: Dataset with samples
-            image_type: 'handwritten' or 'printed'
+            model_name: Model name (OCR or VLM)
+            phase: Phase number (1 for basic extraction)
+            dataset: Loaded dataset
         
         Returns:
-            Dict mapping phase -> list of results
+            List of BenchmarkResult objects
         """
-        model_dir = self.results_dir / model_name
-        all_phase_results = {}
+        results = []
+        results_file = self.results_dir / model_name / f"phase_{phase}_results.csv"
         
-        for phase in self.phases:
-            logger.info(f"  Phase {phase} ({image_type} images)...")
-            
-            results = []
-            results_file = model_dir / f"{image_type}_phase_{phase}_results.csv"
-            
-            # Load existing results if resuming
-            existing_results = self._load_existing_results(results_file)
-            processed_ids = {(r.sample_id, r.image_type) for r in existing_results}
-            csv_headers_written = len(existing_results) > 0
-            
-            samples_to_process = [
-                s for s in dataset if (s.sample_id, image_type) not in processed_ids
-            ]
-            
-            logger.info(f"    Processing {len(samples_to_process)} samples")
-            
-            # Process samples
-            with tqdm(total=len(samples_to_process), desc=f"Phase {phase}",
-                     unit="sample", leave=True, disable=False) as pbar:
-                for sample in samples_to_process:
-                    try:
-                        # Get the appropriate image path based on image_type
-                        image_path = self._get_image_path(sample, image_type)
-                        
-                        # Process sample
-                        result = self._process_sample(
-                            sample, model_name, phase, image_type, image_path
-                        )
-                        results.append(result)
-                        
-                        # Save incrementally every 50 samples
-                        if len(results) % 50 == 0:
-                            all_results = existing_results + results
-                            self._save_results_csv(
-                                results_file,
-                                all_results,
-                                write_headers=(not csv_headers_written)
-                            )
-                            logger.info(f"Checkpoint saved ({len(all_results)} total)")
-                            csv_headers_written = True
-                            existing_results = all_results
-                            results = []
-                        
-                        pbar.update(1)
+        # Load existing results if resuming
+        existing_results = self._load_existing_results(results_file)
+        processed_ids = {r.sample_id for r in existing_results}
+        csv_headers_written = len(existing_results) > 0
+        
+        samples_to_process = [s for s in dataset if s.sample_id not in processed_ids]
+        
+        logger.info(f"[Phase {phase}] Total samples: {len(dataset)}")
+        logger.info(f"[Phase {phase}] Already processed: {len(processed_ids)}")
+        logger.info(f"[Phase {phase}] Samples to process: {len(samples_to_process)}")
+        
+        if not samples_to_process:
+            logger.info(f"[Phase {phase}] ✓ All samples already processed, skipping")
+            return existing_results
+        
+        # Process samples with detailed progress bar
+        with tqdm(total=len(samples_to_process), 
+                 desc=f"{model_name:20s} Phase {phase}",
+                 unit="sample", leave=True, disable=False, 
+                 bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]',
+                 file=sys.stdout) as pbar:
+            for sample in samples_to_process:
+                try:
+                    # Get image paths
+                    hw_image_path = self._get_image_path(sample, 'handwritten')
+                    pr_image_path = self._get_image_path(sample, 'printed')
                     
-                    except Exception as e:
-                        logger.warning(f"Failed {sample.sample_id}: {e}")
-                        error_result = BenchmarkResult(
-                            sample_id=sample.sample_id,
-                            image_path=str(self._get_image_path(sample, image_type)),
-                            dataset='IAM_mini',
-                            model=model_name,
-                            phase=phase,
-                            image_type=image_type,
-                            ground_truth=sample.ground_truth,
-                            error=str(e),
-                            timestamp=datetime.now().isoformat()
+                    # 1. Extract GROUND TRUTH from printed image (use generic prompt)
+                    pr_start = time.time()
+                    gt_prompt, ground_truth, gt_error = self._call_model(
+                        model_name, pr_image_path, phase, sample, is_ground_truth=True
+                    )
+                    pr_time_ms = (time.time() - pr_start) * 1000
+                    
+                    if ground_truth:
+                        logger.debug(f"[{sample.sample_id}] Ground truth (printed): {len(ground_truth)} chars in {pr_time_ms:.1f}ms")
+                    elif gt_error:
+                        logger.debug(f"[{sample.sample_id}] Ground truth ERROR: {gt_error[:60]}")
+                    
+                    # 2. Extract PREDICTION from handwritten image (use phase-specific prompt)
+                    hw_start = time.time()
+                    pred_prompt, prediction, pred_error = self._call_model(
+                        model_name, hw_image_path, phase, sample, is_ground_truth=False
+                    )
+                    hw_time_ms = (time.time() - hw_start) * 1000
+                    
+                    if prediction:
+                        logger.debug(f"[{sample.sample_id}] Prediction (handwritten): {len(prediction)} chars in {hw_time_ms:.1f}ms")
+                    elif pred_error:
+                        logger.debug(f"[{sample.sample_id}] Prediction ERROR: {pred_error[:60]}")
+                    
+                    # Create result: ground_truth from printed, prediction from handwritten
+                    result = BenchmarkResult(
+                        sample_id=sample.sample_id,
+                        image_path=str(hw_image_path),
+                        printed_image_path=str(pr_image_path),
+                        dataset='IAM_mini',
+                        model=model_name,
+                        phase=phase,
+                        ground_truth=ground_truth,  # From printed image
+                        prediction=prediction,  # From handwritten image
+                        prompt=pred_prompt,  # Prompt used for prediction (phase-specific)
+                        ground_truth_inference_time_ms=pr_time_ms,
+                        prediction_inference_time_ms=hw_time_ms,
+                        ground_truth_error=gt_error,
+                        prediction_error=pred_error,
+                        timestamp=datetime.now().isoformat()
+                    )
+                    results.append(result)
+                    
+                    # Save incrementally every 50 samples
+                    if len(results) % 50 == 0:
+                        all_results = existing_results + results
+                        self._save_results_csv(
+                            results_file,
+                            all_results,
+                            write_headers=(not csv_headers_written)
                         )
-                        results.append(error_result)
-                        pbar.update(1)
-            
-            # Final save
-            if results:
-                all_results = existing_results + results
-                self._save_results_csv(
-                    results_file,
-                    all_results,
-                    write_headers=(not csv_headers_written)
-                )
-                logger.info(f"Phase {phase} saved ({len(all_results)} total)")
-            
-            all_phase_results[phase] = existing_results + results
+                        logger.info(f"[Phase {phase}] ✓ Checkpoint saved ({len(all_results)} total)")
+                        csv_headers_written = True
+                        existing_results = all_results
+                        results = []
+                    
+                    pbar.update(1)
+                
+                except Exception as e:
+                    logger.warning(f"[Phase {phase}] ✗ Failed {sample.sample_id}: {str(e)[:100]}")
+                    hw_image_path = self._get_image_path(sample, 'handwritten')
+                    pr_image_path = self._get_image_path(sample, 'printed')
+                    error_result = BenchmarkResult(
+                        sample_id=sample.sample_id,
+                        image_path=str(hw_image_path),
+                        printed_image_path=str(pr_image_path),
+                        dataset='IAM_mini',
+                        model=model_name,
+                        phase=phase,
+                        prediction_error=str(e),
+                        timestamp=datetime.now().isoformat()
+                    )
+                    results.append(error_result)
+                    pbar.update(1)
         
-        return all_phase_results
+        # Final save
+        if results:
+            all_results = existing_results + results
+            self._save_results_csv(
+                results_file,
+                all_results,
+                write_headers=(not csv_headers_written)
+            )
+            logger.info(f"[Phase {phase}] ✓ Final save complete ({len(all_results)} total samples)")
+        
+        return existing_results + results
     
     def _get_image_path(self, sample, image_type: str) -> Path:
         """
-        Get the appropriate image path for the given image type.
+        Get image path for the given type, constructing printed path from handwritten.
         
         Args:
             sample: Sample object
@@ -349,64 +445,69 @@ class IAMMiniVLMBenchmark:
         Returns:
             Path to the image file
         """
-        # The sample object should have metadata with paths to both image types
-        if image_type == 'handwritten':
-            # Use handwritten image if available, otherwise full image
-            if hasattr(sample, 'handwritten_path') and sample.handwritten_path:
-                return Path(sample.handwritten_path)
-            elif hasattr(sample, 'metadata') and 'handwritten_path' in sample.metadata:
-                return Path(sample.metadata['handwritten_path'])
-        elif image_type == 'printed':
-            # Use printed image if available
-            if hasattr(sample, 'printed_path') and sample.printed_path:
-                return Path(sample.printed_path)
-            elif hasattr(sample, 'metadata') and 'printed_path' in sample.metadata:
-                return Path(sample.metadata['printed_path'])
+        base_path = Path(sample.image_path)
         
-        # Fallback to image_path
-        return Path(sample.image_path)
+        if image_type == 'printed':
+            # Replace handwritten.png with printed.png
+            return base_path.parent / "printed.png"
+        else:
+            # Return handwritten as-is
+            return base_path
     
-    def _process_sample(
-        self, sample, model_name: str, phase: int,
-        image_type: str, image_path: Path
-    ) -> BenchmarkResult:
+    def _call_model(
+        self, model_name: str, image_path: Path, phase: int, sample,
+        is_ground_truth: bool = False
+    ) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """
-        Process single sample through VLM API.
+        Call model on a single image (OCR or VLM depending on model type).
+        
+        For ground truth extraction (printed image):
+        - Always use generic prompt (Phase 2 style) to get clean baseline
+        
+        For prediction extraction (handwritten image):
+        - Phase 1: Basic extraction prompt
+        - Phase 2: Generic prompt
+        - Phase 3: Context-aware prompt with dataset hints
         
         Args:
-            sample: Sample object
             model_name: Model name
+            image_path: Path to image
             phase: Phase number
-            image_type: 'handwritten' or 'printed'
-            image_path: Path to image to use
+            sample: Sample object
+            is_ground_truth: If True, use generic prompt (for printed image)
         
         Returns:
-            BenchmarkResult with prediction
+            Tuple of (prompt, output_text, error)
         """
-        start_time = time.time()
-        prediction = None
         prompt: Optional[str] = None
+        prediction = None
         error = None
         
         try:
-            # Validate model is a VLM
-            if model_name not in ModelRegistry.list_vlm_models():
-                raise ValueError(f"{model_name} is not a VLM model")
+            model_type = ModelRegistry.get_model_type(model_name)
             
-            # Build prompt based on phase
-            if phase == 2:
-                # Phase 2: Generic prompt
-                prompt = prompt_module.get_phase_2_prompt()
-            elif phase == 3:
-                # Phase 3: Context-aware prompt
-                prompt = prompt_module.get_phase_3_prompt(
-                    sample, 'IAM_mini', 'a'  # Use 'a' as default suffix
-                )
+            if model_type == ModelType.OCR:
+                # OCR models: call without query/prompt
+                response = self.api.process(str(image_path), model=model_name)
             else:
-                raise ValueError(f"Unknown phase: {phase}")
-            
-            # Call VLM model
-            response = self.api.process(str(image_path), model=model_name, query=prompt)
+                # VLM models: build prompt
+                if is_ground_truth:
+                    # Ground truth always uses generic prompt (fair baseline)
+                    prompt = prompt_module.get_phase_2_prompt()
+                elif phase == 1:
+                    # Phase 1: Basic extraction prompt
+                    prompt = "Extract all text from this document image"
+                elif phase == 2:
+                    # Phase 2: Generic prompt
+                    prompt = prompt_module.get_phase_2_prompt()
+                elif phase == 3:
+                    # Phase 3: Context-aware prompt for prediction only
+                    prompt = prompt_module.get_phase_3_prompt(sample, 'IAM_mini', 'a')
+                else:
+                    raise ValueError(f"Unknown phase: {phase}")
+                
+                # Call VLM model with prompt
+                response = self.api.process(str(image_path), model=model_name, query=prompt)
             
             if response.error:
                 raise Exception(response.error)
@@ -414,34 +515,20 @@ class IAMMiniVLMBenchmark:
             prediction = response.content
         
         except Exception as e:
-            logger.warning(f"API call failed for {sample.sample_id}: {e}")
+            logger.warning(f"API call failed for {image_path.name}: {e}")
             error = str(e)
         
-        elapsed_ms = (time.time() - start_time) * 1000
-        
-        return BenchmarkResult(
-            sample_id=sample.sample_id,
-            image_path=str(image_path),
-            dataset='IAM_mini',
-            model=model_name,
-            phase=phase,
-            image_type=image_type,
-            ground_truth=sample.ground_truth,
-            prediction=prediction,
-            prompt=prompt,
-            inference_time_ms=elapsed_ms,
-            error=error,
-            timestamp=datetime.now().isoformat()
-        )
+        return prompt, prediction, error
     
     def _save_results_csv(self, results_file: Path, results: List[BenchmarkResult], write_headers: bool = True):
         """Save results to CSV file."""
         results_file.parent.mkdir(parents=True, exist_ok=True)
         
         fieldnames = [
-            'sample_id', 'image_path', 'dataset', 'model', 'phase', 'image_type',
-            'ground_truth', 'prediction', 'prompt', 'inference_time_ms', 'tokens_used',
-            'error', 'timestamp'
+            'sample_id', 'image_path', 'printed_image_path', 'dataset', 'model', 'phase',
+            'ground_truth', 'prediction', 'prompt',
+            'ground_truth_inference_time_ms', 'prediction_inference_time_ms',
+            'tokens_used', 'ground_truth_error', 'prediction_error', 'timestamp'
         ]
         
         with open(results_file, 'w', newline='') as f:
@@ -463,9 +550,11 @@ class IAMMiniVLMBenchmark:
             with open(results_file, 'r') as f:
                 reader = csv.DictReader(f)
                 for row in reader:
-                    row['inference_time_ms'] = float(row['inference_time_ms']) if row.get('inference_time_ms') else 0.0
-                    row['tokens_used'] = int(row['tokens_used']) if row.get('tokens_used') and row['tokens_used'] != 'None' else None
+                    # Convert numeric fields
                     row['phase'] = int(row['phase'])
+                    row['ground_truth_inference_time_ms'] = float(row.get('ground_truth_inference_time_ms', 0.0))
+                    row['prediction_inference_time_ms'] = float(row.get('prediction_inference_time_ms', 0.0))
+                    row['tokens_used'] = int(row['tokens_used']) if row.get('tokens_used') and row['tokens_used'] != 'None' else None
                     results.append(BenchmarkResult(**row))
             
             return results
@@ -476,24 +565,31 @@ class IAMMiniVLMBenchmark:
 
 if __name__ == '__main__':
     """
-    Run IAM_mini benchmark on gpt-5-mini and gpt-5-nano.
+    Run IAM_mini benchmark on OCR/VLM models with Phase 1.
     
-    Evaluates each model on:
-    1. Handwritten images (fair evaluation - no reference text visible)
-    2. Printed images (oracle evaluation - reference text only)
-    
-    Prevents cheating by keeping evaluations completely separate.
+    Phase 1 Evaluation:
+    - Ground truth: OCR/VLM output on printed.png (clean text)
+    - Prediction: OCR/VLM output on handwritten.png (handwritten text)
+    - Metric: Compare how well model extracts handwritten text vs printed text
     """
     logger.info("=" * 80)
-    logger.info("IAM_mini Fairness Benchmark: Handwritten vs Printed Images")
+    logger.info("IAM_mini Benchmark: Phase 1 - Printed vs Handwritten Extraction")
     logger.info("=" * 80)
     
-    models = ['gpt-5-mini', 'gpt-5-nano']
+    # OCR and VLM models for Phase 1
+    models = [
+        # OCR models
+        'azure_intelligence',
+        'mistral_document_ai',
+        # 'donut',  # Uncomment if needed
+        # VLM models
+        'gpt-5-mini',
+        'gpt-5-nano'
+    ]
     
     benchmark = IAMMiniVLMBenchmark(
         models=models,
-        phases=[2, 3],
-        sample_limit=None  # Use all samples
+        sample_limit=10  # Limit to 10 samples for quick test
     )
     
     summary = benchmark.run()
