@@ -52,13 +52,23 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 import sys
 import re
+import os
+import base64
+import requests
 
 from tqdm import tqdm
 from datasets import load_dataset
+from PIL import Image
 import numpy as np
+from dotenv import load_dotenv
+from azure.ai.documentintelligence import DocumentIntelligenceClient
+from azure.core.credentials import AzureKeyCredential
 
 from .unified_model_api import UnifiedModelAPI, ModelRegistry
 from .dataset_loaders import load_image
+
+# Load environment
+load_dotenv(Path(__file__).parent.parent / ".env.local")
 
 # Create logs directory
 LOGS_DIR = Path(__file__).parent / "logs"
@@ -475,18 +485,234 @@ class PubLayNetBenchmarkRunner:
         Returns:
             Predicted boxes with categories
         """
-        # For now, return empty boxes (OCR layout inference is complex)
-        # In practice, this would:
-        # 1. Run OCR on image
-        # 2. Analyze text size, position, structure
-        # 3. Group into regions
-        # 4. Assign categories based on characteristics
-        
         logger.debug(f"Phase P-A: Running {model_name} OCR inference")
         
-        # Placeholder: Return empty boxes
-        # Real implementation would call OCR API and infer layout
-        return []
+        try:
+            # Get image
+            image = sample['image']
+            
+            # Save temporarily for OCR API
+            temp_path = "/tmp/ocr_temp.jpg"
+            if isinstance(image, Image.Image):
+                image.save(temp_path)
+            else:
+                # Assume it's a path
+                temp_path = str(image)
+            
+            # Call OCR API based on model
+            if model_name == "azure_intelligence":
+                boxes = self._extract_azure_bounding_boxes(temp_path)
+            elif model_name == "mistral_document_ai":
+                boxes = self._extract_mistral_bounding_boxes(temp_path)
+            else:
+                logger.warning(f"Unknown OCR model: {model_name}, returning empty boxes")
+                boxes = []
+            
+            return boxes
+            
+        except Exception as e:
+            logger.error(f"P-A OCR inference failed: {e}")
+            return []
+    
+    def _extract_azure_bounding_boxes(self, image_path: str) -> List[Dict]:
+        """
+        Extract bounding boxes from Azure Document Intelligence OCR.
+        
+        Args:
+            image_path: Path to image
+        
+        Returns:
+            List of bounding boxes as [x, y, width, height, category, confidence]
+        """
+        try:
+            endpoint = os.getenv("AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT", "").strip()
+            api_key = os.getenv("AZURE_DOCUMENT_INTELLIGENCE_KEY", "").strip()
+            
+            if not endpoint or not api_key:
+                logger.warning("Azure Document Intelligence credentials not found")
+                return []
+            
+            client = DocumentIntelligenceClient(
+                endpoint=endpoint, 
+                credential=AzureKeyCredential(api_key)
+            )
+            
+            # Read image and call Azure API
+            with open(image_path, "rb") as f:
+                document_data = f.read()
+            
+            poller = client.begin_analyze_document(
+                model_id="prebuilt-read",
+                body=document_data,
+                content_type="application/octet-stream"
+            )
+            result = poller.result()
+            
+            boxes = []
+            
+            # Extract bounding boxes from pages
+            if result.pages:
+                page = result.pages[0]  # Assume single page
+                
+                # Collect all lines with their positions
+                if page.lines:
+                    for line in page.lines:
+                        if line.polygon:
+                            # Polygon is a flat list: [x1, y1, x2, y2, x3, y3, ...]
+                            coords = []
+                            for i in range(0, len(line.polygon), 2):
+                                if i + 1 < len(line.polygon):
+                                    coords.append((line.polygon[i], line.polygon[i + 1]))
+                            
+                            if coords:
+                                # Get bounding box from polygon
+                                xs = [c[0] for c in coords]
+                                ys = [c[1] for c in coords]
+                                x_min, x_max = min(xs), max(xs)
+                                y_min, y_max = min(ys), max(ys)
+                                
+                                width = x_max - x_min
+                                height = y_max - y_min
+                                
+                                # Infer category from text properties
+                                # Simple heuristic: text size determines category
+                                # Title: larger font (height > 20)
+                                # Regular text: normal (height 10-20)
+                                # Others get default category 1
+                                if height > 20:
+                                    category = 2  # Title
+                                else:
+                                    category = 1  # Text
+                                
+                                box = {
+                                    "x": float(x_min),
+                                    "y": float(y_min),
+                                    "width": float(width),
+                                    "height": float(height),
+                                    "category": category,
+                                    "confidence": 1.0  # OCR confidence assumed high
+                                }
+                                boxes.append(box)
+            
+            logger.debug(f"Azure OCR extracted {len(boxes)} boxes")
+            return boxes
+            
+        except Exception as e:
+            logger.error(f"Azure bounding box extraction failed: {e}")
+            return []
+    
+    def _extract_mistral_bounding_boxes(self, image_path: str) -> List[Dict]:
+        """
+        Extract bounding boxes from Mistral Document AI OCR.
+        
+        Uses mistral-document-ai-2505 model via Azure endpoint.
+        
+        Args:
+            image_path: Path to image
+        
+        Returns:
+            List of bounding boxes
+        """
+        try:
+            import base64
+            import requests
+            from pathlib import Path
+            
+            endpoint = os.getenv("AZURE_OPENAI_ENDPOINT", "").strip()
+            api_key = os.getenv("AZURE_OPENAI_API_KEY", "").strip()
+            
+            if not endpoint or not api_key:
+                logger.warning("Azure OpenAI credentials not found for Mistral")
+                return []
+            
+            # Load and encode image
+            with open(image_path, "rb") as f:
+                image_bytes = f.read()
+            
+            image_data = base64.b64encode(image_bytes).decode("utf-8")
+            
+            # Detect mime type
+            suffix = Path(image_path).suffix.lower()
+            mime_type_map = {
+                ".jpg": "image/jpeg",
+                ".jpeg": "image/jpeg",
+                ".png": "image/png",
+                ".gif": "image/gif",
+                ".webp": "image/webp",
+            }
+            mime_type = mime_type_map.get(suffix, "image/jpeg")
+            document_url = f"data:{mime_type};base64,{image_data}"
+            
+            # Call Mistral OCR API via Azure
+            endpoint = endpoint.rstrip("/")
+            endpoint_url = f"{endpoint}/providers/mistral/azure/ocr"
+            
+            headers = {
+                "Content-Type": "application/json",
+                "api-key": api_key.strip(),
+            }
+            
+            payload = {
+                "model": "mistral-document-ai-2505",
+                "document": {
+                    "type": "document_url",
+                    "document_url": document_url
+                }
+            }
+            
+            logger.debug(f"Calling Mistral OCR API: {endpoint_url}")
+            response = requests.post(endpoint_url, headers=headers, json=payload, timeout=60)
+            
+            if response.status_code != 200:
+                logger.error(f"Mistral API error: {response.status_code} - {response.text[:300]}")
+                return []
+            
+            result = response.json()
+            boxes = []
+            
+            # Extract bounding boxes from Mistral response
+            # Mistral returns structured layout data in pages
+            if "pages" in result:
+                for page_idx, page in enumerate(result["pages"]):
+                    if "elements" in page:
+                        for element in page["elements"]:
+                            # Extract bounding box
+                            if "bbox" in element:
+                                bbox = element["bbox"]
+                                # bbox format: [x_min, y_min, x_max, y_max]
+                                x_min, y_min, x_max, y_max = bbox
+                                width = x_max - x_min
+                                height = y_max - y_min
+                                
+                                # Infer category from element type
+                                element_type = element.get("type", "text").lower()
+                                if element_type in ["title", "heading"]:
+                                    category = 2
+                                elif element_type in ["list", "bullet"]:
+                                    category = 3
+                                elif element_type in ["table"]:
+                                    category = 4
+                                elif element_type in ["figure", "image"]:
+                                    category = 5
+                                else:
+                                    category = 1  # Default to text
+                                
+                                box = {
+                                    "x": float(x_min),
+                                    "y": float(y_min),
+                                    "width": float(width),
+                                    "height": float(height),
+                                    "category": category,
+                                    "confidence": 1.0
+                                }
+                                boxes.append(box)
+            
+            logger.debug(f"Mistral OCR extracted {len(boxes)} boxes")
+            return boxes
+            
+        except Exception as e:
+            logger.error(f"Mistral bounding box extraction failed: {e}")
+            return []
     
     def _phase_pb_vlm_direct(self, model_name: str, sample) -> List[Dict]:
         """
@@ -602,17 +828,11 @@ Category definitions:
 - Text: Regular text blocks and paragraphs
 - Title: Document titles and section headings
 - List: Bulleted or numbered lists
-- Table: Tabular data structures with rows/columns
+- Table: Tabular data structures with rows and columns
 - Figure: Images, charts, diagrams, or visual elements
 
-Output as JSON array:
-[
-  {
-    "category": "Text",
-    "bbox": [x, y, width, height],
-    "confidence": 0.95
-  }
-]
+Output as JSON array with this structure:
+[{{'category': 'Text', 'bbox': [10, 20, 300, 150], 'confidence': 0.95}}]
 
 Only output the JSON array, no other text."""
     
@@ -632,22 +852,37 @@ Only output the JSON array, no other text."""
             List of box dicts
         """
         try:
-            # Try to find JSON in response
+            # Try to find JSON in response - look for [ ... ]
             json_match = re.search(r'\[.*\]', response_text, re.DOTALL)
             if not json_match:
-                logger.warning(f"No JSON found in response")
+                logger.debug(f"No JSON found in response: {response_text[:100]}")
                 return []
             
             json_str = json_match.group(0)
             data = json.loads(json_str)
             
+            if not isinstance(data, list):
+                logger.warning(f"Expected JSON array, got {type(data)}")
+                return []
+            
             boxes = []
             for item in data:
+                if not isinstance(item, dict):
+                    logger.warning(f"Expected dict item, got {type(item)}")
+                    continue
+                
                 # Map category name to ID
-                category_name = item.get('category', 'Text').lower()
-                category_id = self._category_name_to_id(category_name)
+                category_name = item.get('category', 'Text')
+                if isinstance(category_name, str):
+                    category_id = self._category_name_to_id(category_name)
+                else:
+                    category_id = int(category_name) if isinstance(category_name, (int, float)) else 1
                 
                 bbox = item.get('bbox', [0, 0, 0, 0])
+                if not isinstance(bbox, (list, tuple)) or len(bbox) < 4:
+                    logger.warning(f"Invalid bbox format: {bbox}")
+                    continue
+                
                 boxes.append({
                     'x': float(bbox[0]),
                     'y': float(bbox[1]),
@@ -659,6 +894,9 @@ Only output the JSON array, no other text."""
             
             return boxes
         
+        except json.JSONDecodeError as e:
+            logger.debug(f"JSON decode error: {e}")
+            return []
         except Exception as e:
             logger.warning(f"Failed to parse VLM response: {e}")
             return []
