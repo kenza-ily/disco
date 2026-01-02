@@ -9,6 +9,41 @@ Playground to explore PoCs and research ideas
 5. For Hugging Face models: `pip install -U huggingface_hub` then `hf auth login`
 6. For Weights & Biases: `wandb login`
 
+## AWS Connection
+
+### Authentication
+Connect to AWS using the provided login scripts:
+
+```bash
+# Login to AWS (sets up credentials and profiles)
+aws-login
+
+# Login to AWS CodeArtifact (for private package repositories)
+codeartifact-login
+```
+
+### Verification
+After running the login scripts, verify your connection:
+
+```bash
+# Check AWS credentials
+aws sts get-caller-identity
+
+# Check CodeArtifact repositories
+aws codeartifact list-repositories --domain your-domain --domain-owner your-account-id
+```
+
+### Environment Setup
+Complete the environment setup:
+
+```bash
+# Setup environment variables and dependencies
+make setup-env
+
+# Install Python dependencies
+uv sync
+```
+
 ## LLM Settings
 - Synchronous and asynchronous Azure OpenAI clients for flexible API calls
 - Hugging Face model loading and text generation for local model inference (uses `hf auth login` token)
