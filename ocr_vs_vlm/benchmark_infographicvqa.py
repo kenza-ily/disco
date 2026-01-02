@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-DocVQA Benchmark: Document Visual Question Answering Evaluation
+InfographicVQA Benchmark: Infographic Visual Question Answering Evaluation
 
-Evaluates OCR and VLM models on DocVQA_mini dataset using three approaches:
+Evaluates OCR and VLM models on InfographicVQA_mini dataset using three approaches:
 
 Phases:
 - QA1a, QA1b, QA1c: OCR Pipeline (OCR extraction → LLM QA)
@@ -16,6 +16,13 @@ Phases:
 - QA3a, QA3b: Direct VQA (VLM sees image + question)
     - a: Simple prompt
     - b: Detailed prompt
+- QA4a, QA4b, QA4c: Pre-extracted OCR Pipeline (uses AWS Textract OCR from metadata)
+    - a: Simple prompt
+    - b: Detailed prompt
+    - c: Chain-of-thought prompt
+
+Note: InfographicVQA includes pre-extracted OCR text from AWS Textract in the metadata,
+which enables QA4 phase (testing with pre-extracted OCR instead of live OCR).
 
 Models:
 - OCR: azure_intelligence, mistral_document_ai
@@ -27,13 +34,13 @@ Metrics:
 
 Usage:
     # Run all phases
-    python -m ocr_vs_vlm.benchmark_docvqa
+    python -m ocr_vs_vlm.benchmark_infographicvqa
     
     # Run specific phases
-    python -m ocr_vs_vlm.benchmark_docvqa --phases QA1a QA3a
+    python -m ocr_vs_vlm.benchmark_infographicvqa --phases QA1a QA3a QA4a
     
     # With sample limit
-    python -m ocr_vs_vlm.benchmark_docvqa --sample-limit 50
+    python -m ocr_vs_vlm.benchmark_infographicvqa --sample-limit 50
 """
 
 import json
@@ -48,7 +55,7 @@ from typing import Dict, List, Optional, Tuple
 
 from tqdm import tqdm
 
-from .dataset_loaders_qa import DocVQAMiniDataset, QASample
+from .dataset_loaders_qa import InfographicVQAMiniDataset, QASample
 from .unified_model_api import UnifiedModelAPI, ModelRegistry
 from . import prompts_qa
 
@@ -76,7 +83,7 @@ def _configure_logging(results_dir: Path):
     console_handler.setFormatter(console_formatter)
     logger.addHandler(console_handler)
     
-    log_file = results_dir / 'benchmark_docvqa.log'
+    log_file = results_dir / 'benchmark_infographicvqa.log'
     file_handler = logging.FileHandler(log_file)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(file_formatter)
@@ -92,18 +99,19 @@ class QABenchmarkConfig:
     """Configuration for QA benchmark run."""
     
     # Dataset
-    dataset_name: str = "DocVQA_mini"
+    dataset_name: str = "InfographicVQA_mini"
     
     # Models for each approach
     ocr_models: List[str] = field(default_factory=lambda: ["azure_intelligence", "mistral_document_ai"])
     vlm_models: List[str] = field(default_factory=lambda: ["gpt-5-mini", "gpt-5-nano"])
     qa_model: str = "gpt-5-mini"  # Model for answering questions in pipeline approaches
     
-    # Phases to run
+    # Phases to run (includes QA4 for pre-extracted OCR)
     phases: List[str] = field(default_factory=lambda: [
         "QA1a", "QA1b", "QA1c",  # OCR Pipeline
         "QA2a", "QA2b", "QA2c",  # VLM Parse Pipeline  
-        "QA3a", "QA3b"          # Direct VQA
+        "QA3a", "QA3b",          # Direct VQA
+        "QA4a", "QA4b", "QA4c"   # Pre-extracted OCR Pipeline
     ])
     
     # Sample control
@@ -111,7 +119,7 @@ class QABenchmarkConfig:
     batch_size: int = 50
     
     # Output paths
-    results_dir: str = "results/DocVQA_mini"
+    results_dir: str = "results/InfographicVQA_mini"
     
     # API settings
     retry_failed: bool = True
@@ -133,8 +141,8 @@ class QAResult:
     prediction: str
     
     # Phase info
-    phase: str  # e.g., "QA1a", "QA2b", "QA3a"
-    parsing_model: Optional[str] = None  # OCR/VLM for extraction
+    phase: str  # e.g., "QA1a", "QA2b", "QA3a", "QA4a"
+    parsing_model: Optional[str] = None  # OCR/VLM for extraction (None for QA4)
     qa_model: Optional[str] = None  # LLM for answering
     
     # Intermediate outputs
@@ -175,20 +183,11 @@ class QAResult:
 # METRICS
 # =============================================================================
 
-
 def compute_anls(prediction: str, ground_truths: List[str], threshold: float = 0.5) -> float:
     """
     Compute Average Normalized Levenshtein Similarity (ANLS).
     
-    This is the standard DocVQA evaluation metric.
-    
-    Args:
-        prediction: Model's predicted answer
-        ground_truths: List of valid ground truth answers
-        threshold: Threshold below which score is 0 (default: 0.5)
-    
-    Returns:
-        ANLS score in [0, 1]
+    This is the standard DocVQA/InfographicVQA evaluation metric.
     """
     if not prediction or not ground_truths:
         return 0.0
@@ -197,7 +196,6 @@ def compute_anls(prediction: str, ground_truths: List[str], threshold: float = 0
         import editdistance
     except ImportError:
         logger.warning("editdistance not installed, using basic comparison")
-        # Fallback to exact match
         pred_lower = prediction.lower().strip()
         return 1.0 if any(pred_lower == gt.lower().strip() for gt in ground_truths) else 0.0
     
@@ -240,14 +238,15 @@ def compute_exact_match(prediction: str, ground_truths: List[str]) -> float:
 # BENCHMARK RUNNER
 # =============================================================================
 
-class DocVQABenchmark:
+class InfographicVQABenchmark:
     """
-    DocVQA Benchmark with three evaluation approaches.
+    InfographicVQA Benchmark with four evaluation approaches.
     
     Approaches:
     1. OCR Pipeline (QA1): OCR extraction → LLM QA
     2. VLM Parse Pipeline (QA2): VLM extraction → LLM QA
     3. Direct VQA (QA3): VLM sees image + question together
+    4. Pre-extracted OCR Pipeline (QA4): Uses AWS Textract OCR from metadata → LLM QA
     """
     
     def __init__(self, config: QABenchmarkConfig):
@@ -266,7 +265,7 @@ class DocVQABenchmark:
         # Initialize API
         self.api = UnifiedModelAPI()
         
-        logger.info(f"DocVQA Benchmark initialized")
+        logger.info(f"InfographicVQA Benchmark initialized")
         logger.info(f"  Phases: {config.phases}")
         logger.info(f"  OCR models: {config.ocr_models}")
         logger.info(f"  VLM models: {config.vlm_models}")
@@ -289,7 +288,7 @@ class DocVQABenchmark:
         # Load dataset
         logger.info(f"\nLoading {self.config.dataset_name}...")
         dataset_root = Path(__file__).parent / "datasets_subsets"
-        dataset = DocVQAMiniDataset(
+        dataset = InfographicVQAMiniDataset(
             str(dataset_root),
             sample_limit=self.config.sample_limit
         )
@@ -334,12 +333,12 @@ class DocVQABenchmark:
         
         return summary
     
-    def _run_phase(self, phase: str, dataset: DocVQAMiniDataset) -> List[QAResult]:
+    def _run_phase(self, phase: str, dataset: InfographicVQAMiniDataset) -> List[QAResult]:
         """Run a single phase across all relevant models."""
         results = []
         
         # Parse phase type and variation
-        phase_type = phase[:3]  # QA1, QA2, QA3
+        phase_type = phase[:3]  # QA1, QA2, QA3, QA4
         variation = phase[3] if len(phase) > 3 else 'a'
         
         # Determine models for this phase
@@ -347,8 +346,10 @@ class DocVQABenchmark:
             models = self.config.ocr_models
         elif phase_type == "QA2":
             models = self.config.vlm_models
-        else:  # QA3
+        elif phase_type == "QA3":
             models = self.config.vlm_models
+        else:  # QA4 - Pre-extracted OCR, only needs QA model
+            models = ["pre_extracted_ocr"]  # Placeholder, uses metadata OCR
         
         # Setup output
         phase_dir = self.results_dir / phase
@@ -418,17 +419,17 @@ class DocVQABenchmark:
                 # OCR Pipeline: Extract with OCR, answer with LLM
                 extracted_text = self._extract_with_ocr(sample.image_path, parsing_model)
                 prompt_used = prompts_qa.get_pipeline_qa_prompt(
-                    sample.question, extracted_text, variation, "DocVQA"
+                    sample.question, extracted_text, variation, "InfographicVQA"
                 )
                 qa_model_used = self.config.qa_model
                 prediction = self._answer_with_llm(prompt_used, qa_model_used)
                 
             elif phase_type == "QA2":
                 # VLM Parse Pipeline: Extract with VLM, answer with LLM
-                parse_prompt = prompts_qa.get_parsing_prompt("DocVQA")
+                parse_prompt = prompts_qa.get_parsing_prompt("InfographicVQA")
                 extracted_text = self._extract_with_vlm(sample.image_path, parsing_model, parse_prompt)
                 prompt_used = prompts_qa.get_pipeline_qa_prompt(
-                    sample.question, extracted_text, variation, "DocVQA"
+                    sample.question, extracted_text, variation, "InfographicVQA"
                 )
                 qa_model_used = self.config.qa_model
                 prediction = self._answer_with_llm(prompt_used, qa_model_used)
@@ -436,9 +437,21 @@ class DocVQABenchmark:
             elif phase_type == "QA3":
                 # Direct VQA: VLM sees image + question
                 prompt_used = prompts_qa.get_direct_vqa_prompt(
-                    sample.question, variation, "DocVQA"
+                    sample.question, variation, "InfographicVQA"
                 )
                 prediction = self._direct_vqa(sample.image_path, parsing_model, prompt_used)
+                
+            elif phase_type == "QA4":
+                # Pre-extracted OCR Pipeline: Use OCR from metadata
+                extracted_text = sample.metadata.get('ocr_text', '')
+                if not extracted_text:
+                    raise ValueError("No pre-extracted OCR text in metadata")
+                
+                prompt_used = prompts_qa.get_pipeline_qa_prompt(
+                    sample.question, extracted_text, variation, "InfographicVQA"
+                )
+                qa_model_used = self.config.qa_model
+                prediction = self._answer_with_llm(prompt_used, qa_model_used)
             
         except Exception as e:
             logger.warning(f"Processing error: {e}")
@@ -448,9 +461,9 @@ class DocVQABenchmark:
                 for retry in range(self.config.max_retries):
                     try:
                         time.sleep(2 ** retry)
-                        # Simplified retry - just try the main operation again
+                        # Simplified retry for direct VQA
                         if phase_type == "QA3":
-                            prompt_used = prompts_qa.get_direct_vqa_prompt(sample.question, variation, "DocVQA")
+                            prompt_used = prompts_qa.get_direct_vqa_prompt(sample.question, variation, "InfographicVQA")
                             prediction = self._direct_vqa(sample.image_path, parsing_model, prompt_used)
                             error = None
                             break
@@ -473,7 +486,7 @@ class DocVQABenchmark:
             ground_truths=sample.answers,
             prediction=prediction,
             phase=f"{phase_type}{variation}",
-            parsing_model=parsing_model,
+            parsing_model=parsing_model if parsing_model != "pre_extracted_ocr" else None,
             qa_model=qa_model_used,
             extracted_text=extracted_text,
             prompt_used=prompt_used,
@@ -559,6 +572,7 @@ class DocVQABenchmark:
         ocr_phases = [p for p in all_results if p.startswith("QA1")]
         vlm_parse_phases = [p for p in all_results if p.startswith("QA2")]
         direct_vqa_phases = [p for p in all_results if p.startswith("QA3")]
+        pre_ocr_phases = [p for p in all_results if p.startswith("QA4")]
         
         def avg_metric(phases: List[str], metric: str) -> float:
             if not phases:
@@ -578,6 +592,10 @@ class DocVQABenchmark:
             'direct_vqa': {
                 'avg_anls': avg_metric(direct_vqa_phases, 'anls'),
                 'avg_em': avg_metric(direct_vqa_phases, 'exact_match')
+            },
+            'pre_extracted_ocr_pipeline': {
+                'avg_anls': avg_metric(pre_ocr_phases, 'anls'),
+                'avg_em': avg_metric(pre_ocr_phases, 'exact_match')
             }
         }
         
@@ -614,15 +632,15 @@ class DocVQABenchmark:
 # =============================================================================
 
 def main():
-    """Run DocVQA benchmark from command line."""
+    """Run InfographicVQA benchmark from command line."""
     import argparse
     
-    parser = argparse.ArgumentParser(description='DocVQA QA Benchmark')
+    parser = argparse.ArgumentParser(description='InfographicVQA QA Benchmark')
     parser.add_argument(
         '--phases', '-p',
         nargs='+',
-        default=["QA1a", "QA1b", "QA1c", "QA2a", "QA2b", "QA2c", "QA3a", "QA3b"],
-        help='Phases to run (default: all)'
+        default=["QA1a", "QA1b", "QA1c", "QA2a", "QA2b", "QA2c", "QA3a", "QA3b", "QA4a", "QA4b", "QA4c"],
+        help='Phases to run (default: all including QA4 pre-extracted OCR)'
     )
     parser.add_argument(
         '--sample-limit', '-n',
@@ -658,12 +676,12 @@ def main():
         qa_model=args.qa_model
     )
     
-    benchmark = DocVQABenchmark(config)
+    benchmark = InfographicVQABenchmark(config)
     summary = benchmark.run()
     
     # Print final summary
     print("\n" + "="*70)
-    print("DOCVQA BENCHMARK SUMMARY")
+    print("INFOGRAPHICVQA BENCHMARK SUMMARY")
     print("="*70)
     
     for phase, metrics in summary.get('metrics_summary', {}).items():
