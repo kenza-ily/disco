@@ -10,3 +10,6 @@ __pycache__/
 /ocr_vs_vlm/datasets_subsets
 *.csv
 ocr_vs_vlm/crop_tests/*
+ocr_vs_vlm/results_postprocessing/*
+ocr_vs_vlm/results_analysis/icdar_mini_eval.ipynb
+*.ipynb

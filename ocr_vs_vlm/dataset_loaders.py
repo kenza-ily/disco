@@ -7,9 +7,9 @@ All loaders return a consistent interface: Sample(image_path, ground_truth, meta
 import json
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Iterator, Tuple
+from typing import Dict, List, Optional, Iterator, Tuple, Literal
 import numpy as np
 from PIL import Image
 
@@ -31,6 +31,25 @@ class Sample:
     image_path: str
     ground_truth: str
     metadata: Dict
+
+
+@dataclass
+class QASample(Sample):
+    """
+    Extended sample for Question-Answering tasks.
+    
+    Inherits from Sample for backward compatibility with parsing tasks.
+    For parsing mode: ground_truth contains full document text
+    For QA mode: ground_truth contains the primary answer, answers contains all valid answers
+    
+    Attributes:
+        question: The question to answer about the image
+        answers: List of valid answers (for QA evaluation with multiple correct answers)
+        question_type: Category of question (layout, table/list, form, etc.)
+    """
+    question: str = ""
+    answers: List[str] = field(default_factory=list)
+    question_type: str = ""
 
 
 class Dataset(ABC):
@@ -761,6 +780,453 @@ class VOC2007Dataset(Dataset):
             return (0, 0)
 
 
+class DocVQADataset(Dataset):
+    """
+    DocVQA Dataset loader supporting both parsing and QA tasks.
+    
+    Loads from HuggingFace parquet format with embedded images.
+    
+    Structure:
+    - DocVQA/{split}-*.parquet
+    
+    Modes:
+    - 'qa': Each question-answer pair is a sample (returns QASample)
+    - 'parsing': Each unique document is a sample (returns Sample with full text)
+    
+    Args:
+        dataset_root: Root path to DocVQA_hf folder
+        mode: 'qa' or 'parsing'
+        split: 'train', 'validation', or 'test'
+        sample_limit: Max samples to load
+    """
+    
+    def __init__(
+        self,
+        dataset_root: str,
+        mode: Literal['qa', 'parsing'] = 'qa',
+        split: str = 'validation',
+        sample_limit: Optional[int] = None,
+        **kwargs
+    ):
+        self.mode = mode
+        self.split = split
+        self._cache_dir: Optional[Path] = None
+        super().__init__(dataset_root, sample_limit=sample_limit)
+    
+    def _get_cache_dir(self) -> Path:
+        """Get or create image cache directory."""
+        if self._cache_dir is None:
+            self._cache_dir = self.dataset_root / ".cache" / "images" / "DocVQA" / self.split
+            self._cache_dir.mkdir(parents=True, exist_ok=True)
+        return self._cache_dir
+    
+    def _extract_image(self, image_data: Dict, image_name: str) -> str:
+        """
+        Extract image bytes to disk and return path.
+        
+        Args:
+            image_data: Dict with 'bytes' and 'path' keys
+            image_name: Fallback name if path is empty
+        
+        Returns:
+            Absolute path to extracted image file
+        """
+        cache_dir = self._get_cache_dir()
+        
+        # Use original path or fallback to provided name
+        filename = image_data.get('path') or f"{image_name}.png"
+        image_path = cache_dir / filename
+        
+        # Only extract if not already cached
+        if not image_path.exists():
+            image_bytes = image_data.get('bytes', b'')
+            if image_bytes:
+                image_path.write_bytes(image_bytes)
+        
+        return str(image_path)
+    
+    def _load(self):
+        """Load DocVQA samples from parquet files."""
+        try:
+            import pyarrow.parquet as pq
+        except ImportError:
+            logger.error("pyarrow not installed. Install with: pip install pyarrow")
+            return
+        
+        data_dir = self.dataset_root / "DocVQA"
+        if not data_dir.exists():
+            raise FileNotFoundError(f"DocVQA directory not found: {data_dir}")
+        
+        # Find parquet files for the split
+        parquet_files = sorted(data_dir.glob(f"{self.split}-*.parquet"))
+        if not parquet_files:
+            raise FileNotFoundError(f"No parquet files found for split '{self.split}' in {data_dir}")
+        
+        if self.mode == 'qa':
+            self._load_qa_mode(parquet_files)
+        else:
+            self._load_parsing_mode(parquet_files)
+    
+    def _load_qa_mode(self, parquet_files: List[Path]):
+        """Load in QA mode: each question is a sample."""
+        import pyarrow.parquet as pq
+        
+        for parquet_file in parquet_files:
+            try:
+                df = pq.read_table(parquet_file).to_pandas()
+                
+                for _, row in df.iterrows():
+                    # Extract image to cache
+                    image_path = self._extract_image(
+                        row['image'],
+                        f"doc_{row['docId']}_{row['questionId']}"
+                    )
+                    
+                    # Get answers list (handle numpy arrays)
+                    raw_answers = row['answers']
+                    answers = list(raw_answers) if hasattr(raw_answers, '__iter__') and not isinstance(raw_answers, str) else [raw_answers]
+                    
+                    # Get question types (handle numpy arrays)
+                    raw_q_types = row.get('question_types', [])
+                    q_types = list(raw_q_types) if hasattr(raw_q_types, '__iter__') and not isinstance(raw_q_types, str) else []
+                    question_type = q_types[0] if len(q_types) > 0 else 'unknown'
+                    
+                    sample = QASample(
+                        sample_id=f"docvqa_{row['questionId']}",
+                        image_path=image_path,
+                        ground_truth=answers[0] if answers else "",  # Primary answer for backward compat
+                        metadata={
+                            'dataset': 'DocVQA',
+                            'mode': 'qa',
+                            'split': self.split,
+                            'docId': row['docId'],
+                            'ucsf_document_id': row.get('ucsf_document_id', ''),
+                            'ucsf_document_page_no': row.get('ucsf_document_page_no', ''),
+                            'question_types': q_types,
+                        },
+                        question=row['question'],
+                        answers=answers,
+                        question_type=question_type,
+                    )
+                    self.samples.append(sample)
+                    
+            except Exception as e:
+                logger.warning(f"Failed to load {parquet_file}: {e}")
+                continue
+        
+        logger.info(f"Loaded {len(self.samples)} QA samples from DocVQA ({self.split})")
+    
+    def _load_parsing_mode(self, parquet_files: List[Path]):
+        """Load in parsing mode: each unique document is a sample."""
+        import pyarrow.parquet as pq
+        
+        # Collect all data first to group by document
+        doc_data: Dict[int, Dict] = {}
+        
+        for parquet_file in parquet_files:
+            try:
+                df = pq.read_table(parquet_file).to_pandas()
+                
+                for _, row in df.iterrows():
+                    doc_id = row['docId']
+                    
+                    if doc_id not in doc_data:
+                        # First occurrence of this document
+                        image_path = self._extract_image(
+                            row['image'],
+                            f"doc_{doc_id}"
+                        )
+                        doc_data[doc_id] = {
+                            'image_path': image_path,
+                            'answers': [],
+                            'questions': [],
+                            'ucsf_document_id': row.get('ucsf_document_id', ''),
+                            'ucsf_document_page_no': row.get('ucsf_document_page_no', ''),
+                        }
+                    
+                    # Collect all answers as text content
+                    raw_answers = row['answers']
+                    answers = list(raw_answers) if hasattr(raw_answers, '__iter__') and not isinstance(raw_answers, str) else [raw_answers]
+                    doc_data[doc_id]['answers'].extend(answers)
+                    doc_data[doc_id]['questions'].append(row['question'])
+                    
+            except Exception as e:
+                logger.warning(f"Failed to load {parquet_file}: {e}")
+                continue
+        
+        # Create samples from grouped documents
+        for doc_id, data in doc_data.items():
+            # Ground truth is all unique text snippets from answers
+            unique_texts = list(dict.fromkeys(data['answers']))  # Preserve order, remove dupes
+            ground_truth = '\n'.join(unique_texts)
+            
+            sample = Sample(
+                sample_id=f"docvqa_doc_{doc_id}",
+                image_path=data['image_path'],
+                ground_truth=ground_truth,
+                metadata={
+                    'dataset': 'DocVQA',
+                    'mode': 'parsing',
+                    'split': self.split,
+                    'docId': doc_id,
+                    'ucsf_document_id': data['ucsf_document_id'],
+                    'ucsf_document_page_no': data['ucsf_document_page_no'],
+                    'num_questions': len(data['questions']),
+                    'num_text_snippets': len(unique_texts),
+                },
+            )
+            self.samples.append(sample)
+        
+        logger.info(f"Loaded {len(self.samples)} document samples from DocVQA ({self.split})")
+
+
+class InfographicVQADataset(Dataset):
+    """
+    InfographicVQA Dataset loader supporting both parsing and QA tasks.
+    
+    Similar to DocVQA but includes pre-extracted OCR from AWS Textract.
+    
+    Structure:
+    - InfographicVQA/{split}-*.parquet
+    
+    Modes:
+    - 'qa': Each question-answer pair is a sample (returns QASample)
+    - 'parsing': Each unique image is a sample with OCR as ground truth
+    
+    Args:
+        dataset_root: Root path to DocVQA_hf folder
+        mode: 'qa' or 'parsing'
+        split: 'train', 'validation', or 'test'
+        sample_limit: Max samples to load
+    """
+    
+    def __init__(
+        self,
+        dataset_root: str,
+        mode: Literal['qa', 'parsing'] = 'qa',
+        split: str = 'validation',
+        sample_limit: Optional[int] = None,
+        **kwargs
+    ):
+        self.mode = mode
+        self.split = split
+        self._cache_dir: Optional[Path] = None
+        super().__init__(dataset_root, sample_limit=sample_limit)
+    
+    def _get_cache_dir(self) -> Path:
+        """Get or create image cache directory."""
+        if self._cache_dir is None:
+            self._cache_dir = self.dataset_root / ".cache" / "images" / "InfographicVQA" / self.split
+            self._cache_dir.mkdir(parents=True, exist_ok=True)
+        return self._cache_dir
+    
+    def _extract_image(self, image_data: Dict, image_name: str) -> str:
+        """Extract image bytes to disk and return path."""
+        cache_dir = self._get_cache_dir()
+        
+        filename = image_data.get('path') or f"{image_name}.png"
+        image_path = cache_dir / filename
+        
+        if not image_path.exists():
+            image_bytes = image_data.get('bytes', b'')
+            if image_bytes:
+                image_path.write_bytes(image_bytes)
+        
+        return str(image_path)
+    
+    def _extract_ocr_text(self, ocr_json_str: str) -> str:
+        """
+        Extract plain text from AWS Textract OCR JSON.
+        
+        Args:
+            ocr_json_str: JSON string containing Textract output
+        
+        Returns:
+            Extracted plain text
+        """
+        if not ocr_json_str:
+            return ""
+        
+        try:
+            import ast
+            
+            # The OCR field may be a Python list repr string like "['...json...']"
+            if isinstance(ocr_json_str, str) and ocr_json_str.startswith('['):
+                try:
+                    parsed = ast.literal_eval(ocr_json_str)
+                    if isinstance(parsed, list) and len(parsed) > 0:
+                        ocr_data = json.loads(parsed[0])
+                    else:
+                        return ""
+                except (ValueError, SyntaxError):
+                    ocr_data = json.loads(ocr_json_str)
+            else:
+                ocr_data = json.loads(ocr_json_str) if isinstance(ocr_json_str, str) else ocr_json_str
+            
+            # Handle list wrapper
+            if isinstance(ocr_data, list) and len(ocr_data) > 0:
+                ocr_data = json.loads(ocr_data[0]) if isinstance(ocr_data[0], str) else ocr_data[0]
+            
+            # Extract LINE text from Textract format
+            # Textract stores LINE blocks in a separate 'LINE' key, not nested in 'PAGE'
+            texts = []
+            
+            # Try LINE key first (common Textract format)
+            if 'LINE' in ocr_data:
+                for block in ocr_data.get('LINE', []):
+                    text = block.get('Text', '')
+                    if text:
+                        texts.append(text)
+            
+            # Fallback: check PAGE for LINE blocks
+            if not texts and 'PAGE' in ocr_data:
+                for block in ocr_data.get('PAGE', []):
+                    if block.get('BlockType') == 'LINE':
+                        text = block.get('Text', '')
+                        if text:
+                            texts.append(text)
+            
+            return '\n'.join(texts)
+        except (json.JSONDecodeError, TypeError, KeyError) as e:
+            logger.debug(f"Failed to parse OCR JSON: {e}")
+            return ""
+    
+    def _load(self):
+        """Load InfographicVQA samples from parquet files."""
+        try:
+            import pyarrow.parquet as pq
+        except ImportError:
+            logger.error("pyarrow not installed. Install with: pip install pyarrow")
+            return
+        
+        data_dir = self.dataset_root / "InfographicVQA"
+        if not data_dir.exists():
+            raise FileNotFoundError(f"InfographicVQA directory not found: {data_dir}")
+        
+        parquet_files = sorted(data_dir.glob(f"{self.split}-*.parquet"))
+        if not parquet_files:
+            raise FileNotFoundError(f"No parquet files found for split '{self.split}' in {data_dir}")
+        
+        if self.mode == 'qa':
+            self._load_qa_mode(parquet_files)
+        else:
+            self._load_parsing_mode(parquet_files)
+    
+    def _load_qa_mode(self, parquet_files: List[Path]):
+        """Load in QA mode: each question is a sample."""
+        import pyarrow.parquet as pq
+        
+        for parquet_file in parquet_files:
+            try:
+                df = pq.read_table(parquet_file).to_pandas()
+                
+                for _, row in df.iterrows():
+                    image_path = self._extract_image(
+                        row['image'],
+                        f"infovqa_{row['questionId']}"
+                    )
+                    
+                    # Handle numpy arrays
+                    raw_answers = row['answers']
+                    answers = list(raw_answers) if hasattr(raw_answers, '__iter__') and not isinstance(raw_answers, str) else [raw_answers]
+                    
+                    raw_answer_types = row.get('answer_type', [])
+                    answer_types = list(raw_answer_types) if hasattr(raw_answer_types, '__iter__') and not isinstance(raw_answer_types, str) else []
+                    question_type = answer_types[0] if len(answer_types) > 0 else 'unknown'
+                    
+                    # Handle operations/reasoning field
+                    raw_ops = row.get('operation/reasoning', [])
+                    operations = list(raw_ops) if hasattr(raw_ops, '__iter__') and not isinstance(raw_ops, str) else []
+                    
+                    # Extract OCR text for reference
+                    ocr_text = self._extract_ocr_text(row.get('ocr', ''))
+                    
+                    sample = QASample(
+                        sample_id=f"infovqa_{row['questionId']}",
+                        image_path=image_path,
+                        ground_truth=answers[0] if answers else "",
+                        metadata={
+                            'dataset': 'InfographicVQA',
+                            'mode': 'qa',
+                            'split': self.split,
+                            'image_url': row.get('image_url', ''),
+                            'answer_types': answer_types,
+                            'operations': operations,
+                            'ocr_text': ocr_text,  # Pre-extracted OCR available
+                        },
+                        question=row['question'],
+                        answers=answers,
+                        question_type=question_type,
+                    )
+                    self.samples.append(sample)
+                    
+            except Exception as e:
+                logger.warning(f"Failed to load {parquet_file}: {e}")
+                continue
+        
+        logger.info(f"Loaded {len(self.samples)} QA samples from InfographicVQA ({self.split})")
+    
+    def _load_parsing_mode(self, parquet_files: List[Path]):
+        """Load in parsing mode: each unique image is a sample with OCR as ground truth."""
+        import pyarrow.parquet as pq
+        
+        # Group by image URL (unique identifier for infographics)
+        image_data: Dict[str, Dict] = {}
+        
+        for parquet_file in parquet_files:
+            try:
+                df = pq.read_table(parquet_file).to_pandas()
+                
+                for _, row in df.iterrows():
+                    image_url = row.get('image_url', row['questionId'])
+                    
+                    if image_url not in image_data:
+                        image_path = self._extract_image(
+                            row['image'],
+                            f"infovqa_{hash(image_url) % 10**8}"
+                        )
+                        ocr_text = self._extract_ocr_text(row.get('ocr', ''))
+                        
+                        image_data[image_url] = {
+                            'image_path': image_path,
+                            'ocr_text': ocr_text,
+                            'image_url': image_url,
+                            'questions': [],
+                            'answers': [],
+                        }
+                    
+                    raw_answers = row['answers']
+                    answers = list(raw_answers) if hasattr(raw_answers, '__iter__') and not isinstance(raw_answers, str) else [raw_answers]
+                    image_data[image_url]['answers'].extend(answers)
+                    image_data[image_url]['questions'].append(row['question'])
+                    
+            except Exception as e:
+                logger.warning(f"Failed to load {parquet_file}: {e}")
+                continue
+        
+        # Create samples
+        for idx, (image_url, data) in enumerate(image_data.items()):
+            # Use OCR text as ground truth for parsing evaluation
+            ground_truth = data['ocr_text'] if data['ocr_text'] else '\n'.join(dict.fromkeys(data['answers']))
+            
+            sample = Sample(
+                sample_id=f"infovqa_img_{idx}",
+                image_path=data['image_path'],
+                ground_truth=ground_truth,
+                metadata={
+                    'dataset': 'InfographicVQA',
+                    'mode': 'parsing',
+                    'split': self.split,
+                    'image_url': data['image_url'],
+                    'num_questions': len(data['questions']),
+                    'has_ocr': bool(data['ocr_text']),
+                },
+            )
+            self.samples.append(sample)
+        
+        logger.info(f"Loaded {len(self.samples)} image samples from InfographicVQA ({self.split})")
+
+
 class DatasetRegistry:
     """
     Central registry for dataset instantiation.
@@ -775,6 +1241,8 @@ class DatasetRegistry:
         'IAM_mini': IAMMiniDataset,
         'PubLayNet': PubLayNetDataset,
         'VOC2007': VOC2007Dataset,
+        'DocVQA': DocVQADataset,
+        'InfographicVQA': InfographicVQADataset,
     }
     
     @classmethod
@@ -783,14 +1251,17 @@ class DatasetRegistry:
         cls._DATASETS[name] = dataset_class
     
     @classmethod
-    def get_dataset(cls, name: str, root: str, sample_limit: Optional[int] = None) -> Dataset:
+    def get_dataset(cls, name: str, root: str, sample_limit: Optional[int] = None, **kwargs) -> Dataset:
         """
         Get dataset instance by name.
         
         Args:
-            name: Dataset name (IAM, ICDAR, PubLayNet)
+            name: Dataset name (IAM, ICDAR, PubLayNet, DocVQA, InfographicVQA)
             root: Root directory path
             sample_limit: Max samples to load
+            **kwargs: Additional arguments for specific loaders:
+                - mode: 'qa' or 'parsing' (for DocVQA/InfographicVQA)
+                - split: 'train', 'validation', or 'test' (for DocVQA/InfographicVQA)
         
         Returns:
             Dataset instance
@@ -803,7 +1274,7 @@ class DatasetRegistry:
             raise ValueError(f"Unknown dataset: {name}. Available: {available}")
         
         dataset_class = cls._DATASETS[name]
-        return dataset_class(root, sample_limit=sample_limit)
+        return dataset_class(root, sample_limit=sample_limit, **kwargs)
     
     @classmethod
     def list_datasets(cls) -> List[str]:

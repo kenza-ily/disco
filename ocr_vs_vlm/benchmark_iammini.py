@@ -565,31 +565,27 @@ class IAMMiniVLMBenchmark:
 
 if __name__ == '__main__':
     """
-    Run IAM_mini benchmark on OCR/VLM models with Phase 1.
+    Run IAM_mini benchmark on VLM models with Phases 2 & 3.
     
-    Phase 1 Evaluation:
-    - Ground truth: OCR/VLM output on printed.png (clean text)
-    - Prediction: OCR/VLM output on handwritten.png (handwritten text)
-    - Metric: Compare how well model extracts handwritten text vs printed text
+    Phase 2 & 3 Evaluation:
+    - Ground truth: VLM output on printed.png (clean text)
+    - Prediction: VLM output on handwritten.png (handwritten text)
+    - Phase 2: Generic prompt
+    - Phase 3: Context-aware prompt with dataset hints
     """
     logger.info("=" * 80)
-    logger.info("IAM_mini Benchmark: Phase 1 - Printed vs Handwritten Extraction")
+    logger.info("IAM_mini Benchmark: Phases 2 & 3 - VLM Evaluation")
     logger.info("=" * 80)
     
-    # OCR and VLM models for Phase 1
+    # VLM models for Phases 2 & 3
     models = [
-        # OCR models
-        'azure_intelligence',
-        'mistral_document_ai',
-        # 'donut',  # Uncomment if needed
-        # VLM models
         'gpt-5-mini',
         'gpt-5-nano'
     ]
     
     benchmark = IAMMiniVLMBenchmark(
         models=models,
-        sample_limit=10  # Limit to 10 samples for quick test
+        sample_limit=500  # Run on all samples
     )
     
     summary = benchmark.run()

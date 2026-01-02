@@ -23,6 +23,8 @@ dependencies = [
     "langchain-community",
     "huggingface-hub>=0.0.0",
     "pandas>=2.3.3",
+    "editdistance>=0.8.1",
+    "pyarrow>=21.0.0",
 ]
 
 [build-system]
