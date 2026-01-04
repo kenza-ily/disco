@@ -23,6 +23,7 @@ dependencies = [
     "langchain-community",
     "huggingface-hub>=0.0.0",
     "pandas>=2.3.3",
+    "seaborn>=0.13.0",
     "editdistance>=0.8.1",
     "pyarrow>=21.0.0",
     "datasets>=4.4.2",
