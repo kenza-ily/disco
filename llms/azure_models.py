@@ -17,5 +17,6 @@ AVAILABLE_AZURE_MODELS = [
     "gpt-5.1-codex-mini",
     "gpt-image-1",
     "mistral-document-ai-2505",
-    "o3"
+    "o3",
+    "text-embedding-3-large"
 ]
