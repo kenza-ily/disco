@@ -27,6 +27,7 @@ dependencies = [
     "editdistance>=0.8.1",
     "pyarrow>=21.0.0",
     "datasets>=4.4.2",
+    "boto3>=1.42.27",
 ]
 
 [build-system]

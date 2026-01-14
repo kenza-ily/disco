@@ -1,0 +1,137 @@
+{
+  "currency": "USD",
+  "as_of_date": "2026-01-13",
+  "items": [
+    {
+      "provider": "azure",
+      "product": "Azure AI Document Intelligence",
+      "sku": "Read (S0, pay-as-you-go)",
+      "billing_unit": "page",
+      "pricing": [
+        {
+          "volume_tier": "0-1M pages/month",
+          "usd_per_1000_pages": 1.5,
+          "usd_per_page": 0.0015
+        },
+        {
+          "volume_tier": "1M+ pages/month",
+          "usd_per_1000_pages": 0.6,
+          "usd_per_page": 0.0006
+        }
+      ],
+      "notes": [
+        "Billed by pages analysed."
+      ]
+    },
+    {
+      "provider": "mistral",
+      "product": "mistral-document-ai-2505",
+      "billing_unit": "page",
+      "pricing": [
+        {
+          "plan": "Azure AI Foundry Models (Global)",
+          "usd_per_1000_pages": 3.0,
+          "usd_per_page": 0.003
+        },
+        {
+          "plan": "Azure AI Foundry Models (DataZone)",
+          "usd_per_1000_pages": 3.3,
+          "usd_per_page": 0.0033
+        }
+      ]
+    },
+    {
+      "provider": "mistral",
+      "product": "mistral-ocr-2505",
+      "billing_unit": "page",
+      "pricing": [
+        {
+          "plan": "Mistral OCR",
+          "usd_per_1000_pages": 1.0,
+          "usd_per_page": 0.001
+        }
+      ],
+      "notes": [
+        "Mistral also lists an 'annotated pages' price separately; not included here."
+      ]
+    },
+    {
+      "provider": "openai",
+      "product": "gpt-5-mini",
+      "billing_unit": "token-derived (estimated per page)",
+      "pricing": {
+        "text_input_usd_per_1m_tokens": 0.25,
+        "text_output_usd_per_1m_tokens": 2.0,
+        "image_tokenisation": {
+          "patch_size_px": 32,
+          "patch_cap": 1536,
+          "multiplier": 1.62
+        }
+      },
+      "per_page_estimate": {
+        "assumptions": {
+          "page_image_px": { "width": 1654, "height": 2339 },
+          "output_tokens_per_page": 900
+        },
+        "derived": {
+          "raw_patches": 3848,
+          "capped_patches_after_resize": 1518,
+          "image_input_tokens_after_multiplier": 2460
+        },
+        "usd_per_page_estimate": 0.002415
+      },
+      "notes": [
+        "This is an estimate because GPT models are billed per token; changing page resolution and extracted-text length changes cost."
+      ]
+    },
+    {
+      "provider": "openai",
+      "product": "gpt-5-nano",
+      "billing_unit": "token-derived (estimated per page)",
+      "pricing": {
+        "text_input_usd_per_1m_tokens": 0.05,
+        "text_output_usd_per_1m_tokens": 0.4,
+        "image_tokenisation": {
+          "patch_size_px": 32,
+          "patch_cap": 1536,
+          "multiplier": 2.46
+        }
+      },
+      "per_page_estimate": {
+        "assumptions": {
+          "page_image_px": { "width": 1654, "height": 2339 },
+          "output_tokens_per_page": 900
+        },
+        "derived": {
+          "raw_patches": 3848,
+          "capped_patches_after_resize": 1518,
+          "image_input_tokens_after_multiplier": 3735
+        },
+        "usd_per_page_estimate": 0.00054675
+      },
+      "notes": [
+        "This is an estimate because GPT models are billed per token; changing page resolution and extracted-text length changes cost."
+      ]
+    },
+    {
+      "provider": "anthropic",
+      "product": "claude sonnet 4",
+      "billing_unit": "token-based (API)",
+      "pricing": [
+        {
+          "description": "input tokens",
+          "usd_per_1m_tokens": 3.0,
+          "usd_per_1000_tokens": 0.003
+        },
+        {
+          "description": "output tokens",
+          "usd_per_1m_tokens": 15.0,
+          "usd_per_1000_tokens": 0.015
+        }
+      ],
+      "notes": [
+        "Pricing based on Anthropic API token billing."
+      ]
+    }
+  ]
+}
