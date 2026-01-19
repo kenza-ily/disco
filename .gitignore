@@ -14,3 +14,4 @@ ocr_vs_vlm/results_postprocessing/*
 ocr_vs_vlm/results_analysis/icdar_mini_eval.ipynb
 *.ipynb
 ocr_vs_vlm/results_analysis/icdar_mini_eval.ipynb
+sandbox/output/output.md

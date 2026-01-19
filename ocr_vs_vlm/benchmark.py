@@ -340,7 +340,9 @@ class BenchmarkRunner:
         output_dir = self.results_dir / dataset_name / model_name
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        results_file = output_dir / f"{phase_file_name}_results.csv"
+        # Add timestamp to filename to preserve previous runs
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        results_file = output_dir / f"{phase_file_name}_results_{timestamp}.csv"
         
         # Load existing results if resuming
         existing_results = self._load_existing_results(results_file)

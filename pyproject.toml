@@ -28,6 +28,7 @@ dependencies = [
     "pyarrow>=21.0.0",
     "datasets>=4.4.2",
     "boto3>=1.42.27",
+    "anthropic>=0.7.0",
 ]
 
 [build-system]

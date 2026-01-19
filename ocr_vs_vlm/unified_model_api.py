@@ -131,21 +131,16 @@ class ModelRegistry:
             "requires": ["azure_openai_endpoint", "azure_openai_api_key", "azure_api_version"],
             "description": "GPT-5 nano - Ultra-fast vision LLM"
         },
-        # "mistral": {
-        #     "type": ModelType.VLM,
-        #     "requires": ["azure_openai_endpoint", "azure_openai_api_key", "azure_api_version"],
-        #     "description": "Mistral - Open vision LLM"
-        # },
-        # "claude_sonnet": {
-        #     "type": ModelType.VLM,
-        #     "requires": ["anthropic_api_key"],
-        #     "description": "Claude Sonnet 4.5 - High-accuracy vision LLM"
-        # },
-        # "claude_haiku": {
-        #     "type": ModelType.VLM,
-        #     "requires": ["anthropic_api_key"],
-        #     "description": "Claude Haiku 4.5 - Fast vision LLM"
-        # },
+        "claude_sonnet": {
+            "type": ModelType.VLM,
+            "requires": [],
+            "description": "Claude Sonnet 4 - High-accuracy vision LLM via AWS Bedrock"
+        },
+        "claude_haiku": {
+            "type": ModelType.VLM,
+            "requires": [],
+            "description": "Claude Haiku 4 - Fast vision LLM via AWS Bedrock"
+        },
         "qwen_vl": {
             "type": ModelType.VLM,
             "requires": [],
@@ -305,9 +300,9 @@ class UnifiedModelAPI:
         elif model == "mistral":
             return self._vlm_mistral(image_path, query)
         elif model == "claude_sonnet":
-            return self._vlm_claude(image_path, "claude-3-5-sonnet-20241022", query)
+            return self._vlm_claude(image_path, "us.anthropic.claude-3-5-sonnet-20241022-v2:0", query)
         elif model == "claude_haiku":
-            return self._vlm_claude(image_path, "claude-3-5-haiku-20241022", query)
+            return self._vlm_claude(image_path, "us.anthropic.claude-3-5-haiku-20241022-v2:0", query)
         elif model == "qwen_vl":
             return self._vlm_qwen(image_path, query)
         else:
@@ -605,58 +600,70 @@ class UnifiedModelAPI:
         )
     
     def _vlm_claude(self, image_path: str, model_id: str, query: Optional[str]) -> ModelResponse:
-        """Claude vision LLM."""
-        if anthropic is None:
-            raise ImportError("Claude requires 'anthropic' package. Install with: pip install anthropic")
+        """Claude vision LLM via AWS Bedrock."""
+        try:
+            import boto3
+            import json
+        except ImportError:
+            raise ImportError("Claude via Bedrock requires 'boto3'. Install with: pip install boto3")
         
-        client = anthropic.Anthropic(api_key=self.config.get("anthropic_api_key"))
-        
-        # Load image
+        # Load image and encode
         with open(image_path, "rb") as f:
             image_data = base64.standard_b64encode(f.read()).decode("utf-8")
         
         # Detect media type
         suffix = Path(image_path).suffix.lower()
         media_type_map = {
-            ".jpg": "image/jpeg",
-            ".jpeg": "image/jpeg",
-            ".png": "image/png",
-            ".gif": "image/gif",
-            ".webp": "image/webp",
+            ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png",
+            ".gif": "image/gif", ".webp": "image/webp",
         }
         media_type = media_type_map.get(suffix, "image/jpeg")
         
         if not query:
             query = "Extract all text from this document image"
         
-        response = client.messages.create(
-            model=model_id,
-            max_tokens=4000,  # Claude models support extended outputs for complex documents
-            messages=[
+        # Use AWS Bedrock client
+        client = boto3.client("bedrock-runtime", region_name="us-east-1")
+        
+        # Prepare message for Claude
+        message_content = [
+            {
+                "type": "image",
+                "source": {
+                    "type": "base64",
+                    "media_type": media_type,
+                    "data": image_data,
+                },
+            },
+            {"type": "text", "text": query}
+        ]
+        
+        body = json.dumps({
+            "anthropic_version": "bedrock-2023-05-31",
+            "max_tokens": 4000,
+            "messages": [
                 {
                     "role": "user",
-                    "content": [
-                        {
-                            "type": "image",
-                            "source": {
-                                "type": "base64",
-                                "media_type": media_type,
-                                "data": image_data,
-                            },
-                        },
-                        {"type": "text", "text": query}
-                    ],
+                    "content": message_content,
                 }
             ],
+        })
+        
+        response = client.invoke_model(
+            modelId=model_id,
+            contentType="application/json",
+            accept="application/json",
+            body=body
         )
+        response_body = json.loads(response["body"].read().decode("utf-8"))
         
         return ModelResponse(
             model_name="claude_sonnet" if "sonnet" in model_id else "claude_haiku",
             model_type=ModelType.VLM,
-            content=response.content[0].text,
+            content=response_body["content"][0]["text"],
             source=image_path,
             query=query,
-            tokens_used=response.usage.input_tokens + response.usage.output_tokens,
+            tokens_used=response_body["usage"]["input_tokens"] + response_body["usage"]["output_tokens"],
         )
     
     def _vlm_qwen(self, image_path: str, query: Optional[str]) -> ModelResponse:

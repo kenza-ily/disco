@@ -318,7 +318,9 @@ class IAMMiniVLMBenchmark:
             List of BenchmarkResult objects
         """
         results = []
-        results_file = self.results_dir / model_name / f"phase_{phase}_results.csv"
+        # Add timestamp to filename to preserve previous runs
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        results_file = self.results_dir / model_name / f"phase_{phase}_results_{timestamp}.csv"
         
         # Load existing results if resuming
         existing_results = self._load_existing_results(results_file)
@@ -563,7 +565,7 @@ class IAMMiniVLMBenchmark:
             return []
 
 
-if __name__ == '__main__':
+def main():
     """
     Run IAM_mini benchmark on VLM models with Phases 2 & 3.
     
@@ -573,19 +575,40 @@ if __name__ == '__main__':
     - Phase 2: Generic prompt
     - Phase 3: Context-aware prompt with dataset hints
     """
-    logger.info("=" * 80)
-    logger.info("IAM_mini Benchmark: Phases 2 & 3 - VLM Evaluation")
-    logger.info("=" * 80)
+    import argparse
     
-    # VLM models for Phases 2 & 3
-    models = [
-        'gpt-5-mini',
-        'gpt-5-nano'
-    ]
+    parser = argparse.ArgumentParser(description='IAM_mini Handwriting OCR/VLM Benchmark')
+    parser.add_argument(
+        '--phases', '-p',
+        nargs='+',
+        default=["2", "3"],
+        help='Phases to run (default: 2 3). Phase 2=generic, Phase 3=context-aware'
+    )
+    parser.add_argument(
+        '--sample-limit', '-n',
+        type=int,
+        default=None,
+        help='Maximum samples to process (default: all 500)'
+    )
+    parser.add_argument(
+        '--models', '-m',
+        nargs='+',
+        default=['gpt-5-mini', 'gpt-5-nano'],
+        help='VLM models to test (default: gpt-5-mini, gpt-5-nano)'
+    )
+    
+    args = parser.parse_args()
+    
+    logger.info("=" * 80)
+    logger.info("IAM_mini Benchmark: VLM Evaluation")
+    logger.info("=" * 80)
+    logger.info(f"Models: {args.models}")
+    logger.info(f"Phases: {args.phases}")
+    logger.info(f"Sample limit: {args.sample_limit if args.sample_limit else 'All'}")
     
     benchmark = IAMMiniVLMBenchmark(
-        models=models,
-        sample_limit=500  # Run on all samples
+        models=args.models,
+        sample_limit=args.sample_limit
     )
     
     summary = benchmark.run()
@@ -595,3 +618,7 @@ if __name__ == '__main__':
     logger.info(f"{'='*80}")
     logger.info(json.dumps(summary, indent=2))
     logger.info(f"\nResults saved to: {benchmark.results_dir}")
+
+
+if __name__ == '__main__':
+    main()

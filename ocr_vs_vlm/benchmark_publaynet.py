@@ -337,7 +337,9 @@ class PubLayNetBenchmarkRunner:
         output_dir = self.results_dir / phase / model_name
         output_dir.mkdir(parents=True, exist_ok=True)
         
-        results_file = output_dir / f"{phase}_{model_name}_results.csv"
+        # Add timestamp to filename to preserve previous runs
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        results_file = output_dir / f"{phase}_{model_name}_results_{timestamp}.csv"
         
         # Load existing results if resuming
         existing_results = self._load_existing_results(results_file)
@@ -978,20 +980,35 @@ if __name__ == '__main__':
     
     Phases:
       P-A: OCR layout inference (azure_intelligence, mistral_document_ai)
-      P-B: VLM direct detection (gpt-5-mini, gpt-5-nano)
-      P-C: VLM + OCR hybrid (gpt-5-mini, gpt-5-nano)
+      P-B: VLM direct detection (gpt-5-mini, gpt-5-nano, claude_sonnet)
+      P-C: VLM + OCR hybrid (gpt-5-mini, gpt-5-nano, claude_sonnet)
     """
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="PubLayNet Parsing Benchmark")
+    parser.add_argument('--sample-limit', type=int, default=None, help='Max samples per dataset (None = all 500)')
+    parser.add_argument('--models', nargs='+', default=None, help='VLM models to test')
+    parser.add_argument('--ocr-models', nargs='+', default=None, help='OCR models to test')
+    parser.add_argument('--phases', nargs='+', default=None, help='Phases to run (P-A, P-B, P-C)')
+    parser.add_argument('--results-dir', type=str, default='results/publaynet', help='Results directory')
+    
+    args = parser.parse_args()
+    
     logger.info("=" * 80)
     logger.info("Starting PubLayNet Parsing Benchmark")
     logger.info("=" * 80)
+    logger.info(f"Sample limit: {args.sample_limit}")
+    logger.info(f"VLM models: {args.models}")
+    logger.info(f"OCR models: {args.ocr_models}")
+    logger.info(f"Phases: {args.phases}")
     
     config = BenchmarkConfigPubLayNet(
-        ocr_models=['azure_intelligence', 'mistral_document_ai'],
-        vlm_models=['gpt-5-mini', 'gpt-5-nano'],
-        phases=['P-A', 'P-B', 'P-C'],
-        sample_limit=None,  # Use all samples
+        ocr_models=args.ocr_models or ['azure_intelligence', 'mistral_document_ai'],
+        vlm_models=args.models or ['gpt-5-mini', 'gpt-5-nano'],
+        phases=args.phases or ['P-A', 'P-B', 'P-C'],
+        sample_limit=args.sample_limit,
         batch_size=10,
-        results_dir="results/publaynet"
+        results_dir=args.results_dir
     )
     
     runner = PubLayNetBenchmarkRunner(config)

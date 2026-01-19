@@ -355,7 +355,9 @@ class DocVQABenchmark:
         phase_dir.mkdir(parents=True, exist_ok=True)
         
         for model in models:
-            model_results_file = phase_dir / f"{model}_results.csv"
+            # Add timestamp to filename to preserve previous runs
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            model_results_file = phase_dir / f"{model}_results_{timestamp}.csv"
             existing_ids = self._load_existing_ids(model_results_file)
             samples_to_process = [s for s in dataset if s.sample_id not in existing_ids]
             
