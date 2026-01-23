@@ -30,7 +30,7 @@ from llms.embeddings import (
     EmbeddingPipeline,
     create_embeddings_for_dataset,
 )
-from ocr_vs_vlm.dataset_loaders_qa import DocVQAMiniDataset, InfographicVQAMiniDataset
+from ocr_vs_vlm.datasets.dataset_loaders_qa import DocVQAMiniDataset, InfographicVQAMiniDataset
 
 # Configure logging
 logging.basicConfig(

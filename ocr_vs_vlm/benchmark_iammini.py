@@ -29,7 +29,7 @@ import sys
 
 from tqdm import tqdm
 
-from ocr_vs_vlm.dataset_loaders import DatasetRegistry, validate_dataset
+from ocr_vs_vlm.datasets.dataset_loaders import DatasetRegistry, validate_dataset
 from ocr_vs_vlm.unified_model_api import UnifiedModelAPI, ModelRegistry, ModelType
 from ocr_vs_vlm import prompts as prompt_module
 

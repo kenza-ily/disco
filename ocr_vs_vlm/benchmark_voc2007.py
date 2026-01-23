@@ -25,7 +25,7 @@ from pathlib import Path
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from ocr_vs_vlm.benchmark import BenchmarkRunner, create_benchmark_config
+from ocr_vs_vlm.benchmarks.benchmark import BenchmarkRunner, create_benchmark_config
 
 # Configure logging
 logging.basicConfig(
