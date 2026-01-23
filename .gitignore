@@ -14,3 +14,5 @@ ocr_vs_vlm/results_analysis/icdar_mini_eval.ipynb
 ocr_vs_vlm/results_analysis/icdar_mini_eval.ipynb
 sandbox/output/output.md
 .claude/*
+/ocr_vs_vlm/datasets/datasets_subsets
+/ocr_vs_vlm/results_analysis
