@@ -19,6 +19,19 @@
 - **Complexity**: Very High — multiple languages, tables, forms, receipts, invoices, mixed quality
 - **Stratification**: Question family (numeric, date/time, lookup, yes/no, multi-hop), answer type, document ID (max 5 per doc)
 
+### ChartQAPro_mini
+- **Type**: Charts, infographics, dashboards, and data visualizations
+- **Samples**: 494 QA pairs (stratified from 1,948 total)
+- **Complexity**: Very High — requires numerical reasoning, trend analysis, multi-step inference, diverse question types
+- **Question Types**: Factoid (55.9%), Conversational (16%), Fact Checking (12.8%), Multi Choice (10.7%), Hypothetical (4.7%)
+- **Answer Types**: short_text (38.3%), numeric (37.7%), boolean (13.2%), multiple_choice (8.9%), long_text (2%)
+- **Special**: 
+  - Conversational samples have 2-6 follow-up questions (multi-turn QA)
+  - 12.6% include paragraph context (pre-extracted text)
+  - 4.3% require temporal/year reasoning
+  - Modern benchmark (published 2025, shows VLM saturation - Claude 3.5 Sonnet: 55.8% vs 90.5% on older ChartQA)
+- **Stratification**: Question Type (proportional), Answer Type (within question type), multi-turn depth, context availability
+
 ## Task 2: Text Parsing (OCR)
 
 ### IAM_mini
