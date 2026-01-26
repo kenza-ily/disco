@@ -31,7 +31,7 @@ LOGS_DIR.mkdir(exist_ok=True)
 
 # Configure logging with multiple handlers
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)  # Only log warnings and errors
 logger.handlers.clear()
 
 formatter = logging.Formatter(
@@ -40,7 +40,7 @@ formatter = logging.Formatter(
 )
 
 console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setLevel(logging.INFO)
+console_handler.setLevel(logging.WARNING)  # Only show warnings and errors to console
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
@@ -74,7 +74,7 @@ class BenchmarkConfig:
     
     # Sample control
     sample_limit: Optional[int] = None  # Max samples per dataset
-    batch_size: int = 50  # Save results every this many samples
+    batch_size: int = 10  # Save results every this many samples
     
     # Output paths
     results_dir: str = "results"
@@ -153,8 +153,8 @@ class BenchmarkRunner:
             self.results_dir = Path(__file__).parent / config.results_dir
         self.results_dir.mkdir(parents=True, exist_ok=True)
         
-        # Initialize prompts directory
-        self.prompts_dir = Path(__file__).parent / "prompts"
+        # Initialize prompts directory - use parent ocr_vs_vlm/prompts
+        self.prompts_dir = Path(__file__).parent.parent / "prompts"
         self.prompts_dir.mkdir(parents=True, exist_ok=True)
         
         self.checkpoint_file = self.results_dir / config.checkpoint_file
@@ -201,11 +201,11 @@ class BenchmarkRunner:
             execution_summary['end_time'] = datetime.now().isoformat()
             execution_summary['total_time_seconds'] = time.time() - start_time
             
-            # Save final execution summary
-            summary_file = self.results_dir / "execution_summary.json"
-            with open(summary_file, 'w') as f:
-                json.dump(execution_summary, f, indent=2)
-            logger.info(f"Saved execution summary to {summary_file}")
+            # Skip saving execution summary for RX-PAD benchmark
+            # summary_file = self.results_dir / "execution_summary.json"
+            # with open(summary_file, 'w') as f:
+            #     json.dump(execution_summary, f, indent=2)
+            # logger.info(f"Saved execution summary to {summary_file}")
             
         finally:
             logger.info(f"Benchmark completed. Total time: {time.time() - start_time:.1f}s")
@@ -588,6 +588,7 @@ class BenchmarkRunner:
             'IAM_mini': Path(__file__).parent / "datasets_subsets",  # IAM_mini is in datasets_subsets
             'PubLayNet': base_path / "PubLayNet",
             'VOC2007': Path("/Users/kenzabenkirane/Documents/GitHub/research-playground/datasets/VOC2007"),
+            'RX-PAD': Path("/Users/kenzabenkirane/Documents/GitHub/research-playground/datasets/task1_parsing/RX-PAD"),
         }
         
         if dataset_name not in dataset_paths:
@@ -614,10 +615,16 @@ class BenchmarkRunner:
                     unique_prompts.append(prompt_text)
                     seen_prompts.add(prompt_text)
         
-        # Save each unique prompt to a separate file
+        # Save each unique prompt to a separate file - append to preserve existing prompts
         if unique_prompts:
             prompt_file = self.prompts_dir / f"prompt{phase_letter}.txt"
-            with open(prompt_file, 'w') as f:
+            # Check if file exists before appending
+            file_exists = prompt_file.exists() and prompt_file.stat().st_size > 0
+            
+            with open(prompt_file, 'a') as f:
+                # Add separator if file already has content
+                if file_exists:
+                    f.write(f"\n\n--- {datetime.now().isoformat()} ---\n")
                 f.write(unique_prompts[0])  # Save the first (likely only) unique prompt
             logger.info(f"Saved {len(unique_prompts)} unique prompt(s) to {prompt_file}")
             
