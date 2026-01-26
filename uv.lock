@@ -5625,6 +5625,7 @@ dependencies = [
     { name = "torch", version = "2.8.0", source = { registry = "https://pypi.org/simple/" }, marker = "python_full_version < '3.10'" },
     { name = "torch", version = "2.9.1", source = { registry = "https://pypi.org/simple/" }, marker = "python_full_version >= '3.10'" },
     { name = "transformers" },
+    { name = "watch" },
 ]
 
 [package.dev-dependencies]
@@ -5663,6 +5664,7 @@ requires-dist = [
     { name = "sentencepiece", specifier = ">=0.1.99" },
     { name = "torch", specifier = ">=2.0.0" },
     { name = "transformers", specifier = ">=4.0.0" },
+    { name = "watch", specifier = ">=0.2.7" },
 ]
 
 [package.metadata.requires-dev]
@@ -7104,6 +7106,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/fd/90/6c35ef65fbc49f8189729839b793a4a74a7dd8c5aa5eb56caa93f8c97732/uuid_utils-0.12.0-pp311-pypy311_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8c3ec53c0cb15e1835870c139317cc5ec06e35aa22843e3ed7d9c74f23f23898", size = 335892, upload-time = "2025-12-01T17:29:53.44Z" },
     { url = "https://files.pythonhosted.org/packages/6b/c7/e3f3ce05c5af2bf86a0938d22165affe635f4dcbfd5687b1dacc042d3e0e/uuid_utils-0.12.0-pp311-pypy311_pp73-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:84e5c0eba209356f7f389946a3a47b2cc2effd711b3fc7c7f155ad9f7d45e8a3", size = 360693, upload-time = "2025-12-01T17:29:54.558Z" },
 ]
+
+[[package]]
+name = "watch"
+version = "0.2.7"
+source = { registry = "https://pypi.org/simple/" }
+sdist = { url = "https://files.pythonhosted.org/packages/4d/30/05e13da086995c5d9fde762ff3cb742884aa76fb6167eda9a73a876aee8b/watch-0.2.7.tar.gz", hash = "sha256:d51f3648091c031e08d0cf0f3177da884078f25538a9d8dc568693ab5ac2dee0", size = 6441, upload-time = "2018-10-02T21:28:53.915Z" }
 
 [[package]]
 name = "wcwidth"
