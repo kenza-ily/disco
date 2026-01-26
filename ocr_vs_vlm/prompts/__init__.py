@@ -19,7 +19,11 @@ def get_phase_2_prompt(dataset_name: str = '') -> str:
     """
     # For Chinese datasets, specify Unicode output
     if dataset_name == 'VOC2007':
-        return "Extract all text from this document image. Output text in Simplified Chinese Unicode characters (UTF-8)."
+        return "Extract all text from this document image. Output text in Simplified Chinese Unicode characters (UTF-8). Return ONLY the extracted text."
+    
+    # For RX-PAD (French medical prescriptions)
+    if dataset_name == 'RX-PAD':
+        return "Extract all text from this document image. Return ONLY the extracted text."
     
     return "Extract all text from this document image"
 

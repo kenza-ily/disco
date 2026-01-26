@@ -780,6 +780,112 @@ class VOC2007Dataset(Dataset):
             return (0, 0)
 
 
+class RXPADDataset(Dataset):
+    """
+    RX-PAD French Medical Prescription Dataset loader.
+    
+    Structure:
+    - training_data/images/*.png (images)
+    - training_data/annotations/*.json (field-level annotations)
+    - testing_data/images/*.png (images)
+    - testing_data/annotations/*.json (field-level annotations)
+    
+    This dataset contains French medical prescription forms with field-level
+    bounding boxes and text annotations for key fields (prescriber, patient,
+    medication, dosage, etc.).
+    """
+    
+    def _load(self):
+        """Load RX-PAD images and annotations from both training and testing sets."""
+        self.samples = []
+        
+        # Load both training and testing data
+        for split in ['training_data', 'testing_data']:
+            split_dir = self.dataset_root / split
+            images_dir = split_dir / "images"
+            annotations_dir = split_dir / "annotations"
+            
+            if not images_dir.exists():
+                logger.warning(f"RX-PAD {split} images directory not found: {images_dir}")
+                continue
+            
+            if not annotations_dir.exists():
+                logger.warning(f"RX-PAD {split} annotations directory not found: {annotations_dir}")
+                continue
+            
+            # Process each image
+            for image_path in sorted(images_dir.glob("*.png")):
+                # Find corresponding annotation file
+                annotation_name = image_path.stem + ".json"
+                annotation_path = annotations_dir / annotation_name
+                
+                if not annotation_path.exists():
+                    logger.debug(f"No annotation for {image_path.name}")
+                    continue
+                
+                sample_id = f"rxpad_{split}_{image_path.stem}"
+                
+                # Load and extract ground truth
+                try:
+                    with open(annotation_path, 'r', encoding='utf-8') as f:
+                        annotation = json.load(f)
+                    ground_truth = self._extract_ground_truth(annotation)
+                except Exception as e:
+                    logger.warning(f"Failed to load annotation {annotation_path}: {e}")
+                    continue
+                
+                metadata = {
+                    'dataset': 'RX-PAD',
+                    'language': 'fr',  # French
+                    'document_type': 'medical_prescription',
+                    'split': split,
+                    'image_size': self._get_image_size(image_path),
+                }
+                
+                self.samples.append(Sample(
+                    sample_id=sample_id,
+                    image_path=str(image_path),
+                    ground_truth=ground_truth,
+                    metadata=metadata
+                ))
+    
+    def _extract_ground_truth(self, annotation: Dict) -> str:
+        """
+        Extract all text from prescription annotation.
+        
+        Args:
+            annotation: Annotation dict with 'prescr' list containing fields
+        
+        Returns:
+            Concatenated text with field structure
+        """
+        texts = []
+        prescr_fields = annotation.get('prescr', [])
+        
+        for field in prescr_fields:
+            label = field.get('label', '')
+            text = field.get('text', '').strip()
+            
+            if text:
+                if label:
+                    # Include label for structured output
+                    texts.append(f"{label}: {text}")
+                else:
+                    texts.append(text)
+        
+        # Join texts - use newline for structure
+        return '\n'.join(texts)
+    
+    @staticmethod
+    def _get_image_size(image_path: Path) -> Tuple[int, int]:
+        """Get image dimensions."""
+        try:
+            with Image.open(image_path) as img:
+                return img.size
+        except Exception:
+            return (0, 0)
+
+
 class DocVQADataset(Dataset):
     """
     DocVQA Dataset loader supporting both parsing and QA tasks.
@@ -1241,6 +1347,7 @@ class DatasetRegistry:
         'IAM_mini': IAMMiniDataset,
         'PubLayNet': PubLayNetDataset,
         'VOC2007': VOC2007Dataset,
+        'RX-PAD': RXPADDataset,
         'DocVQA': DocVQADataset,
         'InfographicVQA': InfographicVQADataset,
     }
