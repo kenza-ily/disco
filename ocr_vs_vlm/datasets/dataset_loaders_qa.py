@@ -1,14 +1,15 @@
 """
-QA Dataset Loaders for DocVQA_mini and InfographicVQA_mini.
+QA Dataset Loaders for DocVQA_mini, InfographicVQA_mini, and VisR-Bench_mini.
 
 Loads the mini datasets from the datasets_subsets folder for QA benchmarking.
 """
 
 import json
 import logging
+import random
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Iterator
+from typing import Dict, List, Optional, Iterator, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -271,3 +272,192 @@ def validate_qa_dataset(dataset_name: str, dataset_root: str) -> Dict:
         'valid': True,
         'checks': checks
     }
+
+
+@dataclass
+class VisRBenchSample:
+    """Sample for VisR-Bench retrieval + QA task."""
+    
+    sample_id: str
+    doc_id: str
+    question: str
+    answer: str  # Ground truth answer
+    page_index: int  # Index of the evidence page
+    content_type: str  # "figure", "table", "text", or "multilingual"
+    detected_language: str
+    
+    # Multi-page document info
+    all_page_images: List[str]  # List of image filenames for all pages
+    all_page_md_str: List[str]  # Pre-extracted markdown for each page
+    total_pages: int
+    
+    # Paths resolved at load time
+    images_dir: Optional[str] = None
+
+
+class VisRBenchMiniDataset:
+    """
+    VisR-Bench Mini Dataset loader for retrieval + QA evaluation.
+    
+    Multi-page document QA with evidence page grounding.
+    - 498 documents across 4 content types
+    - 17,045 total QA pairs
+    - Each QA includes page_index for retrieval evaluation
+    - Pre-extracted markdown available (all_page_md_str)
+    
+    Sampling Strategy:
+    - qa_per_doc: Cap random QAs per document to ensure diversity
+    - Default: 5 QAs per doc to avoid over-weighting documents with many questions
+    """
+    
+    def __init__(
+        self,
+        dataset_root: str,
+        content_type: Optional[str] = None,
+        sample_limit: Optional[int] = None,
+        qa_per_doc: int = 5,
+        seed: int = 42
+    ):
+        """
+        Initialize VisR-Bench mini loader.
+        
+        Args:
+            dataset_root: Root path to datasets_subsets folder
+            content_type: Filter by type: "figure", "table", "text", "multilingual", or None for all
+            sample_limit: Max total samples to load (None = all)
+            qa_per_doc: Max QAs to sample randomly per document (default 5 for development)
+            seed: Random seed for reproducible sampling
+        """
+        self.dataset_root = Path(dataset_root)
+        self.content_type = content_type
+        self.sample_limit = sample_limit
+        self.qa_per_doc = qa_per_doc
+        self.seed = seed
+        self.samples: List[VisRBenchSample] = []
+        
+        random.seed(seed)
+        self._load()
+        
+        logger.info(f"Loaded {len(self.samples)} samples from VisR-Bench_mini "
+                   f"(content_type={content_type}, qa_per_doc={qa_per_doc})")
+    
+    def _load(self):
+        """Load samples from JSON files with per-document QA sampling."""
+        visr_dir = self.dataset_root / "visr_bench_mini"
+        content_types_to_load = [self.content_type] if self.content_type else ["figure", "table", "text", "multilingual"]
+        
+        total_loaded = 0
+        
+        for ctype in content_types_to_load:
+            qa_file = visr_dir / f"{ctype}_QA_mini.json"
+            
+            if not qa_file.exists():
+                logger.warning(f"VisR-Bench {ctype} JSON not found: {qa_file}")
+                continue
+            
+            with open(qa_file) as f:
+                docs = json.load(f)
+            
+            # Get the images directory for this content type
+            images_base = visr_dir / "documents" / ctype
+            
+            for doc in docs:
+                doc_id = doc['file_name']
+                all_page_images = doc.get('all_page_images', [])
+                all_page_md_str = doc.get('all_page_md_str', [])
+                qa_list = doc.get('qa_list', [])
+                
+                # Sample random QAs per document (capped at qa_per_doc)
+                if len(qa_list) > self.qa_per_doc:
+                    sampled_qas = random.sample(qa_list, self.qa_per_doc)
+                else:
+                    sampled_qas = qa_list
+                
+                # Create one sample per QA
+                for qa_idx, qa in enumerate(sampled_qas):
+                    sample_id = f"{doc_id}_{qa_idx}"
+                    
+                    sample = VisRBenchSample(
+                        sample_id=sample_id,
+                        doc_id=doc_id,
+                        question=qa.get('question', ''),
+                        answer=qa.get('answer', ''),
+                        page_index=qa.get('page_index', 0),
+                        detected_language=qa.get('detected_language', 'unknown'),
+                        content_type=ctype,
+                        all_page_images=all_page_images,
+                        all_page_md_str=all_page_md_str,
+                        total_pages=len(all_page_images),
+                        images_dir=str(images_base / doc_id / "images")
+                    )
+                    
+                    self.samples.append(sample)
+                    total_loaded += 1
+                    
+                    if self.sample_limit and total_loaded >= self.sample_limit:
+                        return
+    
+    def get_evidence_page_image(self, sample: VisRBenchSample) -> str:
+        """
+        Get the file path to the evidence page image for a sample.
+        
+        Args:
+            sample: VisRBenchSample with page_index and images_dir
+            
+        Returns:
+            Full path to the evidence page image
+        """
+        images_dir = Path(sample.images_dir)
+        page_idx = sample.page_index
+        image_filename = sample.all_page_images[page_idx]
+        return str(images_dir / image_filename)
+    
+    def get_all_page_images(self, sample: VisRBenchSample) -> List[str]:
+        """
+        Get file paths to all page images for a sample.
+        
+        Args:
+            sample: VisRBenchSample
+            
+        Returns:
+            List of paths to all page images in order
+        """
+        images_dir = Path(sample.images_dir)
+        return [str(images_dir / img) for img in sample.all_page_images]
+    
+    def __len__(self) -> int:
+        return len(self.samples)
+    
+    def __iter__(self):
+        return iter(self.samples)
+    
+    def __getitem__(self, idx: int) -> VisRBenchSample:
+        return self.samples[idx]
+    
+    def get_stats(self) -> Dict:
+        """Return dataset statistics."""
+        stats = {
+            'total_samples': len(self.samples),
+            'unique_documents': len(set(s.doc_id for s in self.samples)),
+            'content_type_distribution': {},
+            'language_distribution': {},
+            'avg_pages_per_doc': 0,
+            'avg_qa_per_doc': 0,
+        }
+        
+        # Content type distribution
+        for s in self.samples:
+            ct = s.content_type
+            stats['content_type_distribution'][ct] = stats['content_type_distribution'].get(ct, 0) + 1
+            
+            lang = s.detected_language
+            stats['language_distribution'][lang] = stats['language_distribution'].get(lang, 0) + 1
+        
+        # Average pages
+        if self.samples:
+            total_pages = sum(s.total_pages for s in self.samples)
+            unique_docs = len(set(s.doc_id for s in self.samples))
+            stats['avg_pages_per_doc'] = total_pages / unique_docs if unique_docs > 0 else 0
+            stats['avg_qa_per_doc'] = len(self.samples) / unique_docs if unique_docs > 0 else 0
+        
+        return stats
