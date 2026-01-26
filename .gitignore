@@ -15,3 +15,6 @@ sandbox/output/output.md
 ocr_vs_vlm/results/results_postprocessing/*
 ocr_vs_vlm/results/raw/*
 ocr_vs_vlm/benchmarks/benchmark_*.py
+*.log
+/ocr_vs_vlm/benchmarks/results
+/ocr_vs_vlm/datasets_subsets
