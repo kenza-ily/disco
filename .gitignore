@@ -18,3 +18,7 @@ ocr_vs_vlm/benchmarks/benchmark_*.py
 *.log
 /ocr_vs_vlm/benchmarks/results
 /ocr_vs_vlm/datasets_subsets
+/.hf_staging
+/zzz_ignore
+zzz_ignore/*
+/ocr_vs_vlm/results
