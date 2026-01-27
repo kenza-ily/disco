@@ -1,0 +1,17 @@
+This is an infographic image containing data visualizations, statistics, and text.
+Pay attention to:
+- Charts, graphs, and visual data representations
+- Numbers, percentages, and statistics
+- Labels, titles, and annotations
+- Relationships between different elements
+
+Carefully examine the image to answer the following question.
+
+Question: {question}
+
+Instructions:
+- Provide a concise, direct answer
+- Include units or context if relevant
+- If you cannot find the answer, respond with "NOT FOUND"
+
+Answer:
