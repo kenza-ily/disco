@@ -1,0 +1,117 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-01-27T09:30:00Z",
+  "colors": {
+    "providers": {
+      "azure": {
+        "primary": "#0078D4",
+        "dark": "#005A9E",
+        "light": "#50B8E7",
+        "accent": "#00BCF2"
+      },
+      "mistral": {
+        "primary": "#F04E23",
+        "dark": "#C83E1C",
+        "light": "#FF7A59",
+        "accent": "#FF5733"
+      },
+      "openai": {
+        "primary": "#10A37F",
+        "dark": "#0D8B6A",
+        "light": "#1AC299",
+        "accent": "#00C9A7"
+      },
+      "claude": {
+        "primary": "#B85C38",
+        "dark": "#9A4D2F",
+        "light": "#D17A52",
+        "accent": "#CC6B47"
+      }
+    },
+    "models": {
+      "azure_intelligence": "#0078D4",
+      "mistral_document_ai": "#F04E23",
+      "gpt-5-mini": "#10A37F",
+      "gpt-5-nano": "#1AC299",
+      "claude_sonnet": "#B85C38",
+      "claude_haiku": "#D17A52",
+      "donut": "#8B5CF6",
+      "qwen_vl": "#F59E0B"
+    },
+    "datasets": {
+      "DocVQA_mini": "#3B82F6",
+      "InfographicVQA_mini": "#8B5CF6",
+      "IAM_mini": "#EC4899",
+      "ICDAR_mini": "#10B981",
+      "publaynet_full": "#F59E0B",
+      "VOC2007": "#EF4444",
+      "chartqapro_mini": "#6366F1",
+      "dude_mini": "#14B8A6",
+      "RX-PAD": "#F97316",
+      "visr_bench_mini": "#A855F7"
+    },
+    "metrics": {
+      "CER": "#EF4444",
+      "WER": "#F59E0B",
+      "ANLS": "#10B981",
+      "EM": "#3B82F6",
+      "cosine_similarity": "#8B5CF6",
+      "substring_match": "#EC4899"
+    },
+    "phases": {
+      "P-A": "#9CA3AF",
+      "P-B": "#60A5FA",
+      "P-C": "#34D399",
+      "QA1a": "#9CA3AF",
+      "QA1b": "#60A5FA",
+      "QA1c": "#34D399",
+      "QA2a": "#F59E0B",
+      "QA2b": "#FBBF24",
+      "QA2c": "#FCD34D",
+      "QA3a": "#EF4444",
+      "QA3b": "#F87171"
+    },
+    "status": {
+      "production": "#10B981",
+      "experimental": "#F59E0B",
+      "deprecated": "#EF4444",
+      "in_progress": "#3B82F6"
+    }
+  },
+  "plot_defaults": {
+    "figsize": [14, 6],
+    "font_size": 11,
+    "title_font_size": 14,
+    "label_font_size": 12,
+    "legend_font_size": 10,
+    "style": "seaborn-v0_8-whitegrid",
+    "dpi": 100,
+    "save_dpi": 300,
+    "bbox_inches": "tight"
+  },
+  "heatmap_defaults": {
+    "cmap": "RdYlGn",
+    "annot": true,
+    "fmt": ".3f",
+    "linewidths": 0.5,
+    "cbar_kws": {
+      "shrink": 0.8
+    }
+  },
+  "barplot_defaults": {
+    "width": 0.8,
+    "edgecolor": "black",
+    "linewidth": 0.7,
+    "alpha": 0.8
+  },
+  "export_formats": {
+    "figures": ["png", "svg"],
+    "tables": ["csv", "xlsx"]
+  },
+  "figure_output_paths": {
+    "base": "3_notebooks/figures",
+    "by_dataset": "3_notebooks/figures/{dataset}",
+    "by_metric": "3_notebooks/figures/by_metric/{metric}",
+    "comparison": "3_notebooks/figures/comparison"
+  }
+}

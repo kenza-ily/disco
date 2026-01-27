@@ -21,4 +21,7 @@ ocr_vs_vlm/benchmarks/benchmark_*.py
 /.hf_staging
 /zzz_ignore
 zzz_ignore/*
-/ocr_vs_vlm/results
+/ocr_vs_vlm/results/1_raw/zzz_ignore
+ocr_vs_vlm/results/1_raw/VOC2007/gpt-5-nano/execution_summary.json
+ocr_vs_vlm/results/1_raw/VOC2007/gpt-5-nano/checkpoint.json
+/ocr_vs_vlm/results/1_raw

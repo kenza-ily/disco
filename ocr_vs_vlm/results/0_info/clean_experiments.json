@@ -1,0 +1,256 @@
+{
+  "last_updated": "2026-01-27T09:30:00Z",
+  "version": "1.0.0",
+  "description": "Registry of production-ready experiment results",
+  "datasets": {
+    "DocVQA_mini": {
+      "description": "Document Visual Question Answering - 500 samples per phase",
+      "type": "qa",
+      "sample_count": 500,
+      "phases": {
+        "QA1a": {
+          "description": "OCR + simple prompt",
+          "raw_files": ["1_raw/DocVQA_mini/QA1a/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA1a.csv",
+          "models": ["azure_intelligence", "mistral_document_ai"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA1b": {
+          "description": "VLM + generic prompt",
+          "raw_files": ["1_raw/DocVQA_mini/QA1b/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA1b.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA1c": {
+          "description": "VLM + task-aware prompt",
+          "raw_files": ["1_raw/DocVQA_mini/QA1c/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA1c.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA2a": {
+          "description": "OCR + CoT prompt",
+          "raw_files": ["1_raw/DocVQA_mini/QA2a/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA2a.csv",
+          "models": ["azure_intelligence", "mistral_document_ai"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA2b": {
+          "description": "VLM + generic + CoT",
+          "raw_files": ["1_raw/DocVQA_mini/QA2b/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA2b.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA2c": {
+          "description": "VLM + task-aware + CoT",
+          "raw_files": ["1_raw/DocVQA_mini/QA2c/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA2c.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA3a": {
+          "description": "OCR + few-shot examples",
+          "raw_files": ["1_raw/DocVQA_mini/QA3a/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA3a.csv",
+          "models": ["azure_intelligence", "mistral_document_ai"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA3b": {
+          "description": "VLM + few-shot examples",
+          "raw_files": ["1_raw/DocVQA_mini/QA3b/*.csv"],
+          "clean_file": "2_clean/DocVQA_mini/QA3b.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        }
+      }
+    },
+    "InfographicVQA_mini": {
+      "description": "Infographic Visual Question Answering - 500 samples per phase",
+      "type": "qa",
+      "sample_count": 500,
+      "phases": {
+        "QA1a": {
+          "description": "OCR + simple prompt",
+          "raw_files": ["1_raw/InfographicVQA_mini/QA1a/*.csv"],
+          "clean_file": "2_clean/InfographicVQA_mini/QA1a.csv",
+          "models": ["azure_intelligence", "mistral_document_ai"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA1b": {
+          "description": "VLM + generic prompt",
+          "raw_files": ["1_raw/InfographicVQA_mini/QA1b/*.csv"],
+          "clean_file": "2_clean/InfographicVQA_mini/QA1b.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        },
+        "QA1c": {
+          "description": "VLM + task-aware prompt",
+          "raw_files": ["1_raw/InfographicVQA_mini/QA1c/*.csv"],
+          "clean_file": "2_clean/InfographicVQA_mini/QA1c.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["ANLS", "EM", "substring_match"]
+        }
+      }
+    },
+    "IAM_mini": {
+      "description": "Handwriting Recognition - 500 samples per phase",
+      "type": "parsing",
+      "sample_count": 500,
+      "phases": {
+        "P-A": {
+          "description": "OCR baseline",
+          "raw_files": ["1_raw/IAM_mini/azure_intelligence/*.csv", "1_raw/IAM_mini/mistral_document_ai/*.csv"],
+          "clean_file": "2_clean/IAM_mini/P-A.csv",
+          "models": ["azure_intelligence", "mistral_document_ai"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        },
+        "P-B": {
+          "description": "VLM + generic prompt",
+          "raw_files": ["1_raw/IAM_mini/gpt-5-mini/*.csv", "1_raw/IAM_mini/claude_sonnet/*.csv"],
+          "clean_file": "2_clean/IAM_mini/P-B.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        },
+        "P-C": {
+          "description": "VLM + task-aware prompt",
+          "raw_files": ["1_raw/IAM_mini/gpt-5-mini/*.csv", "1_raw/IAM_mini/claude_sonnet/*.csv"],
+          "clean_file": "2_clean/IAM_mini/P-C.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        }
+      }
+    },
+    "ICDAR_mini": {
+      "description": "Multilingual OCR - 500 samples (10 languages)",
+      "type": "parsing",
+      "sample_count": 500,
+      "phases": {
+        "20251223": {
+          "description": "Multilingual text extraction",
+          "raw_files": ["1_raw/ICDAR_mini/20251223/*.csv"],
+          "clean_file": "2_clean/ICDAR_mini/20251223.csv",
+          "models": ["azure_intelligence", "gpt-5-mini", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        }
+      }
+    },
+    "publaynet_full": {
+      "description": "Document Layout Detection - 500 samples per phase",
+      "type": "parsing",
+      "sample_count": 500,
+      "phases": {
+        "P-A": {
+          "description": "OCR baseline",
+          "raw_files": ["1_raw/publaynet_full/P-A/*.csv"],
+          "clean_file": "2_clean/publaynet_full/P-A.csv",
+          "models": ["azure_intelligence", "mistral_document_ai"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        },
+        "P-B": {
+          "description": "VLM + generic prompt",
+          "raw_files": ["1_raw/publaynet_full/P-B/*.csv"],
+          "clean_file": "2_clean/publaynet_full/P-B.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        },
+        "P-C": {
+          "description": "VLM + task-aware prompt",
+          "raw_files": ["1_raw/publaynet_full/P-C/*.csv"],
+          "clean_file": "2_clean/publaynet_full/P-C.csv",
+          "models": ["gpt-5-mini", "gpt-5-nano", "claude_sonnet"],
+          "sample_count": 500,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        }
+      }
+    },
+    "VOC2007": {
+      "description": "Chinese Medical Documents - 238 samples",
+      "type": "parsing",
+      "sample_count": 238,
+      "phases": {
+        "20251220_baseline": {
+          "description": "Baseline extraction",
+          "raw_files": ["1_raw/VOC2007/20251220_baseline/*.csv"],
+          "clean_file": "2_clean/VOC2007/20251220_baseline.csv",
+          "models": ["azure_intelligence", "gpt-5-mini"],
+          "sample_count": 238,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        },
+        "20251220_prompted": {
+          "description": "With task-specific prompts",
+          "raw_files": ["1_raw/VOC2007/20251220_prompted/*.csv"],
+          "clean_file": "2_clean/VOC2007/20251220_prompted.csv",
+          "models": ["azure_intelligence", "gpt-5-mini"],
+          "sample_count": 238,
+          "status": "production",
+          "metrics": ["CER", "WER", "cosine_similarity"]
+        }
+      }
+    },
+    "chartqapro_mini": {
+      "description": "Chart Question Answering - Large files (211-451 MB)",
+      "type": "qa",
+      "sample_count": "unknown",
+      "status": "experimental",
+      "notes": "Very large files, may need special handling"
+    },
+    "dude_mini": {
+      "description": "Document Understanding Dataset - Large files (111-171 MB)",
+      "type": "qa",
+      "sample_count": "unknown",
+      "status": "experimental",
+      "notes": "Very large files, may need special handling"
+    },
+    "RX-PAD": {
+      "description": "Medical Prescription Analysis",
+      "type": "parsing",
+      "sample_count": "unknown",
+      "status": "experimental"
+    },
+    "visr_bench_mini": {
+      "description": "Visual Reasoning Benchmark",
+      "type": "qa",
+      "sample_count": "unknown",
+      "status": "experimental",
+      "location": "results/raw/visr_bench_mini (not in ocr_vs_vlm/results)"
+    }
+  }
+}

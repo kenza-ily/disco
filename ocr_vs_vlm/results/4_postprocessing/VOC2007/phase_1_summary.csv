@@ -1,0 +1,3 @@
+model,phase,total_samples,avg_inference_time_ms,median_inference_time_ms,min_inference_time_ms,max_inference_time_ms,error_count,error_rate,avg_tokens,total_tokens,predictions_count,prediction_rate
+azure_intelligence,phase_1,238,3769.092818268207,2717.632532119751,2549.107074737549,13152.332067489624,0,0.0,,0.0,238,100.0
+mistral_document_ai,phase_1,238,4033.1475494288597,3572.515368461609,2428.0943870544434,11537.039041519163,0,0.0,,0.0,238,100.0

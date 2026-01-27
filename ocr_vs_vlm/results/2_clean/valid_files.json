@@ -1,0 +1,536 @@
+{
+  "generated_at": "2026-01-20T13:33:59.955769",
+  "valid_files": {
+    "publaynet_full": {
+      "P-A": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_full/P-A/azure_intelligence/P-A_azure_intelligence_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_full/P-A/mistral_document_ai/P-A_mistral_document_ai_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "P-C": {
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_full/P-C/gpt-5-mini/P-C_gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_full/P-C/gpt-5-nano/P-C_gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "P-B": {
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_full/P-B/gpt-5-mini/P-B_gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_full/P-B/gpt-5-nano/P-B_gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      }
+    },
+    "publaynet_test": {
+      "P-A": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_test/P-A/azure_intelligence/P-A_azure_intelligence_results.csv",
+          "row_count": 5,
+          "timestamp": null
+        }
+      },
+      "P-C": {
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_test/P-C/gpt-5-mini/P-C_gpt-5-mini_results.csv",
+          "row_count": 5,
+          "timestamp": null
+        }
+      },
+      "P-B": {
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet_test/P-B/gpt-5-mini/P-B_gpt-5-mini_results.csv",
+          "row_count": 5,
+          "timestamp": null
+        }
+      }
+    },
+    "publaynet": {
+      "P-A": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet/P-A/azure_intelligence/P-A_azure_intelligence_results_20260114_170932.csv",
+          "row_count": 500,
+          "timestamp": "20260114_170932"
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet/P-A/mistral_document_ai/P-A_mistral_document_ai_results_20260114_174506.csv",
+          "row_count": 500,
+          "timestamp": "20260114_174506"
+        }
+      },
+      "P-C": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet/P-C/claude_sonnet/P-C_claude_sonnet_results_20260119_184717.csv",
+          "row_count": 500,
+          "timestamp": "20260119_184717"
+        }
+      },
+      "P-B": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/publaynet/P-B/claude_sonnet/P-B_claude_sonnet_results_20260119_180431.csv",
+          "row_count": 500,
+          "timestamp": "20260119_180431"
+        }
+      }
+    },
+    "DocVQA_mini": {
+      "QA3a": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA3a/claude_sonnet_results_20260119_192924.csv",
+          "row_count": 500,
+          "timestamp": "20260119_192924"
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA3a/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA3a/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA1b": {
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1b/mistral_document_ai_results_20260114_205827.csv",
+          "row_count": 500,
+          "timestamp": "20260114_205827"
+        },
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1b/azure_intelligence_results_20260114_200424.csv",
+          "row_count": 500,
+          "timestamp": "20260114_200424"
+        }
+      },
+      "QA2c": {
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2c/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2c/claude_sonnet_results_20260115_004512.csv",
+          "row_count": 500,
+          "timestamp": "20260115_004512"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2c/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA2b": {
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2b/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2b/claude_sonnet_results_20260115_001828.csv",
+          "row_count": 500,
+          "timestamp": "20260115_001828"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2b/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA1c": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1c/azure_intelligence_results_20260114_214512.csv",
+          "row_count": 500,
+          "timestamp": "20260114_214512"
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1c/mistral_document_ai_results_20260114_225054.csv",
+          "row_count": 500,
+          "timestamp": "20260114_225054"
+        }
+      },
+      "QA3b": {
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA3b/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA3b/claude_sonnet_results_20260119_200101.csv",
+          "row_count": 500,
+          "timestamp": "20260119_200101"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA3b/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA1a QA1b QA1c QA2a QA2b QA2c QA3a QA3b": {
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1a QA1b QA1c QA2a QA2b QA2c QA3a QA3b/mistral_document_ai_results_20260114_151012.csv",
+          "row_count": 10,
+          "timestamp": "20260114_151012"
+        },
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1a QA1b QA1c QA2a QA2b QA2c QA3a QA3b/azure_intelligence_results_20260114_150900.csv",
+          "row_count": 10,
+          "timestamp": "20260114_150900"
+        }
+      },
+      "QA1a": {
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1a/mistral_document_ai_results_20260114_191635.csv",
+          "row_count": 500,
+          "timestamp": "20260114_191635"
+        },
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA1a/azure_intelligence_results_20260114_181918.csv",
+          "row_count": 500,
+          "timestamp": "20260114_181918"
+        }
+      },
+      "QA2a": {
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2a/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2a/claude_sonnet_results_20260114_235142.csv",
+          "row_count": 500,
+          "timestamp": "20260114_235142"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/DocVQA_mini/QA2a/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      }
+    },
+    "VOC2007": {
+      "phase_3a": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/claude_sonnet/VOC2007/claude_sonnet/phase_3a_results_20260115_161035.csv",
+          "row_count": 238,
+          "timestamp": "20260115_161035"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/gpt-5-mini/VOC2007/gpt-5-mini/phase_3a_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/gpt-5-nano/VOC2007/gpt-5-nano/phase_3a_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        }
+      },
+      "phase_2": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/claude_sonnet/VOC2007/claude_sonnet/phase_2_results_20260115_155614.csv",
+          "row_count": 238,
+          "timestamp": "20260115_155614"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/gpt-5-mini/VOC2007/gpt-5-mini/phase_2_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/gpt-5-nano/VOC2007/gpt-5-nano/phase_2_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        }
+      },
+      "phase_4": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/claude_sonnet/VOC2007/claude_sonnet/phase_4_results_20260115_162454.csv",
+          "row_count": 238,
+          "timestamp": "20260115_162454"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/gpt-5-mini/VOC2007/gpt-5-mini/phase_4_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/gpt-5-nano/VOC2007/gpt-5-nano/phase_4_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        }
+      },
+      "phase_1": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/azure_intelligence/VOC2007/azure_intelligence/phase_1_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/VOC2007/mistral_document_ai/VOC2007/mistral_document_ai/phase_1_results.csv",
+          "row_count": 238,
+          "timestamp": null
+        }
+      }
+    },
+    "ICDAR_mini": {
+      "phase_1": {
+        "donut": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/20251223/donut/phase_1_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/20251223/azure_intelligence/phase_1_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/20251223/mistral_document_ai/phase_1_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "phase_3a": {
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/20251223/gpt-5-mini/phase_3a_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/20251223/gpt-5-nano/phase_3a_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "phase_2": {
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/20251223/gpt-5-mini/phase_2_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/ICDAR_mini/20251223/gpt-5-nano/phase_2_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      }
+    },
+    "IAM_mini": {
+      "phase_3": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/claude_sonnet/phase_3_results_20260120_013043.csv",
+          "row_count": 500,
+          "timestamp": "20260120_013043"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/gpt-5-mini/phase_3_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/gpt-5-nano/phase_3_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "phase_2": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/claude_sonnet/phase_2_results_20260119_234652.csv",
+          "row_count": 500,
+          "timestamp": "20260119_234652"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/gpt-5-mini/phase_2_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/gpt-5-nano/phase_2_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "phase_1": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/azure_intelligence/phase_1_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/IAM_mini/mistral_document_ai/phase_1_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      }
+    },
+    "InfographicVQA_mini": {
+      "QA3a": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA3a/claude_sonnet_results_20260119_203114.csv",
+          "row_count": 500,
+          "timestamp": "20260119_203114"
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA3a/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA3a/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA4a": {
+        "pre_extracted_ocr": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA4a/pre_extracted_ocr_results_20260115_132144.csv",
+          "row_count": 500,
+          "timestamp": "20260115_132144"
+        }
+      },
+      "QA1b": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA1b/azure_intelligence_results_20260115_051353.csv",
+          "row_count": 500,
+          "timestamp": "20260115_051353"
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA1b/mistral_document_ai_results_20260115_062628.csv",
+          "row_count": 500,
+          "timestamp": "20260115_062628"
+        }
+      },
+      "QA": {
+        "pre_extracted_ocr": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA/pre_extracted_ocr_results_20260114_151114.csv",
+          "row_count": 10,
+          "timestamp": "20260114_151114"
+        }
+      },
+      "QA2c": {
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2c/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2c/claude_sonnet_results_20260115_115432.csv",
+          "row_count": 500,
+          "timestamp": "20260115_115432"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2c/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA2b": {
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2b/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2b/claude_sonnet_results_20260115_112047.csv",
+          "row_count": 500,
+          "timestamp": "20260115_112047"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2b/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA1c": {
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA1c/azure_intelligence_results_20260115_073555.csv",
+          "row_count": 500,
+          "timestamp": "20260115_073555"
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA1c/mistral_document_ai_results_20260115_090305.csv",
+          "row_count": 500,
+          "timestamp": "20260115_090305"
+        }
+      },
+      "QA3b": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA3b/claude_sonnet_results_20260119_214653.csv",
+          "row_count": 500,
+          "timestamp": "20260119_214653"
+        },
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA3b/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA3b/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        }
+      },
+      "QA1a": {
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA1a/mistral_document_ai_results_20260115_034712.csv",
+          "row_count": 500,
+          "timestamp": "20260115_034712"
+        },
+        "azure_intelligence": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA1a/azure_intelligence_results_20260115_021152.csv",
+          "row_count": 500,
+          "timestamp": "20260115_021152"
+        }
+      },
+      "QA4b": {
+        "pre_extracted_ocr": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA4b/pre_extracted_ocr_results_20260115_141102.csv",
+          "row_count": 500,
+          "timestamp": "20260115_141102"
+        }
+      },
+      "QA2a": {
+        "gpt-5-nano": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2a/gpt-5-nano_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2a/gpt-5-mini_results.csv",
+          "row_count": 500,
+          "timestamp": null
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA2a/claude_sonnet_results_20260115_105356.csv",
+          "row_count": 500,
+          "timestamp": "20260115_105356"
+        }
+      },
+      "QA4c": {
+        "pre_extracted_ocr": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/InfographicVQA_mini/QA4c/pre_extracted_ocr_results_20260115_145624.csv",
+          "row_count": 500,
+          "timestamp": "20260115_145624"
+        }
+      }
+    }
+  }
+}

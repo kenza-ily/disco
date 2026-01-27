@@ -1,0 +1,52 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-01-27T09:30:00Z",
+  "pipeline_runs": {
+    "last_validation": null,
+    "last_consolidation": null,
+    "last_postprocessing": null,
+    "last_notebook_execution": null
+  },
+  "datasets_status": {
+    "DocVQA_mini": {
+      "last_updated": "2026-01-14",
+      "validation_status": "pending",
+      "consolidation_status": "pending",
+      "notebook_status": "working"
+    },
+    "InfographicVQA_mini": {
+      "last_updated": "2026-01-14",
+      "validation_status": "pending",
+      "consolidation_status": "pending",
+      "notebook_status": "pending"
+    },
+    "IAM_mini": {
+      "last_updated": "2026-01-14",
+      "validation_status": "pending",
+      "consolidation_status": "pending",
+      "notebook_status": "working"
+    },
+    "ICDAR_mini": {
+      "last_updated": "2026-01-12",
+      "validation_status": "pending",
+      "consolidation_status": "pending",
+      "notebook_status": "working"
+    },
+    "publaynet_full": {
+      "last_updated": "2026-01-03",
+      "validation_status": "pending",
+      "consolidation_status": "pending",
+      "notebook_status": "pending"
+    },
+    "VOC2007": {
+      "last_updated": "2026-01-14",
+      "validation_status": "pending",
+      "consolidation_status": "pending",
+      "notebook_status": "working"
+    }
+  },
+  "notes": {
+    "restructuring_date": "2026-01-27",
+    "description": "Pipeline status tracking after folder restructuring"
+  }
+}

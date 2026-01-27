@@ -1,0 +1,3 @@
+model,phase,total_samples,avg_inference_time_ms,median_inference_time_ms,min_inference_time_ms,max_inference_time_ms,error_count,error_rate,avg_tokens,total_tokens,predictions_count,prediction_rate
+gpt-5-mini,phase_4,238,30418.92188937724,28824.83959197998,14701.890230178831,61664.9968624115,0,0.0,,0.0,238,100.0
+gpt-5-nano,phase_4,238,32918.14620154245,27731.172680854797,15329.298973083496,283053.4477233887,0,0.0,,0.0,75,31.512605042016805

@@ -1,0 +1,4 @@
+model,phase,total_samples,avg_inference_time_ms,median_inference_time_ms,min_inference_time_ms,max_inference_time_ms,error_count,error_rate,avg_tokens,total_tokens,predictions_count,prediction_rate
+azure_intelligence,phase_1,500,2990.463852405548,2578.1344175338745,2441.2741661071777,16293.524980545044,0,0.0,,0.0,492,98.4
+donut,phase_1,500,36080.416964530945,521.4501619338989,415.91501235961914,9723301.394939424,0,0.0,,0.0,500,100.0
+mistral_document_ai,phase_1,500,2075.6863827705383,1829.9058675765991,658.2531929016113,23001.973152160645,0,0.0,,0.0,500,100.0

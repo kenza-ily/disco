@@ -1,0 +1,11 @@
+Language,Best Model,Best CER,Best WER,Worst Model,Worst CER,CER Range,Samples
+Arabic,azure_intelligence,0.6265,0.7594,gpt-5-nano,11.9272,11.3007,63
+Bangla,gpt-5-mini,1.0116,1.0581,gpt-5-nano,7.6532,6.6416,81
+Chinese,gpt-5-mini,0.3637,0.5165,gpt-5-nano,3.6709,3.3072,67
+Hindi,azure_intelligence,0.4352,0.5708,gpt-5-nano,5.1898,4.7546,68
+Japanese,azure_intelligence,0.4713,0.6936,gpt-5-nano,13.0193,12.548,60
+Korean,azure_intelligence,0.6377,0.785,gpt-5-nano,9.5871,8.9494,51
+Latin,azure_intelligence,0.4898,0.7614,gpt-5-nano,14.2877,13.7979,23
+Mixed,azure_intelligence,0.5807,0.7761,gpt-5-nano,39.534,38.9533,71
+None,azure_intelligence,1.0993,1.3576,gpt-5-nano,33.4958,32.3965,95
+Symbols,azure_intelligence,0.6885,0.9744,gpt-5-nano,35.1064,34.4179,117

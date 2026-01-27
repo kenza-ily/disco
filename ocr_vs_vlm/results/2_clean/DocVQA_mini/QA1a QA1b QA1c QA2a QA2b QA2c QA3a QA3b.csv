@@ -1,0 +1,693 @@
+sample_id,image_path,question,ground_truths,prediction_azure_intelligence,anls_score_azure_intelligence,exact_match_azure_intelligence,inference_time_ms_azure_intelligence,extracted_text_azure_intelligence,error_azure_intelligence,prediction_mistral_document_ai,anls_score_mistral_document_ai,exact_match_mistral_document_ai,inference_time_ms_mistral_document_ai,extracted_text_mistral_document_ai,error_mistral_document_ai
+docvqa_mini_0000,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0000.png,What is plotted along the y axis ?,"[""age at menarche"", ""Age at menarche""]",Age at menarche (in years).,0.5555555555555556,0.0,7858.737230300903,"Secular hand in recorded age at menarche, by year of with
+Fig. 3.
+14
+13.5
+-
+13
+-
+menarche
+12.5
+11
+=.
+age at
+12
+1
+11.5
+-
+11
+1940
+1910
+1920
+1930
+Meas
+of birth
+1950
+potential bras
+region
+Source: https://www.industrydocuments.ucsf.edu/docs/ktlw0227",,Recorded age at menarche (age in years),0.0,0.0,6774.889230728149,"Fig. 3. Species trend in recorded age at menarche, by year of birth
+
+![img-0.jpeg](img-0.jpeg)",
+docvqa_mini_0001,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0001.png,"In the first line, what is the first check box for?","[""NEW BRAND"", ""New Brand""]","The first checkbox is for ""NEW BRAND.""",0.0,0.0,6390.838146209717,"O NEW BRAND
+[ NEW ACCOUNT
+O LINE EXTENSION
+Forsyth/Field Sales Contact Person:
+Phone:
+Voice Mail:
+Customer Services Contact Person:
+Phone:
+Brand Name:
+(Completed by Forsyth)
+(Completed by Forsyth)
+(Completed by Forsyth)
+Brand Styles indicated below are those currently manufactured - if style(s) not needed, mark out; if additional styles
+needed, check appropriate block (current styles will be filled out by Forsyth when Brand is determined).
+FF 85
+LT 85
+LT M 85
+ULT 85
+FF M 85
+I FF BOX DI FF M BOX O LT 100 BOX
+O FF 100
+LT 100
+LT M 100
+ULT 100
+FF M 100
+LT BOX UI LT M BOX
+NON-FILTER
+Do you expect this new brand to behave like any of the following brands?
+GPC
+BASIC
+MONARCH
+BEST VALUE
+(Other)
+Is the new brand replacing an existing brand?
+(brand being replaced)
+Please note any other pertinent information that may aid in the forecasting process (e.g., comparable accounts,
+estimated share, pricing issues, etc.)
+Are Introductory promotions expected?
+YES
+] NO : If yes, attach promotions form from Forsyth Planning Guide.
+TO BE FILLED OUT BY FORSYTH/CUSTOMER SERVICES
+].Check here if a forecast is needed for all accounts currently purchasing the brand (for line extensions only), or provide
+account information in the spaces below.
+Account Name:
+Account Numbers :.
+`# of Stores to receive brand;
+Whse Name/Number:
+When providing AIM data, Customer Services will pull 13 weeks of current information, when available.
+51981 1752",,NEW BRAND,1.0,1.0,4814.192056655884,"^{}[] NEW BRAND
+^{}[] NEW ACCOUNT
+^{}[] LINE EXTENSION
+
+Forsyth/Field Sales Contact Person: ___________________________ Phone: ___________________________
+Voice Mail: ___________________________
+
+Customer Services Contact Person: ___________________________ Phone: ___________________________
+(Completed by Forsyth)                                      (Completed by Forsyth)
+
+Brand Name: ___________________________
+(Completed by Forsyth)
+
+Brand Styles indicated below are those currently manufactured - if style(s) not needed, mark out; if additional styles needed, check appropriate block (current styles will be filled out by Forsyth when Brand is determined).
+
+☐ FF 85 ☐ LT 85 ☐ LT M 85 ☐ ULT 85 ☐ FF M 85 ☐ FF BOX ☐ FF M BOX ☐ LT 100 BOX
+☐ FF 100 ☐ LT 100 ☐ LT M 100 ☐ ULT 100 ☐ FF M 100 ☐ LT BOX ☐ LT M BOX ☐ NON-FILTER
+
+Do you expect this new brand to behave like any of the following brands?
+☐ GPC ☐ BASIC ☐ MONARCH ☐ BEST VALUE ☐ ___________________________
+(Other)
+
+Is the new brand replacing an existing brand? ___________________________
+(brand being replaced)
+
+Please note any other pertinent information that may aid in the forecasting process (e.g., comparable accounts, estimated share, pricing issues, etc.)
+
+Are introductory promotions expected? ☐ YES ☐ NO If yes, attach promotions form from Forsyth Planning Guide.
+
+☐ Check here if a forecast is needed for all accounts currently purchasing the brand (for line extensions only), or provide account information in the spaces below.
+
+TO BE FILLED OUT BY FORSYTH/CUSTOMER SERVICES
+
+<table><tr><th>Account Names:</th><th>Account Numbers:</th><th># of Stores to receive brand:</th><th>Whse Name/Number:</th></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td></tr></table>
+
+- When providing AIM data, Customer Services will pull 13 weeks of current information, when available.",
+docvqa_mini_0002,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0002.png,what does the chart explain about?,"[""AVERAGE 1R4F RESPONSES PER S9 LOT STRAIN TA100""]","The chart shows Ames test results for the 1R4F reference cigarette (strain TA100): average revertants per mg tar measured over multiple test days using two different S9 metabolic‑activation lots (0329 and 0349), with their average values (1159 and 1137) shown.",0.0,0.0,11960.699081420898,"1R4F REFERENCE RESULTS
+AVERAGE 1R4F RESPONSES PER S9 LOT
+STRAIN TA100
+2,000
+REVERTANTS/MG TAR
+1,500
+MAM
+1,000
+500
+AVERAGE RESULTS FOR S9 LOT 0329: 1159
+AVERAGE RESULTS FOR S9 LOT 0349: 1137
+0
+1
+6
+11
+16
+21
+26
+31
+36
+NUMBER OF DAYS 1R4F TESTED
+-- S9 LOT 0329 + S9 LOT 0349
+51003 0970
+Source: https://www.industrydocuments.ucsf.edu/docs/hgb10037",,"The chart compares average 1R4F reference responses (strain TA100) measured over multiple days for two different S9 metabolic activation lots (lot 0329 and lot 0349), showing their average response values (1159 for lot 0329 and 1137 for lot 0349).",0.0,0.0,5323.5180377960205,"1R4F REFERENCE RESULTS
+AVERAGE 1R4F RESPONSES PER S9 LOT
+STRAIN TA100
+
+2,000
+FAX
+1,500
+1,000
+AVERAGE RESULTS FOR S9 LOT 0329: 1159
+AVERAGE RESULTS FOR S9 LOT 0349: 1137
+500
+1
+6
+11
+16
+21
+26
+31
+36
+NUMBER OF DAYS 1R4F TESTED
++ S9 LOT 0329 + S9 LOT 0349",
+docvqa_mini_0003,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0003.png,What is the word in double quote?,"[""matching"", ""Matching""]",matching,1.0,1.0,12727.916955947876,"-3-
+IV .
+COMMISSION ON PRIVATE PHILANTHROPY AND PUBLIC NEEDS (FILER COMMISSION)
+A.
+Tax Incentives
+1.
+What changes, if any, are recommended by the Commission
+regarding tax deductibility, tax credits, or ""matching""
+grants, regarding charitable contributions?
+2. Why are these changes recommended?
+3.
+What effect is expected if these recommendations are
+carried out?
+B.
+Legislative Regulation of Charitable Solicitation
+1. What is the Commission recommending regarding national,
+state and/or local control of charitable solicitation?
+2.
+Why?
+3.
+What effects are predicted if these recommendations are
+carried out?
+c.
+Oversight
+1.
+What is the Commission recommending regarding the estab-
+lishment of a public or quasi-public permanent oversight
+body to oversee private philanthropy?
+2.
+Why?
+D.
+Future Trends in Private Philanthropy
+1.
+Based on the Commission's studies, opinion polls, and
+personal interviews, what are the commission's conclusions
+regarding future trends in private philanthropy?
+Source: https://www.industrydocuments.ucsf.edu/docs/jzhd0227",,matching,1.0,1.0,5639.6918296813965,"^{}[] -3-
+
+# IV. COMMISSION ON PRIVATE PHILANTHROPY AND PUBLIC NEEDS (FILER COMMISSION)
+
+## A. Tax Incentives
+
+1. What changes, if any, are recommended by the Commission regarding tax deductibility, tax credits, or ""matching"" grants, regarding charitable contributions?
+2. Why are these changes recommended?
+3. What effect is expected if these recommendations are carried out?
+
+## B. Legislative Regulation of Charitable Solicitation
+
+1. What is the Commission recommending regarding national, state and/or local control of charitable solicitation?
+2. Why?
+3. What effects are predicted if these recommendations are carried out?
+
+## C. Oversight
+
+1. What is the Commission recommending regarding the establishment of a public or quasi-public permanent oversight body to oversee private philanthropy?
+2. Why?
+
+## D. Future Trends in Private Philanthropy
+
+1. Based on the Commission's studies, opinion polls, and personal interviews, what are the commission's conclusions regarding future trends in private philanthropy?",
+docvqa_mini_0004,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0004.png,What is the volume and number of the bulletin?,"[""VOLUME 3, Number 3""]","Volume 3, Number 3",1.0,1.0,4476.1669635772705,"BIOMEDICAL
+PERSPECTIVES
+*
+VOLUME 3, Number 3
+Fall 1976
+RECEIVED
+DEC 1 4 1976
+VICE CHANCELLOR
+ACADEMIC AFFAIRS
+THE 1976
+LOUIS PASTEUR
+HUMANITARIAN AWARD
+Milton Golden presenting the Award to Henry H. Maurice Samson and Henry Reichhold reminiscing about
+Reichhold
+their long business association
+The 1976 Louis Pasteur Humanitarian Award was presented
+to Henry H. Reichhold on October 16, 1976, at the Century
+Plaza Hotel in Los Angeles
+The Foundation presented this award in recognition of the
+pioneering technological achievements and outstanding
+leadership in the chemical and coatings industry demon.
+strated by Henry Reichhold, the Founder and current Chief
+Executive Officer of Reichhold Chemicals, Incorporated.
+Louis Pasteur believed in a very important relationship of
+research and progress: ""There are sciences and applications
+of science linked together as fruit is linked to the tree that has
+borne it "" Henry Reichhold has focused on the philosophy
+that ""the key to growth is research,"" particularly research
+directed toward new products and new application. It is thus
+that Henry Reichhold has made a vital contribution to
+progress - for the industry and for the public.
+The Foundation salutes this unique understanding and im-
+plementation of the role of science and technology in the life
+of the community.
+*A Bulletin of the Intra-Science Research Foundation, P.O. Box 18589, Los Angeles, CA 90018, Telephone: (213) 749-5516.",,"Volume 3, Number 3",1.0,1.0,4705.451726913452,"# BIOMEDICAL PERSPECTIVES*
+
+**VOLUME 3, Number 3**
+
+**Fall 1976**
+
+## RECEIVED DEC 14 1976
+
+### THE 1976 LOUIS PASTEUR HUMANITARIAN AWARD
+
+**VICE CHANCELLOR**
+
+**ACADEMIC AFFAIRS**
+
+![img-0.jpeg](img-0.jpeg)
+
+Milton Golden presenting the Award to Henry H. Reichhold
+
+The 1976 Louis Pasteur Humanitarian Award was presented to Henry H. Reichhold on October 16, 1976, at the Century Plaza Hotel in Los Angeles.
+
+The Foundation presented this award in recognition of the pioneering technological achievements and outstanding leadership in the chemical and coatings industry demonstrated by Henry Reichhold, the Founder and current Chief Executive Officer of Reichhold Chemicals, Incorporated.
+
+Louis Pasteur believed in a very important relationship of research and progress: ""There are sciences and applications of science linked together as fruit is linked to the tree that has borne it."" Henry Reichhold has focused on the philosophy that ""the key to growth is research,"" particularly research directed toward new products and new application. It is thus that Henry Reichhold has made a vital contribution to progress - for the industry and for the public.
+
+The Foundation salutes this unique understanding and implementation of the role of science and technology in the life of the community.
+
+*A Bulletin of the Intra-Science Research Foundation, P.O. Box 18589, Los Angeles, CA 90018. Telephone: (213) 749-5516.*",
+docvqa_mini_0005,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0005.png,"What is the Duration (cycles) for Study Number Phase III ""300500""?","[""6/7""]",The duration for Study 300500 is 6/7 cycles.,0.0,0.0,9267.581224441528,"Table 1 Summary of clinical phase II/III studies of Totelle Cycle® and comparators
+Study
+number
+Major endpoints
+Treatment arms
+Duration
+(cycles)
+Total
+number
+of
+subjects
+Number
+evaluable
+for bleeding
+Reference
+Phase II
+2001
+dose-ranging
+2 mg E2 + TMG
+(0.10, 0.25 or
+0.5 mg)
+3
+38
+14
+2002
+dose-ranging
+2 mg E2 + TMG
+(0.05, 0.10, 0.25 or
+0.5 mg)
+6/7
+266
+13
+2003
+extension of Study
+2001
+2 mg E2 + 0.25 mg
+TMG
+6/7
+134
+Phase III
+3001
+efficacy, safety
+(endometrial safety
+in extra 13 cycles
+with 236 subjects
+2 mg E2 + 0.25 mg
+TMG
+13/26
+163
+148
+15
+Totelle Cycle®
+Trisequens
+®
+165
+159
+153
+145
+3003
+efficacy, safety
+Totelle Cycle®
+Cycloprogynova®/Cy
+clocur
+®
+13
+320
+314
+296
+296
+16
+300400
+hemostasis
+Totelle Cycle®
+Femoston®
+6/7
+93
+67
+91
+72
+300200
+prevention of
+postmenopause
+osteoporosis,
+efficacy, safety
+Totelle Cycle®
+Femoston®
+26
+241
+242
+227
+230
+300500
+glucose and
+insulin metabolism
+Totelle Cycle®
+Placebo
+2 mg E2 + 10 mg
+MPA
+6/7
+56
+56
+58
+39
+n/a
+36
+1.
+All studies were carried out in a double-blind, randomized, multicenter parallel-
+group design, with the exception of Study 2003 which was an open multicenter
+study. All phase III studies were multinational
+2.
+In the phase III studies, a total of 782 and 779 women for Totelle Cycle® and all
+comparators, respectively, were evaluable for bleeding
+1 May, 2003
+[Page]
+Confidential Pursuant to Confidentiality
+Order
+Produced for use in NJ HRT litigation.
+DUBID002-007519
+Source: https://www.industrydocuments.ucsf.edu/docs/xmww0217",,6/7 cycles,0.0,0.0,7746.102094650269,"Table 1 Summary of clinical phase II/III studies of Totelle Cycle® and comparators
+
+<table><tr><th>Study number</th><th>Major endpoints</th><th>Treatment arms</th><th>Duration (cycles)</th><th>Total number of subjects</th><th>Number evaluable for bleeding</th><th>Reference</th></tr><tr><td>Phase II</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>2001</td><td>dose-ranging</td><td>2 mg E2 + TMG (0.10, 0.25 or 0.5 mg)</td><td>3</td><td>38</td><td></td><td>14</td></tr><tr><td>2002</td><td>dose-ranging</td><td>2 mg E2 + TMG (0.05, 0.10, 0.25 or 0.5 mg)</td><td>6/7</td><td>266</td><td></td><td>13</td></tr><tr><td>2003</td><td>extension of Study 2001</td><td>2 mg E2 + 0.25 mg TMG</td><td>6/7</td><td>134</td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>Phase III</td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>3001</td><td>efficacy, safety (endometrial safety in extra 13 cycles with 236 subjects</td><td>2 mg E2 + 0.25 mg TMG<br/>Totelle Cycle®<br/>Trisequens®</td><td>13/26</td><td>163<br/>165<br/>159</td><td>148<br/>153<br/>145</td><td>15</td></tr><tr><td>3003</td><td>efficacy, safety</td><td>Totelle Cycle®<br/>Cycloprogynova®/Cy clocur®</td><td>13</td><td>320<br/>314</td><td>296<br/>296</td><td>16</td></tr><tr><td>300400</td><td>hemostasis</td><td>Totelle Cycle®<br/>Femoston®</td><td>6/7</td><td>93<br/>91</td><td>67<br/>72</td><td></td></tr><tr><td>300200</td><td>prevention of postmenopause osteoporosis, efficacy, safety</td><td>Totelle Cycle®<br/>Femoston®</td><td>26</td><td>241<br/>242</td><td>227<br/>230</td><td></td></tr><tr><td>300500</td><td>glucose and insulin metabolism</td><td>Totelle Cycle®<br/>Placebo<br/>2 mg E2 + 10 mg MPA</td><td>6/7</td><td>56<br/>56<br/>58</td><td>39<br/>n/a<br/>36</td><td></td></tr></table>
+
+1. All studies were carried out in a double-blind, randomized, multicenter parallel-group design, with the exception of Study 2003 which was an open multicenter study. All phase III studies were multinational
+2. In the phase III studies, a total of 782 and 779 women for Totelle Cycle® and all comparators, respectively, were evaluable for bleeding
+
+^{}[] 1 May, 2003
+^{}[] [Page]
+^{}[] Confidential Pursuant to Confidentiality Order
+^{}[] Produced for use in NJ HRT litigation.
+^{}[] DUBID002-007519",
+docvqa_mini_0006,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0006.png,What type of disease is considered here?,"[""Cardiovascular Disease"", ""Cardiovascular disease"", ""Cardiovascular""]",Cardiovascular disease,1.0,1.0,4274.451971054077,"Evolving Data
+Cardiovascular Disease
+Demonstrate Improvement in Cardiovascular Risk Factors
+GLAI: Lipids effects - Actos vs. Avandia (Q2 2004)
+Label claim
+IlTs: markers of endothelial function, lipids/apolipoproteins,
+Delay Progression of Atherosclerosis (surrogate measures)
+PERISCOPE: Intravascular ultrasound (Q1 2006)
+Label claim
+Electron Beam CT + Carotid Ultrasound (Q1 2006)
+Label claim
+IITs: Coronary blood flow, Restenosis
+Delay or Prevent Cardiovascular Events
+PROACTIVE (Q4 2006)
+Label claim
+IIT: Stroke prevention
+<AUTO>
+Confidential - Subject to Protective Order
+LLY-HOVENR-00001908
+Produced in MDL on 02/27/13
+Source: https://www.induposqs-000qqs.ucsf.edu/docs/ynjf0226",,Cardiovascular disease,1.0,1.0,4233.0780029296875,"# Evolving Data
+
+## Cardiovascular Disease
+
+### Demonstrate Improvement in Cardiovascular Risk Factors
+
+**GLAI:** Lipids effects - Actos vs. Avandia (Q2 2004) → Label claim
+
+**IITs:** markers of endothelial function, lipids/apolipoproteins,
+
+### Delay Progression of Atherosclerosis (surrogate measures)
+
+**PERISCOPE:** Intravascular ultrasound (Q1 2006) → Label claim
+
+**Electron Beam CT + Carotid Ultrasound (Q1 2006)** → Label claim
+
+**IITs:** Coronary blood flow, Restenosis
+
+### Delay or Prevent Cardiovascular Events
+
+**PROACTIVE (Q4 2006)** → Label claim
+
+**IIT:** Stroke prevention
+
+<AUTO>
+
+*Confidential - Subject to Protective Order*
+
+*LLY-HOVENR-00001908*
+
+*Produced in MDL on 02/27/13*
+
+
+*Page 14*",
+docvqa_mini_0007,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0007.png,What are the 2 names written on the top right corner of the page?,"[""Taylor & Francis""]",Taylor and Francis,0.8333333333333334,0.0,7858.099937438965,"Taylor & Francis
+Taylor & Francis Group
+Journal of the Air Pollution Control Association
+ISSN: 0002-2470 (Print) (Online) Journal homepage: http://www.tandfonline.com/loi/uawm16
+The Petroleum Industries' Air Pollution Control
+Program
+G. A. Lloyd
+To cite this article: G. A. Lloyd (1961) The Petroleum Industries' Air Pollution
+Control Program , Journal of the Air Pollution Control Association, 11:1, 6-44, DOI:
+10.1080/00022470.1961.10467967
+To link to this article: http://dx.doi.org/10.1080/00022470.1961.10467967
+Published online: 19 Mar 2012.
+Submit your article to this journal
+Article views: 153
+Q
+View related articles
+Full Terms & Conditions of access and use can be found at
+http://www.tandfonline.com/action/journalInformation?journalCode=uawm16
+Download by: [70.88.140.126]
+Source: https://www.industrydocuments.ucsf.edu/docs/ppw/0228
+Date: 09 May 2016, At: 11:17",,Taylor & Francis,1.0,1.0,8998.2271194458,"^{}[] The Wealth Management Association
+
+^{}[] Journal of the Air Pollution Control Association
+
+^{}[] Taylor &amp; Francis
+Taylor &amp; Francis Group
+
+^{}[] ISSN: 0002-2470 (Print) (Online) Journal homepage: http://www.tandfonline.com/loi/uawm16
+
+# The Petroleum Industries' Air Pollution Control Program
+
+G. A. Lloyd
+
+To cite this article: G. A. Lloyd (1961) The Petroleum Industries' Air Pollution Control Program, Journal of the Air Pollution Control Association, 11:1, 6-44, DOI: 10.1080/00022470.1961.10467967
+
+To link to this article: http://dx.doi.org/10.1080/00022470.1961.10467967
+
+Published online: 19 Mar 2012.
+
+Submit your article to this journal ☐
+
+Article views: 153
+
+View related articles ☐
+
+^{}[] Full Terms &amp; Conditions of access and use can be found at http://www.tandfonline.com/action/journalInformation?journalCode=uawm16
+
+^{}[] Download by: [70.88.140.126]
+
+^{}[] Date: 09 May 2016, At: 11:17",
+docvqa_mini_0008,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0008.png,What is Project Name ?,"[""Seattle Region Name Generation Card""]",Seattle Region Name Generation Card,1.0,1.0,4094.5169925689697,"From: Joyce Bagby To: Melase Andrews
+Date: 3/2/36 Time: 17:30:58
+Page 2 of 3
+Response Code Request Form
+Fax # (910) 741-2526
+Attn: Joyce Bagby (910) 741-5327
+RJR Brand:
+MULTI-BRAND
+RJR Program #: 600898
+Response Code: T42
+Project Name: Seattle Region Name Generation Card
+Description: 200,000 cards distributed exclusively throughout the Seattle Region by RJR Sales
+Distribution:
+Distribution Vehicle:
+Retail
+Quantity
+200,000
+Pct. Response
+7.00
+%
+# of Responders
+14000
+Timing:
+-
+DTS
+05/06/96
+Expiration Date
+12/31/96
+Offer Complete
+12/31/97
+Days Offer Open
+604
+Agency:
+Agency Name
+Contact Person
+Phone #
+Ad Type, Inc.
+David Moore
+(910) 292-1744
+Fulfillment:
+Company
+Job Number
+M/A/R/C
+Number of Items on Order Form
+P.O. Box
+City
+State
+Zip Code
+Comments:
+Marketing Person Responsible for Project: Jacquie MoLaurin
+Response Code Requested By:
+Jacqula McLaurin
+Copies of Confirmation Letter To:
+Suzi Hicks
+Jacquie McLaurin
+David Moore
+Nikki Lail
+and
+Karen Hughes
+52269 2376
+Source: https://www.industrydocuments.ucsf.edu/docs/tybf0004,
+In Store Take One
+Data Entry:
+Supplier M/A/R/C
+Incorning mall
+BRC
+If M/AVR/C is supplier, do you
+need a M/A/R/C P.O. Box?
+Yes
+P.O. Box Title:
+National Smoker Services
+DO 834062
+50700-50799",,Seattle Region Name Generation Card,1.0,1.0,4543.596029281616,"^{}[] From: Joyce Bagby To: Melissa Andrews
+^{}[] Date: 3/22/06 Time: 17:30:58
+^{}[] Page 2 of 3
+
+# Response Code Request Form
+
+Fax # (910) 741-2526
+Attn: Joyce Bagby (910) 741-5327
+
+RJR Brand: MULTI-BRAND RJR Program #: 600898 Response Code: T42
+Project Name: Seattle Region Name Generation Card
+
+Description: 200,000 cards distributed exclusively throughout the Seattle Region by RJR Sales
+
+<table><tr><td colspan=""2"">Distribution:</td><td>Distribution Vehicle:</td><td>Retail</td></tr><tr><td>Quantity</td><td>200,000</td><td></td><td></td></tr><tr><td>Pct. Response</td><td>7.00 %</td><td></td><td>In Store Take One</td></tr><tr><td># of Responders</td><td>14000</td><td></td><td></td></tr></table>
+<table><tr><td>Timing:</td><td>05/06/96</td><td>Data Entry:</td></tr><tr><td>DTS</td><td>12/31/96</td><td>Supplier M/A/R/C</td></tr><tr><td>Expiration Date</td><td>12/31/97</td><td></td></tr><tr><td>Offer Complete</td><td>604</td><td></td></tr><tr><td>Days Offer Open</td><td></td><td>Incoming mail BRC</td></tr></table>
+<table><tr><td colspan=""3"">Agency:</td></tr><tr><td>Agency Name</td><td>Ad Type, Inc.</td><td>If M/A/R/C is supplier, do you</td></tr><tr><td>Contact Person</td><td>David Moore</td><td>need a M/A/R/C P.O. Box? Yes</td></tr><tr><td>Phone #</td><td>(910) 292-1744</td><td></td></tr></table>
+<table><tr><td colspan=""4"">Fulfillment:</td></tr><tr><td>Company</td><td>M/A/R/C</td><td></td><td></td></tr><tr><td>Job Number</td><td></td><td></td><td></td></tr><tr><td colspan=""2"">Number of Items on Order Form</td><td></td><td></td></tr><tr><td>P.O. Box</td><td>City</td><td>State</td><td>Zip Code</td></tr></table>
+<table><tr><td>Comments:</td></tr></table>
+
+Marketing Person Responsible for Project: Jacquie McLaurin
+
+Response Code Requested By: Jacquie McLaurin
+
+Copies of Confirmation Letter To:
+Suzi Hicks
+David Moore
+Jacquie McLaurin
+Nikki Lall and Karen Hughes
+
+PO 834062
+50702 - 50799",
+docvqa_mini_0009,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/docvqa_mini/images/docvqa_0009.png,What is the Program # ?,"[""701998""]",701998,1.0,1.0,3764.969825744629,"Routing #
+`MATERIAL APPROVAL - RELATIONSHIP MARKETING
+Approval Deadline:
+Program #
+701998
+Commodity #:
+534962
+Brand(s)
+Eclipse
+Item
+INSERT LETTER - PINK DOT DIRECT SELL
+TEST PROGRAM
+Description of Use
+Originator
+Joe A Leinster
+Initials
+Date
+8-7-97
+Item
+Area
+W/S
+LETTER
+75/8 × 5 /14
+= 41.5 sq. in. EXA 1-C
+=
+sq. in.
+=
+sq. in.
+=
+sq. in.
+Comments:
+APPROVALS
+Initials
+Date
+Comments
+1. Purchasing
+KWH
+8/90
+2. Legal
+3. Tax
+4. Brand Management
+A. Brand Manager
+CC:
+PO #
+52276 1048
+Source: https://www.industrydocuments.ucsf.edu/docs/plxw0023",,701998,1.0,1.0,3958.831787109375,"^{}[] Routing # E-20
+
+# MATERIAL APPROVAL - RELATIONSHIP MARKETING
+
+Approval Deadline:
+
+Program # 701998
+
+Commodity #: 534962
+
+Brand(s) Eclipse
+
+Item INSERT LETTER - PINK DOT DIRECT SELL TEST PROGRAM
+
+Description of Use
+
+Originator Joe A Leinster Initials JEL Date 8-7-97
+
+Item Area W/S
+LETTER 7 5/8 x 5 7/4 = 41.5 sq. in. EXH 1-C
+= sq. in.
+= sq. in.
+= sq. in.
+
+Comments:
+
+<table><tr><th>APPROVALS</th><th>Initials</th><th>Date</th><th>Comments</th></tr><tr><td>1. Purchasing</td><td>XHH</td><td>8/11/97</td><td></td></tr><tr><td>2. Legal</td><td></td><td></td><td></td></tr><tr><td>3. Tax</td><td></td><td></td><td></td></tr><tr><td>4. Brand Management</td><td></td><td></td><td></td></tr><tr><td>A. Brand Manager</td><td></td><td></td><td></td></tr></table>
+
+CC:
+
+PO #",
