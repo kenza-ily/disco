@@ -25,3 +25,5 @@ zzz_ignore/*
 ocr_vs_vlm/results/1_raw/VOC2007/gpt-5-nano/execution_summary.json
 ocr_vs_vlm/results/1_raw/VOC2007/gpt-5-nano/checkpoint.json
 /ocr_vs_vlm/results/1_raw
+/ocr_vs_vlm/results/3_notebooks/zzz_archive
+*.md

@@ -1,4 +1,4 @@
-sample_id,image_path,question,ground_truths,prediction_pre_extracted_ocr,anls_score_pre_extracted_ocr,exact_match_pre_extracted_ocr,inference_time_ms_pre_extracted_ocr,extracted_text_pre_extracted_ocr,error_pre_extracted_ocr
+sample_id,image_path,question,ground_truths,prediction_gpt-5-mini,anls_score_gpt-5-mini,exact_match_gpt-5-mini,inference_time_ms_gpt-5-mini,extracted_text_gpt-5-mini,error_gpt-5-mini
 infovqa_mini_0000,/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/datasets_subsets/infographicvqa_mini/images/infovqa_0000.png,What percent of people use Twitter more than once a day?,"[""27%"", ""27""]",,0.0,0.0,11115.70692062378,"SOCIAL MEDIA ENGAGEMENT
 STATISTICS ANDTRENDS
 LIKE

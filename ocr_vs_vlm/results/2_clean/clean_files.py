@@ -68,9 +68,9 @@ ERROR_PATTERNS = [
 ]
 
 # Paths
-RESULTS_DIR = Path(__file__).parent.parent / "results"
+RESULTS_DIR = Path(__file__).parent.parent / "1_raw"
 RESULTS_CLEAN_DIR = Path(__file__).parent
-ZZZ_DIR = RESULTS_DIR / "zzz"
+ZZZ_DIR = Path(__file__).parent.parent / "1_raw" / "zzz_ignore"
 
 # Price data (loaded from prices.json)
 PRICES_FILE = Path(__file__).parent.parent.parent / "llms" / "prices.json"
@@ -135,7 +135,7 @@ def discover_result_files(results_dir: Path) -> Dict[str, Dict[str, Dict[str, Li
     )
 
     for dataset_dir in results_dir.iterdir():
-        if not dataset_dir.is_dir() or dataset_dir.name in ["zzz", "results_clean"]:
+        if not dataset_dir.is_dir() or dataset_dir.name in ["zzz_ignore", "results_clean"]:
             continue
 
         dataset_name = dataset_dir.name
@@ -458,8 +458,35 @@ def consolidate_qa_files(
     all_models = set(existing_models)
 
     for model, vf in valid_files.items():
-        all_models.add(model)
-        
+        # Read first row to determine actual model name from parsing_model and qa_model columns
+        actual_model = model  # fallback to filename-based model
+
+        with open(vf.file_path, 'r', newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            first_row = next(reader, None)
+
+            if first_row:
+                parsing_model = first_row.get('parsing_model', '')
+                qa_model = first_row.get('qa_model', '')
+
+                # Construct model name based on available information
+                if parsing_model and qa_model:
+                    # Both models present: use format "parsing__qa"
+                    actual_model = f"{parsing_model}__{qa_model}"
+                elif parsing_model:
+                    # Only parsing model: use it directly
+                    actual_model = parsing_model
+                elif qa_model:
+                    # Only QA model (shouldn't happen in QA datasets, but handle it)
+                    actual_model = qa_model
+                # else: keep filename-based model name
+
+            # Reset file pointer
+            f.seek(0)
+            next(reader)  # Skip header again
+
+        all_models.add(actual_model)
+
         with open(vf.file_path, 'r', newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             for row in reader:
@@ -475,13 +502,17 @@ def consolidate_qa_files(
                         'ground_truths': row.get('ground_truths', ''),
                     }
 
-                # Add model-specific columns
-                all_data[sample_id][f'prediction_{model}'] = row.get('prediction', '')
-                all_data[sample_id][f'anls_score_{model}'] = row.get('anls_score', '')
-                all_data[sample_id][f'exact_match_{model}'] = row.get('exact_match', '')
-                all_data[sample_id][f'inference_time_ms_{model}'] = row.get('inference_time_ms', '')
-                all_data[sample_id][f'extracted_text_{model}'] = row.get('extracted_text', '')
-                all_data[sample_id][f'error_{model}'] = row.get('error', '')
+                # Add model-specific columns using actual_model name
+                all_data[sample_id][f'prediction_{actual_model}'] = row.get('prediction', '')
+                all_data[sample_id][f'anls_score_{actual_model}'] = row.get('anls_score', '')
+                all_data[sample_id][f'exact_match_{actual_model}'] = row.get('exact_match', '')
+                all_data[sample_id][f'embedding_similarity_{actual_model}'] = row.get('embedding_similarity', '')
+                all_data[sample_id][f'substring_match_{actual_model}'] = row.get('substring_match', '')
+                all_data[sample_id][f'prediction_in_ground_truth_{actual_model}'] = row.get('prediction_in_ground_truth', '')
+                all_data[sample_id][f'ground_truth_in_prediction_{actual_model}'] = row.get('ground_truth_in_prediction', '')
+                all_data[sample_id][f'inference_time_ms_{actual_model}'] = row.get('inference_time_ms', '')
+                all_data[sample_id][f'extracted_text_{actual_model}'] = row.get('extracted_text', '')
+                all_data[sample_id][f'error_{actual_model}'] = row.get('error', '')
 
     # Build column list
     base_cols = ['sample_id', 'image_path', 'question', 'ground_truths']
@@ -492,6 +523,10 @@ def consolidate_qa_files(
             f'prediction_{model}',
             f'anls_score_{model}',
             f'exact_match_{model}',
+            f'embedding_similarity_{model}',
+            f'substring_match_{model}',
+            f'prediction_in_ground_truth_{model}',
+            f'ground_truth_in_prediction_{model}',
             f'inference_time_ms_{model}',
             f'extracted_text_{model}',
             f'error_{model}',
