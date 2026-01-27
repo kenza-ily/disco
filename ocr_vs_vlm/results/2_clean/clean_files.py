@@ -52,11 +52,12 @@ EXPECTED_ROWS = {
     "publaynet": 500,
     "publaynet_full": 500,
     "VOC2007": 238,
+    "RX-PAD": 200,
 }
 
 # Dataset categorization
 QA_DATASETS = ["DocVQA_mini", "InfographicVQA_mini"]
-PARSING_DATASETS = ["IAM_mini", "ICDAR_mini", "publaynet", "publaynet_full", "VOC2007"]
+PARSING_DATASETS = ["IAM_mini", "ICDAR_mini", "publaynet", "publaynet_full", "VOC2007", "RX-PAD"]
 
 # Error patterns to detect in predictions
 ERROR_PATTERNS = [
@@ -218,6 +219,18 @@ def discover_result_files(results_dir: Path) -> Dict[str, Dict[str, Dict[str, Li
                         files[dataset_name][experiment][model].append(csv_file)
                     else:
                         files[dataset_name]["phase_1"][model].append(csv_file)
+
+        # Handle RX-PAD (organized by model folder with phase_X naming)
+        elif dataset_name == "RX-PAD":
+            for model_dir in dataset_dir.iterdir():
+                if not model_dir.is_dir() or model_dir.name.startswith("execution"):
+                    continue
+                model = model_dir.name
+                for csv_file in model_dir.glob("*.csv"):
+                    phase_match = re.match(r"phase_(\d+[a-z]?)_", csv_file.name)
+                    if phase_match:
+                        experiment = phase_match.group(1)
+                        files[dataset_name][experiment][model].append(csv_file)
 
     return files
 
