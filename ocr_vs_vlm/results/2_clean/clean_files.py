@@ -26,6 +26,7 @@ Usage:
 import argparse
 import csv
 import json
+import logging
 import os
 import re
 import shutil
@@ -35,6 +36,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 import tiktoken
+
+logger = logging.getLogger(__name__)
 
 # ============================================================================
 # CONFIGURATION
@@ -407,6 +410,201 @@ def move_to_zzz(file_path: Path, reason: str, dry_run: bool = False) -> None:
 # CONSOLIDATION
 # ============================================================================
 
+def load_embeddings_for_phase(phase_dir: Path, phase: str) -> Dict:
+    """
+    Load embeddings from JSON file for a given phase, or return empty cache.
+
+    Args:
+        phase_dir: Path to phase directory in 1_raw (e.g., 1_raw/DocVQA_mini/QA1a)
+        phase: Phase name (e.g., "QA1a")
+
+    Returns:
+        Dict with structure:
+        {
+            'ground_truths': {str(gt_list): [[emb1], [emb2], ...]},
+            'predictions': {sample_id: {model_key: [emb]}}
+        }
+        Returns empty dict if no embeddings file found (embeddings will be generated on-the-fly)
+    """
+    # Find embeddings file (may have timestamp)
+    embeddings_files = list(phase_dir.glob("embeddings_*.json"))
+
+    if not embeddings_files:
+        logger.info(f"No embeddings file found for phase {phase}, will generate embeddings on-the-fly")
+        return {'ground_truths': {}, 'predictions': {}}
+
+    # Take most recent if multiple
+    emb_file = max(embeddings_files, key=lambda f: f.stat().st_mtime)
+
+    try:
+        with open(emb_file, 'r') as f:
+            emb_data = json.load(f)
+
+        logger.info(f"Loaded embeddings from {emb_file.name}")
+        return emb_data
+
+    except Exception as e:
+        logger.warning(f"Failed to load embeddings from {emb_file}: {e}, will generate on-the-fly")
+        return {'ground_truths': {}, 'predictions': {}}
+
+
+def compute_cosine_similarity(pred_embedding: List[float], gt_embeddings: List[List[float]]) -> float:
+    """
+    Compute max cosine similarity between prediction and ground truth embeddings.
+
+    Args:
+        pred_embedding: Single embedding vector
+        gt_embeddings: List of ground truth embedding vectors
+
+    Returns:
+        Max cosine similarity score (0.0-1.0), or 0.0 if computation fails
+    """
+    if not pred_embedding or not gt_embeddings:
+        return 0.0
+
+    try:
+        from scipy.spatial.distance import cosine
+
+        max_sim = 0.0
+        for gt_emb in gt_embeddings:
+            if len(pred_embedding) != len(gt_emb):
+                continue
+            sim = 1.0 - cosine(pred_embedding, gt_emb)
+            max_sim = max(max_sim, sim)
+
+        return float(max_sim)
+
+    except Exception:
+        return 0.0
+
+
+def compute_missing_metrics(
+    row: Dict,
+    embeddings_data: Optional[Dict],
+    actual_model: str,
+    generate_embeddings: bool = True,
+    embedding_calculator=None
+) -> Dict[str, float]:
+    """
+    Compute the 4 missing metrics for a single row.
+
+    Args:
+        row: CSV row dict with prediction and ground_truths
+        embeddings_data: Loaded embeddings dict (or None)
+        actual_model: Model name for embedding lookup
+        generate_embeddings: If True, generate embeddings if not found in cache
+
+    Returns:
+        Dict with keys: substring_match, prediction_in_ground_truth,
+                       ground_truth_in_prediction, embedding_similarity
+    """
+    # Import metric functions from metrics module
+    import sys
+    from pathlib import Path
+
+    # Add parent directory to path to import from ocr_vs_vlm.metrics
+    metrics_path = Path(__file__).parent.parent.parent
+    if str(metrics_path) not in sys.path:
+        sys.path.insert(0, str(metrics_path))
+
+    from ocr_vs_vlm.metrics.evaluation_metrics import (
+        compute_substring_match,
+        compute_prediction_in_ground_truth,
+        compute_ground_truth_in_prediction
+    )
+
+    prediction = row.get('prediction', '')
+    ground_truths_str = row.get('ground_truths', '[]')
+
+    # Parse ground truths JSON
+    try:
+        import json as json_module
+        ground_truths = json_module.loads(ground_truths_str)
+        if not isinstance(ground_truths, list):
+            ground_truths = [str(ground_truths)]
+    except:
+        ground_truths = []
+
+    # Compute string-based metrics
+    substring_match = compute_substring_match(prediction, ground_truths)
+    pred_in_gt = compute_prediction_in_ground_truth(prediction, ground_truths)
+    gt_in_pred = compute_ground_truth_in_prediction(prediction, ground_truths)
+
+    # Compute embedding similarity
+    embedding_similarity = 0.0
+
+    if embeddings_data:
+        # Try to get embeddings from cache
+        sample_id = row.get('sample_id', '')
+
+        # Get prediction embedding
+        pred_embeddings = embeddings_data.get('predictions', {}).get(sample_id, {})
+        pred_emb = pred_embeddings.get(actual_model)
+
+        # Get ground truth embeddings
+        gt_key = ground_truths_str  # Use exact JSON string as key
+        gt_embs = embeddings_data.get('ground_truths', {}).get(gt_key)
+
+        if pred_emb and gt_embs:
+            embedding_similarity = compute_cosine_similarity(pred_emb, gt_embs)
+        elif generate_embeddings and prediction and ground_truths and embedding_calculator:
+            # Generate embeddings on-the-fly if not in cache
+            try:
+                # Generate prediction embedding
+                pred_result = embedding_calculator.embed_text(prediction)
+                pred_emb = pred_result.embedding if pred_result else []
+
+                # Generate ground truth embeddings
+                gt_embs = []
+                for gt in ground_truths:
+                    if gt:
+                        gt_result = embedding_calculator.embed_text(gt)
+                        gt_embs.append(gt_result.embedding)
+
+                # Compute similarity
+                if pred_emb and gt_embs:
+                    embedding_similarity = compute_cosine_similarity(pred_emb, gt_embs)
+
+                    # Store in cache for reuse
+                    if sample_id not in embeddings_data.get('predictions', {}):
+                        if 'predictions' not in embeddings_data:
+                            embeddings_data['predictions'] = {}
+                        embeddings_data['predictions'][sample_id] = {}
+                    embeddings_data['predictions'][sample_id][actual_model] = pred_emb
+
+                    if gt_key not in embeddings_data.get('ground_truths', {}):
+                        if 'ground_truths' not in embeddings_data:
+                            embeddings_data['ground_truths'] = {}
+                        embeddings_data['ground_truths'][gt_key] = gt_embs
+
+            except Exception as e:
+                logger.warning(f"Failed to generate embeddings for sample {sample_id}: {e}")
+    elif generate_embeddings and prediction and ground_truths and embedding_calculator:
+        # No embeddings data at all, generate from scratch
+        try:
+            pred_result = embedding_calculator.embed_text(prediction)
+            pred_emb = pred_result.embedding if pred_result else []
+
+            gt_embs = []
+            for gt in ground_truths:
+                if gt:
+                    gt_result = embedding_calculator.embed_text(gt)
+                    gt_embs.append(gt_result.embedding)
+
+            if pred_emb and gt_embs:
+                embedding_similarity = compute_cosine_similarity(pred_emb, gt_embs)
+
+        except Exception as e:
+            logger.warning(f"Failed to generate embeddings: {e}")
+
+    return {
+        'substring_match': substring_match,
+        'prediction_in_ground_truth': pred_in_gt,
+        'ground_truth_in_prediction': gt_in_pred,
+        'embedding_similarity': embedding_similarity
+    }
+
+
 def consolidate_qa_files(
     valid_files: Dict[str, ValidFile],
     dataset: str,
@@ -436,10 +634,22 @@ def consolidate_qa_files(
 
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
+    # Load embeddings for this dataset+phase
+    embeddings_cache: Dict[str, Optional[Dict]] = {}  # {phase: embeddings_data}
+
+    # Initialize embedding calculator once for reuse
+    embedding_calculator = None
+    try:
+        from llms.embeddings import EmbeddingCalculator
+        embedding_calculator = EmbeddingCalculator()
+        logger.info(f"Initialized EmbeddingCalculator for computing missing metrics")
+    except Exception as e:
+        logger.warning(f"Could not initialize EmbeddingCalculator: {e}. Embedding similarity will be 0.0")
+
     # Load existing data if incremental mode
     existing_data: Dict[str, Dict[str, Any]] = {}
     existing_models: List[str] = []
-    
+
     if incremental and output_file.exists():
         with open(output_file, 'r', newline='', encoding='utf-8') as f:
             reader = csv.DictReader(f)
@@ -506,10 +716,25 @@ def consolidate_qa_files(
                 all_data[sample_id][f'prediction_{actual_model}'] = row.get('prediction', '')
                 all_data[sample_id][f'anls_score_{actual_model}'] = row.get('anls_score', '')
                 all_data[sample_id][f'exact_match_{actual_model}'] = row.get('exact_match', '')
-                all_data[sample_id][f'embedding_similarity_{actual_model}'] = row.get('embedding_similarity', '')
-                all_data[sample_id][f'substring_match_{actual_model}'] = row.get('substring_match', '')
-                all_data[sample_id][f'prediction_in_ground_truth_{actual_model}'] = row.get('prediction_in_ground_truth', '')
-                all_data[sample_id][f'ground_truth_in_prediction_{actual_model}'] = row.get('ground_truth_in_prediction', '')
+
+                # Load embeddings for this phase if not already loaded
+                if experiment not in embeddings_cache:
+                    phase_dir = vf.file_path.parent  # Path to phase dir in 1_raw
+                    embeddings_cache[experiment] = load_embeddings_for_phase(phase_dir, experiment)
+
+                # Compute missing metrics on-the-fly
+                missing_metrics = compute_missing_metrics(
+                    row,
+                    embeddings_cache.get(experiment),
+                    actual_model,
+                    generate_embeddings=True,
+                    embedding_calculator=embedding_calculator
+                )
+
+                all_data[sample_id][f'embedding_similarity_{actual_model}'] = missing_metrics['embedding_similarity']
+                all_data[sample_id][f'substring_match_{actual_model}'] = missing_metrics['substring_match']
+                all_data[sample_id][f'prediction_in_ground_truth_{actual_model}'] = missing_metrics['prediction_in_ground_truth']
+                all_data[sample_id][f'ground_truth_in_prediction_{actual_model}'] = missing_metrics['ground_truth_in_prediction']
                 all_data[sample_id][f'inference_time_ms_{actual_model}'] = row.get('inference_time_ms', '')
                 all_data[sample_id][f'extracted_text_{actual_model}'] = row.get('extracted_text', '')
                 all_data[sample_id][f'error_{actual_model}'] = row.get('error', '')
@@ -913,6 +1138,12 @@ def save_valid_files_list(valid_files: Dict, output_path: Path) -> None:
 # ============================================================================
 
 def main():
+    # Configure logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(message)s'
+    )
+
     parser = argparse.ArgumentParser(
         description="Validate and consolidate benchmark result files."
     )
@@ -931,6 +1162,11 @@ def main():
         action="store_true",
         help="Only validate files, don't consolidate.",
     )
+    parser.add_argument(
+        "--dataset",
+        type=str,
+        help="Process only a specific dataset (e.g., DocVQA_mini, InfographicVQA_mini)",
+    )
 
     args = parser.parse_args()
 
@@ -940,10 +1176,20 @@ def main():
     print(f"Results directory: {RESULTS_DIR}")
     print(f"Output directory: {RESULTS_CLEAN_DIR}")
     print(f"Mode: {'DRY RUN' if args.dry_run else 'INCREMENTAL' if args.incremental else 'FULL REBUILD'}")
+    if args.dataset:
+        print(f"Dataset filter: {args.dataset}")
 
     # Step 1: Discover all result files
     print("\n🔍 Discovering result files...")
     all_files = discover_result_files(RESULTS_DIR)
+
+    # Apply dataset filter if specified
+    if args.dataset:
+        if args.dataset in all_files:
+            all_files = {args.dataset: all_files[args.dataset]}
+        else:
+            print(f"❌ Dataset '{args.dataset}' not found. Available datasets: {', '.join(all_files.keys())}")
+            return
 
     total_files = sum(
         len(files)
