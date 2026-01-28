@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-27T21:32:33.449045",
+  "generated_at": "2026-01-28T12:30:05.426778",
   "valid_files": {
     "publaynet_full": {
       "P-A": {
@@ -16,9 +16,9 @@
       },
       "P-C": {
         "claude_sonnet": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-C/claude_sonnet/P-C_claude_sonnet_results_20260127_204806.csv",
-          "row_count": 5,
-          "timestamp": "20260127_204806"
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-C/claude_sonnet/P-C_claude_sonnet_results_20260128_051730.csv",
+          "row_count": 500,
+          "timestamp": "20260128_051730"
         },
         "gpt-5-mini": {
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-C/gpt-5-mini/P-C_gpt-5-mini_results.csv",
@@ -33,9 +33,9 @@
       },
       "P-B": {
         "claude_sonnet": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-B/claude_sonnet/P-B_claude_sonnet_results_20260127_204722.csv",
-          "row_count": 5,
-          "timestamp": "20260127_204722"
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-B/claude_sonnet/P-B_claude_sonnet_results_20260128_042515.csv",
+          "row_count": 500,
+          "timestamp": "20260128_042515"
         },
         "gpt-5-mini": {
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-B/gpt-5-mini/P-B_gpt-5-mini_results.csv",
@@ -46,6 +46,25 @@
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-B/gpt-5-nano/P-B_gpt-5-nano_results.csv",
           "row_count": 500,
           "timestamp": null
+        }
+      }
+    },
+    "dude_mini": {
+      "all_phases": {
+        "azure_intelligence_gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/dude_mini/azure_intelligence_gpt-5-mini/results_20260124_101749.csv",
+          "row_count": 1212,
+          "timestamp": "20260124_101749"
+        },
+        "gpt-5-mini_gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/dude_mini/gpt-5-mini_gpt-5-mini/results_20260124_101749.csv",
+          "row_count": 1212,
+          "timestamp": "20260124_101749"
+        },
+        "gpt-5-mini": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/dude_mini/gpt-5-mini/results_20260124_101749.csv",
+          "row_count": 808,
+          "timestamp": "20260124_101749"
         }
       }
     },
@@ -377,15 +396,15 @@
         }
       },
       "QA1b": {
-        "mistral_document_ai": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1b/mistral_document_ai_results_20260115_062628.csv",
-          "row_count": 500,
-          "timestamp": "20260115_062628"
-        },
         "azure_intelligence": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1b/azure_intelligence_results_20260115_051353.csv",
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1b/azure_intelligence_results_20260127_220051.csv",
           "row_count": 500,
-          "timestamp": "20260115_051353"
+          "timestamp": "20260127_220051"
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1b/mistral_document_ai_results_20260127_232636.csv",
+          "row_count": 500,
+          "timestamp": "20260127_232636"
         }
       },
       "QA": {
@@ -420,15 +439,15 @@
         }
       },
       "QA1c": {
-        "mistral_document_ai": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1c/mistral_document_ai_results_20260115_090305.csv",
-          "row_count": 500,
-          "timestamp": "20260115_090305"
-        },
         "azure_intelligence": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1c/azure_intelligence_results_20260115_073555.csv",
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1c/azure_intelligence_results_20260128_005758.csv",
           "row_count": 500,
-          "timestamp": "20260115_073555"
+          "timestamp": "20260128_005758"
+        },
+        "mistral_document_ai": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/InfographicVQA_mini/QA1c/mistral_document_ai_results_20260128_023409.csv",
+          "row_count": 500,
+          "timestamp": "20260128_023409"
         }
       },
       "QA3b": {

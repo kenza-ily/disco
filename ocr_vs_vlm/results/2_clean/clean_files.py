@@ -30,12 +30,16 @@ import logging
 import os
 import re
 import shutil
+import sys
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Any
 import tiktoken
+
+# Increase CSV field size limit for large text fields (e.g., DUDE dataset)
+csv.field_size_limit(sys.maxsize)
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +51,7 @@ logger = logging.getLogger(__name__)
 EXPECTED_ROWS = {
     "DocVQA_mini": 500,
     "InfographicVQA_mini": 500,
+    "dude_mini": 404,
     "IAM_mini": 500,
     "ICDAR_mini": 500,
     "publaynet": 500,
@@ -56,7 +61,7 @@ EXPECTED_ROWS = {
 }
 
 # Dataset categorization
-QA_DATASETS = ["DocVQA_mini", "InfographicVQA_mini"]
+QA_DATASETS = ["DocVQA_mini", "InfographicVQA_mini", "dude_mini"]
 PARSING_DATASETS = ["IAM_mini", "ICDAR_mini", "publaynet", "publaynet_full", "VOC2007", "RX-PAD"]
 
 # Error patterns to detect in predictions
@@ -143,9 +148,20 @@ def discover_result_files(results_dir: Path) -> Dict[str, Dict[str, Dict[str, Li
             continue
 
         dataset_name = dataset_dir.name
-        
+
+        # Handle dude_mini FIRST (special case QA dataset with different structure)
+        if dataset_name == "dude_mini":
+            for model_dir in dataset_dir.iterdir():
+                if not model_dir.is_dir() or model_dir.name.startswith(("benchmark", "execution")):
+                    continue
+                model = model_dir.name
+                for csv_file in model_dir.glob("results_*.csv"):
+                    # All phases are in single file, use "all_phases" as experiment
+                    # The consolidation will split by phase column
+                    files[dataset_name]["all_phases"][model].append(csv_file)
+
         # Handle QA datasets (DocVQA_mini, InfographicVQA_mini)
-        if dataset_name in QA_DATASETS:
+        elif dataset_name in QA_DATASETS:
             for phase_dir in dataset_dir.iterdir():
                 if not phase_dir.is_dir() or phase_dir.name.startswith("benchmark"):
                     continue
