@@ -35,3 +35,10 @@ ocr_vs_vlm/results/4_postprocessing/*
 claude_outputs/*
 /ocr_vs_vlm/results/paper
 /ocr_vs_vlm/results/utils
+
+# Embeddings cache (large JSON files)
+/ocr_vs_vlm/results/3_embeddings/**/*.json
+**/*_embeddings*.json
+.embedding_cache_*.json
+/ocr_vs_vlm/results/4_notebooks/by_dataset/todo
+/ocr_vs_vlm/results/3_embeddings

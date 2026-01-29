@@ -58,10 +58,11 @@ EXPECTED_ROWS = {
     "publaynet_full": 500,
     "VOC2007": 238,
     "RX-PAD": 200,
+    "chartqapro_mini": 500,  
 }
 
 # Dataset categorization
-QA_DATASETS = ["DocVQA_mini", "InfographicVQA_mini", "dude_mini"]
+QA_DATASETS = ["DocVQA_mini", "InfographicVQA_mini", "dude_mini", "chartqapro_mini"]
 PARSING_DATASETS = ["IAM_mini", "ICDAR_mini", "publaynet", "publaynet_full", "VOC2007", "RX-PAD"]
 
 # Error patterns to detect in predictions
@@ -149,16 +150,29 @@ def discover_result_files(results_dir: Path) -> Dict[str, Dict[str, Dict[str, Li
 
         dataset_name = dataset_dir.name
 
-        # Handle dude_mini FIRST (special case QA dataset with different structure)
+        # Handle dude_mini (same structure as standard QA datasets: QA folders with model CSV files)
         if dataset_name == "dude_mini":
-            for model_dir in dataset_dir.iterdir():
-                if not model_dir.is_dir() or model_dir.name.startswith(("benchmark", "execution")):
+            for phase_dir in dataset_dir.iterdir():
+                if not phase_dir.is_dir() or phase_dir.name.startswith(("benchmark", "execution")):
                     continue
-                model = model_dir.name
-                for csv_file in model_dir.glob("results_*.csv"):
-                    # All phases are in single file, use "all_phases" as experiment
-                    # The consolidation will split by phase column
-                    files[dataset_name]["all_phases"][model].append(csv_file)
+                experiment = phase_dir.name
+                # CSV files are directly in the phase folder
+                for csv_file in phase_dir.glob("*.csv"):
+                    model = _extract_model_from_filename(csv_file.name)
+                    if model:
+                        files[dataset_name][experiment][model].append(csv_file)
+
+        # Handle chartqapro_mini and visrbench_mini (same structure as standard QA datasets)
+        elif dataset_name in ["chartqapro_mini", "visrbench_mini"]:
+            for phase_dir in dataset_dir.iterdir():
+                if not phase_dir.is_dir() or phase_dir.name.startswith("benchmark"):
+                    continue
+                experiment = phase_dir.name
+                # CSV files are directly in the phase folder
+                for csv_file in phase_dir.glob("*.csv"):
+                    model = _extract_model_from_filename(csv_file.name)
+                    if model:
+                        files[dataset_name][experiment][model].append(csv_file)
 
         # Handle QA datasets (DocVQA_mini, InfographicVQA_mini)
         elif dataset_name in QA_DATASETS:
@@ -172,80 +186,64 @@ def discover_result_files(results_dir: Path) -> Dict[str, Dict[str, Dict[str, Li
                     if model:
                         files[dataset_name][experiment][model].append(csv_file)
 
-        # Handle IAM_mini (organized by model folder)
+        # Handle IAM_mini (organized by Pa/Pb/Pc folders with model CSV files inside)
         elif dataset_name == "IAM_mini":
-            for model_dir in dataset_dir.iterdir():
-                if not model_dir.is_dir() or model_dir.name.startswith(("benchmark", "execution")):
+            for phase_dir in dataset_dir.iterdir():
+                if not phase_dir.is_dir() or phase_dir.name.startswith(("benchmark", "execution")):
                     continue
-                model = model_dir.name
-                for csv_file in model_dir.glob("*.csv"):
-                    # Extract phase from filename (e.g., phase_1_results.csv -> phase_1)
-                    phase_match = re.match(r"(phase_\d+[a-z]?)_", csv_file.name)
-                    if phase_match:
-                        experiment = phase_match.group(1)
+                # Phase folders are named Pa, Pb, Pc
+                experiment = phase_dir.name
+                for csv_file in phase_dir.glob("*.csv"):
+                    model = _extract_model_from_filename(csv_file.name)
+                    if model:
                         files[dataset_name][experiment][model].append(csv_file)
 
-        # Handle ICDAR_mini (has date subfolder)
+        # Handle ICDAR_mini (organized by Pa/Pb/Pc folders with model CSV files inside)
         elif dataset_name == "ICDAR_mini":
-            for date_dir in dataset_dir.iterdir():
-                if not date_dir.is_dir() or date_dir.name == "execution_summary.json":
+            for phase_dir in dataset_dir.iterdir():
+                if not phase_dir.is_dir() or phase_dir.name.startswith(("benchmark", "execution")):
                     continue
-                for model_dir in date_dir.iterdir():
-                    if not model_dir.is_dir():
-                        continue
-                    model = model_dir.name
-                    for csv_file in model_dir.glob("*.csv"):
-                        phase_match = re.match(r"(phase_\d+[a-z]?)_", csv_file.name)
-                        if phase_match:
-                            experiment = phase_match.group(1)
-                            files[dataset_name][experiment][model].append(csv_file)
-                        else:
-                            # Default phase for files without phase prefix
-                            files[dataset_name]["phase_1"][model].append(csv_file)
+                # Phase folders are named Pa, Pb, Pc
+                experiment = phase_dir.name
+                for csv_file in phase_dir.glob("*.csv"):
+                    model = _extract_model_from_filename(csv_file.name)
+                    if model:
+                        files[dataset_name][experiment][model].append(csv_file)
 
-        # Handle PubLayNet (P-A, P-B, P-C phases)
+        # Handle PubLayNet (Pa/Pb/Pc folders with model CSV files inside)
         elif dataset_name.startswith("publaynet"):
             for phase_dir in dataset_dir.iterdir():
-                if not phase_dir.is_dir() or not phase_dir.name.startswith("P-"):
+                if not phase_dir.is_dir() or phase_dir.name.startswith(("benchmark", "execution")):
                     continue
+                # Phase folders are named Pa, Pb, Pc
                 experiment = phase_dir.name
-                for model_dir in phase_dir.iterdir():
-                    if not model_dir.is_dir():
-                        continue
-                    model = model_dir.name
-                    for csv_file in model_dir.glob("*.csv"):
+                for csv_file in phase_dir.glob("*.csv"):
+                    model = _extract_model_from_filename(csv_file.name)
+                    if model:
                         files[dataset_name][experiment][model].append(csv_file)
 
-        # Handle VOC2007 (nested model/VOC2007/model structure)
+        # Handle VOC2007 (organized by Pa/Pb/Pc/Pd folders with model CSV files inside)
         elif dataset_name == "VOC2007":
-            for model_dir in dataset_dir.iterdir():
-                if not model_dir.is_dir() or model_dir.name.startswith("execution"):
+            for phase_dir in dataset_dir.iterdir():
+                if not phase_dir.is_dir() or phase_dir.name.startswith(("benchmark", "execution")):
                     continue
-                model = model_dir.name
-                # Handle nested structure VOC2007/model/VOC2007/model/
-                inner_path = model_dir / "VOC2007" / model
-                if inner_path.exists():
-                    search_dir = inner_path
-                else:
-                    search_dir = model_dir
-                for csv_file in search_dir.glob("*.csv"):
-                    phase_match = re.match(r"(phase_\d+[a-z]?)_", csv_file.name)
-                    if phase_match:
-                        experiment = phase_match.group(1)
+                # Phase folders are named Pa, Pb, Pc, Pd
+                experiment = phase_dir.name
+                for csv_file in phase_dir.glob("*.csv"):
+                    model = _extract_model_from_filename(csv_file.name)
+                    if model:
                         files[dataset_name][experiment][model].append(csv_file)
-                    else:
-                        files[dataset_name]["phase_1"][model].append(csv_file)
 
-        # Handle RX-PAD (organized by model folder with phase_X naming)
+        # Handle RX-PAD (organized by Pa/Pb/Pc folders with model CSV files inside)
         elif dataset_name == "RX-PAD":
-            for model_dir in dataset_dir.iterdir():
-                if not model_dir.is_dir() or model_dir.name.startswith("execution"):
+            for phase_dir in dataset_dir.iterdir():
+                if not phase_dir.is_dir() or phase_dir.name.startswith(("benchmark", "execution")):
                     continue
-                model = model_dir.name
-                for csv_file in model_dir.glob("*.csv"):
-                    phase_match = re.match(r"phase_(\d+[a-z]?)_", csv_file.name)
-                    if phase_match:
-                        experiment = phase_match.group(1)
+                # Phase folders are named Pa, Pb, Pc
+                experiment = phase_dir.name
+                for csv_file in phase_dir.glob("*.csv"):
+                    model = _extract_model_from_filename(csv_file.name)
+                    if model:
                         files[dataset_name][experiment][model].append(csv_file)
 
     return files
@@ -254,7 +252,8 @@ def discover_result_files(results_dir: Path) -> Dict[str, Dict[str, Dict[str, Li
 def _extract_model_from_filename(filename: str) -> Optional[str]:
     """Extract model name from result filename."""
     # Pattern: {model}_results.csv or {model}_results_{timestamp}.csv
-    match = re.match(r"(.+?)_results(?:_\d{8}_\d{6})?\.csv", filename)
+    # Timestamp can be YYYYMMDD or YYYYMMDD_HHMMSS
+    match = re.match(r"(.+?)_results(?:_\d{8}(?:_\d{6})?)?\.csv", filename)
     if match:
         return match.group(1)
     # Pattern: P-{phase}_{model}_results*.csv
@@ -666,15 +665,6 @@ def consolidate_qa_files(
     # Load embeddings for this dataset+phase
     embeddings_cache: Dict[str, Optional[Dict]] = {}  # {phase: embeddings_data}
 
-    # Initialize embedding calculator once for reuse
-    embedding_calculator = None
-    try:
-        from llms.embeddings import EmbeddingCalculator
-        embedding_calculator = EmbeddingCalculator()
-        logger.info(f"Initialized EmbeddingCalculator for computing missing metrics")
-    except Exception as e:
-        logger.warning(f"Could not initialize EmbeddingCalculator: {e}. Embedding similarity will be 0.0")
-
     # Load existing data if incremental mode
     existing_data: Dict[str, Dict[str, Any]] = {}
     existing_models: List[str] = []
@@ -751,14 +741,26 @@ def consolidate_qa_files(
                     phase_dir = vf.file_path.parent  # Path to phase dir in 1_raw
                     embeddings_cache[experiment] = load_embeddings_for_phase(phase_dir, experiment)
 
-                # Compute missing metrics on-the-fly
-                missing_metrics = compute_missing_metrics(
-                    row,
-                    embeddings_cache.get(experiment),
-                    actual_model,
-                    generate_embeddings=True,
-                    embedding_calculator=embedding_calculator
-                )
+                # Check if source file has embedding columns already
+                has_embedding_cols = 'embedding_similarity' in row
+
+                if has_embedding_cols:
+                    # Copy existing metrics directly from source
+                    missing_metrics = {
+                        'embedding_similarity': row.get('embedding_similarity', 0.0),
+                        'substring_match': row.get('substring_match', 0.0),
+                        'prediction_in_ground_truth': row.get('prediction_in_ground_truth', 0.0),
+                        'ground_truth_in_prediction': row.get('ground_truth_in_prediction', 0.0),
+                    }
+                else:
+                    # Compute missing metrics (without generating embeddings)
+                    missing_metrics = compute_missing_metrics(
+                        row,
+                        embeddings_cache.get(experiment),
+                        actual_model,
+                        generate_embeddings=False,  # Don't generate embeddings on-the-fly
+                        embedding_calculator=None
+                    )
 
                 all_data[sample_id][f'embedding_similarity_{actual_model}'] = missing_metrics['embedding_similarity']
                 all_data[sample_id][f'substring_match_{actual_model}'] = missing_metrics['substring_match']
@@ -775,12 +777,6 @@ def consolidate_qa_files(
     for model in sorted_models:
         model_cols.extend([
             f'prediction_{model}',
-            f'anls_score_{model}',
-            f'exact_match_{model}',
-            f'embedding_similarity_{model}',
-            f'substring_match_{model}',
-            f'prediction_in_ground_truth_{model}',
-            f'ground_truth_in_prediction_{model}',
             f'inference_time_ms_{model}',
             f'extracted_text_{model}',
             f'error_{model}',
