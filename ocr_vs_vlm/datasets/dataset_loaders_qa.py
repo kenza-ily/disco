@@ -45,22 +45,24 @@ class DocVQAMiniDataset:
     Each sample has a document image, question, and multiple valid answers.
     """
     
-    def __init__(self, dataset_root: str, sample_limit: Optional[int] = None):
+    def __init__(self, dataset_root: str, sample_limit: Optional[int] = None, sample_ids: Optional[set] = None):
         """
         Initialize DocVQA mini loader.
-        
+
         Args:
             dataset_root: Root path to datasets_subsets folder
             sample_limit: Max samples to load (None = all 500)
+            sample_ids: Optional set of specific sample IDs to load (for targeted reruns)
         """
         self.dataset_root = Path(dataset_root)
         self.sample_limit = sample_limit
+        self.sample_ids = sample_ids  # Filter to specific sample IDs if provided
         self.samples: List[QASample] = []
         self._load()
-        
+
         if sample_limit and len(self.samples) > sample_limit:
             self.samples = self.samples[:sample_limit]
-        
+
         logger.info(f"Loaded {len(self.samples)} samples from DocVQA_mini")
     
     def _load(self):
@@ -74,8 +76,12 @@ class DocVQAMiniDataset:
             data = json.load(f)
         
         images_dir = self.dataset_root / "docvqa_mini"
-        
+
         for sample_data in data.get('samples', []):
+            # Skip if sample_ids filter is provided and this ID is not in it
+            if self.sample_ids and sample_data['sample_id'] not in self.sample_ids:
+                continue
+
             # Build full image path
             image_path = images_dir / sample_data['image_path']
             
@@ -127,22 +133,24 @@ class InfographicVQAMiniDataset:
     Key difference from DocVQA: includes pre-extracted OCR text in metadata.
     """
     
-    def __init__(self, dataset_root: str, sample_limit: Optional[int] = None):
+    def __init__(self, dataset_root: str, sample_limit: Optional[int] = None, sample_ids: Optional[set] = None):
         """
         Initialize InfographicVQA mini loader.
-        
+
         Args:
             dataset_root: Root path to datasets_subsets folder
             sample_limit: Max samples to load (None = all 500)
+            sample_ids: Optional set of specific sample IDs to load (for targeted reruns)
         """
         self.dataset_root = Path(dataset_root)
         self.sample_limit = sample_limit
+        self.sample_ids = sample_ids  # Filter to specific sample IDs if provided
         self.samples: List[QASample] = []
         self._load()
-        
+
         if sample_limit and len(self.samples) > sample_limit:
             self.samples = self.samples[:sample_limit]
-        
+
         logger.info(f"Loaded {len(self.samples)} samples from InfographicVQA_mini")
     
     def _load(self):
@@ -156,8 +164,12 @@ class InfographicVQAMiniDataset:
             data = json.load(f)
         
         images_dir = self.dataset_root / "infographicvqa_mini"
-        
+
         for sample_data in data.get('samples', []):
+            # Skip if sample_ids filter is provided and this ID is not in it
+            if self.sample_ids and sample_data['sample_id'] not in self.sample_ids:
+                continue
+
             # Build full image path
             image_path = images_dir / sample_data['image_path']
             
@@ -453,17 +465,6 @@ class VisRBenchMiniDataset:
         visr_dir = self.dataset_root / "visr_bench_mini"
         content_types_to_load = [self.content_type] if self.content_type else ["figure", "table", "text", "multilingual"]
         
-        # Content type to HF folder mapping
-        content_to_hf_folder = {
-            "figure": "Multimodal",
-            "table": "Multimodal",
-            "text": "Multimodal",
-            "multilingual": "Multilingual"
-        }
-        
-        # Local images directory
-        local_images_dir = visr_dir / "images"
-        
         total_loaded = 0
         
         for ctype in content_types_to_load:
@@ -476,7 +477,8 @@ class VisRBenchMiniDataset:
             with open(qa_file) as f:
                 docs = json.load(f)
             
-            hf_folder = content_to_hf_folder[ctype]
+            # Get the images directory for this content type
+            images_base = visr_dir / "documents" / ctype
             
             for doc in docs:
                 doc_id = doc['file_name']
@@ -484,25 +486,15 @@ class VisRBenchMiniDataset:
                 all_page_md_str = doc.get('all_page_md_str', [])
                 qa_list = doc.get('qa_list', [])
                 
-                # Filter QAs to only include those with non-empty ground truth answers
-                valid_qas = [qa for qa in qa_list if qa.get('answer', '').strip()]
-                
-                if not valid_qas:
-                    # Skip documents with no valid QAs
-                    continue
-                
                 # Sample random QAs per document (capped at qa_per_doc)
-                if len(valid_qas) > self.qa_per_doc:
-                    sampled_qas = random.sample(valid_qas, self.qa_per_doc)
+                if len(qa_list) > self.qa_per_doc:
+                    sampled_qas = random.sample(qa_list, self.qa_per_doc)
                 else:
-                    sampled_qas = valid_qas
+                    sampled_qas = qa_list
                 
                 # Create one sample per QA
                 for qa_idx, qa in enumerate(sampled_qas):
                     sample_id = f"{doc_id}_{qa_idx}"
-                    
-                    # Use the new images directory structure
-                    images_dir = local_images_dir / hf_folder / doc_id
                     
                     sample = VisRBenchSample(
                         sample_id=sample_id,
@@ -515,7 +507,7 @@ class VisRBenchMiniDataset:
                         all_page_images=all_page_images,
                         all_page_md_str=all_page_md_str,
                         total_pages=len(all_page_images),
-                        images_dir=str(images_dir)
+                        images_dir=str(images_base / doc_id / "images")
                     )
                     
                     self.samples.append(sample)
@@ -524,49 +516,20 @@ class VisRBenchMiniDataset:
                     if self.sample_limit and total_loaded >= self.sample_limit:
                         return
     
-    def get_evidence_page_image(self, sample: VisRBenchSample) -> Optional[str]:
+    def get_evidence_page_image(self, sample: VisRBenchSample) -> str:
         """
         Get the file path to the evidence page image for a sample.
-
+        
+        Args:
+            sample: VisRBenchSample with page_index and images_dir
+            
         Returns:
-            Full path to the evidence page image, or None if not found
+            Full path to the evidence page image
         """
+        images_dir = Path(sample.images_dir)
         page_idx = sample.page_index
         image_filename = sample.all_page_images[page_idx]
-
-        # Handle HuggingFace virtual path
-        if sample.images_dir.startswith("hf://"):
-            from huggingface_hub import hf_hub_download
-            # Parse: "hf://kenza-ily/visr-bench-mini/images/multilingual/0001"
-            path_without_prefix = sample.images_dir.replace("hf://", "")
-            parts = path_without_prefix.split("/")
-
-            if len(parts) < 2:
-                logger.error(f"Invalid HF path: {sample.images_dir}")
-                return None
-
-            repo_id = f"{parts[0]}/{parts[1]}"  # "kenza-ily/visr-bench-mini"
-            image_dir = "/".join(parts[2:])  # "images/multilingual/doc_id"
-
-            try:
-                image_path = hf_hub_download(
-                    repo_id=repo_id,
-                    filename=f"{image_dir}/{image_filename}",
-                    repo_type="dataset"
-                )
-                return image_path
-            except Exception as e:
-                logger.warning(f"Failed to download image from HuggingFace: {e}")
-                return None
-
-        # Handle local path
-        images_dir = Path(sample.images_dir)
-        image_path = images_dir / image_filename
-        if image_path.exists():
-            return str(image_path)
-
-        # Image not found - return None to signal fallback to markdown
-        return None
+        return str(images_dir / image_filename)
     
     def get_all_page_images(self, sample: VisRBenchSample) -> List[str]:
         """
