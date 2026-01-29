@@ -30,3 +30,8 @@ ocr_vs_vlm/results/1_raw/VOC2007/gpt-5-nano/checkpoint.json
 /ocr_vs_vlm/results/5_paper
 /ocr_vs_vlm/benchmarks
 /ocr_vs_vlm/ocr_vs_vlm/results/1_raw
+ocr_vs_vlm/results/raw_old/*
+ocr_vs_vlm/results/4_postprocessing/*
+claude_outputs/*
+/ocr_vs_vlm/results/paper
+/ocr_vs_vlm/results/utils

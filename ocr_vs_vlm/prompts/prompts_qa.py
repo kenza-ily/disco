@@ -7,7 +7,7 @@ Defines prompt templates for:
 
 Phase naming convention:
 - QA1a, QA1b, QA1c: OCR Pipeline + QA variations
-- QA2a, QA2b, QA2c: VLM Pipeline + QA variations  
+- QA2a, QA2b: VLM Pipeline (varies parsing prompt, same QA prompt)
 - QA3a, QA3b: Direct VQA variations
 """
 
@@ -88,7 +88,7 @@ Answer:"""
 
 def get_qa_cot_prompt(question: str, extracted_text: str, dataset_name: str = "DocVQA") -> str:
     """
-    QA1c/QA2c: Chain-of-thought QA prompt - reasoning before answering.
+    QA1c: Chain-of-thought QA prompt - reasoning before answering.
     
     Args:
         question: The question to answer
@@ -280,17 +280,52 @@ def get_direct_vqa_prompt(
         raise ValueError(f"Unknown variation: {variation}. Use 'a' or 'b'")
 
 
-def get_parsing_prompt(dataset_name: str) -> str:
+def get_parsing_prompt(dataset_name: str, variation: str = "a") -> str:
     """
     Get parsing prompt for dataset.
     
     Args:
         dataset_name: 'DocVQA' or 'InfographicVQA'
+        variation: 'a' (simple extraction) or 'b' (detailed extraction)
     
     Returns:
         Appropriate parsing prompt
     """
-    if dataset_name == "InfographicVQA":
-        return get_parsing_prompt_infographicvqa()
+    if variation == "b":
+        # Detailed extraction prompt
+        if dataset_name == "InfographicVQA":
+            return """Extract ALL text and data from this infographic image with maximum detail.
+
+Instructions:
+- Include all visible text: titles, subtitles, labels, data values, annotations
+- Preserve ALL numerical data and statistics exactly as shown
+- Include text from charts, graphs, and diagrams
+- Capture data series names and their values
+- Include axis labels and scale values
+- Capture any footnotes, sources, or citations
+- Read text from all areas: headers, body, legends, captions
+- For tables, preserve row and column structure
+- Include any icons or symbols with text labels
+
+Return ONLY the extracted text, no commentary."""
+        else:
+            return """Extract ALL text and data from this document image with maximum detail.
+
+Instructions:
+- Preserve the complete structure and layout of the document
+- Include ALL form labels and their corresponding values
+- Include ALL table headers and cell contents with structure
+- Include any handwritten text or annotations
+- Capture watermarks, stamps, or signatures if present
+- Maintain reading order (top to bottom, left to right)
+- For forms, use "Label: Value" format
+- For tables, indicate row/column structure
+- Include page numbers, headers, footers if present
+
+Return ONLY the extracted text, no commentary."""
     else:
-        return get_parsing_prompt_docvqa()
+        # Simple extraction prompt (variation 'a')
+        if dataset_name == "InfographicVQA":
+            return get_parsing_prompt_infographicvqa()
+        else:
+            return get_parsing_prompt_docvqa()
