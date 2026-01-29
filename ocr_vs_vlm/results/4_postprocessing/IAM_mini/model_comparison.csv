@@ -1,7 +1,0 @@
-Model,Phase,CER (Mean),CER (Median),WER (Mean),WER (Median),Pred Rate %
-mistral_document_ai,Phase 1 (OCR),0.0233,0.0,0.0387,0.0,100.0
-gpt-5-mini,Phase 3 (VLM+),0.0344,0.0093,0.0644,0.0381,100.0
-gpt-5-mini,Phase 2 (VLM),0.0451,0.0092,0.0697,0.0317,100.0
-azure_intelligence,Phase 1 (OCR),0.0622,0.0391,0.3011,0.272,100.0
-gpt-5-nano,Phase 2 (VLM),0.2301,0.032,0.2712,0.0857,85.7
-gpt-5-nano,Phase 3 (VLM+),0.2658,0.0341,0.3039,0.0952,77.5

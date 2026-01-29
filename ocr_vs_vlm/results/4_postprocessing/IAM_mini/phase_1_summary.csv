@@ -1,3 +1,0 @@
-model,phase,total_samples,avg_prediction_time_ms,median_prediction_time_ms,min_prediction_time_ms,max_prediction_time_ms,avg_ground_truth_time_ms,prediction_error_count,prediction_error_rate,ground_truth_error_count,avg_tokens,total_tokens,predictions_count,prediction_rate
-azure_intelligence,phase_1,500,3412.869436264038,2713.329553604126,1549.4167804718018,11686.474084854126,3105.829107284546,0,0.0,0,,0.0,500,100.0
-mistral_document_ai,phase_1,500,2914.1695523262024,2762.454032897949,1502.8371810913086,12372.42579460144,1892.5268096923828,0,0.0,0,,0.0,500,100.0

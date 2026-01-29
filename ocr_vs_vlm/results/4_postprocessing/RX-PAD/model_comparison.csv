@@ -1,9 +1,0 @@
-Model,Phase,CER (Mean),CER (Median),WER (Mean),WER (Median),Avg Time (ms),Pred Rate %
-gpt-5-mini,Phase P-C (VLM + medical context),1.9172,1.6919,1.5202,1.2525,14303.0163,100.0
-claude_sonnet,Phase P-C (VLM + medical context),2.0784,1.7883,1.5853,1.2964,11734.2193,100.0
-gpt-5-mini,Phase P-B (VLM generic),2.0872,1.7987,1.5385,1.2672,14059.3957,100.0
-azure_intelligence,Phase P-A (OCR),2.0904,1.8198,1.471,1.2471,3755.1951,100.0
-claude_sonnet,Phase P-B (VLM generic),2.1873,1.9206,1.6453,1.3196,11505.6317,100.0
-mistral_document_ai,Phase P-A (OCR),2.3283,1.9057,1.7685,1.3241,3621.4834,100.0
-gpt-5-nano,Phase P-C (VLM + medical context),149.9626,2.1975,58.8248,1.5457,17756.956,86.0
-gpt-5-nano,Phase P-B (VLM generic),155.9918,2.1781,62.0229,1.5984,21811.1736,84.5
