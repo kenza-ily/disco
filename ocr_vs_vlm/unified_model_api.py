@@ -550,16 +550,25 @@ class UnifiedModelAPI:
                     ]
                 }
             ],
-            max_completion_tokens=4000  # GPT-5 models can handle complex document analysis
+            max_completion_tokens=16000  # Increased for complex infographics with lots of text
         )
-        
+
+        # Check if content is empty and log the reason
+        content = response.choices[0].message.content or ""
+        finish_reason = response.choices[0].finish_reason
+
+        if not content and finish_reason:
+            logger.warning(f"Empty content from {model}. Finish reason: {finish_reason}")
+            if finish_reason == "content_filter":
+                logger.warning(f"Content filtered for image: {image_path}")
+
         return ModelResponse(
             model_name=model,
             model_type=ModelType.VLM,
-            content=response.choices[0].message.content,
+            content=content,
             source=image_path,
             query=query,
-            tokens_used=response.usage.total_tokens,
+            tokens_used=response.usage.total_tokens if response.usage else 0,
         )
     
     def _vlm_mistral(self, image_path: str, query: Optional[str]) -> ModelResponse:

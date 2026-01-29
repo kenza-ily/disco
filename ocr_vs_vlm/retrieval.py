@@ -268,31 +268,159 @@ class DenseRetriever:
         return all_results[:top_k], gt_rank if gt_rank else len(documents) + 1
 
 
+class BGEM3Retriever:
+    """
+    Dense semantic retrieval using BGE-M3 embeddings.
+
+    Aligns with VisR-Bench standard: https://github.com/puar-playground/VisR-Bench
+    Model: BAAI/bge-m3
+    """
+
+    def __init__(self, model_name: str = "BAAI/bge-m3", device: str = None, batch_size: int = 16):
+        """
+        Initialize BGE-M3 retriever.
+
+        Args:
+            model_name: HuggingFace model ID (default: BAAI/bge-m3)
+            device: Torch device (cuda/cpu, auto-detects if None)
+            batch_size: Batch size for encoding (default: 16)
+        """
+        import torch
+        from transformers import AutoTokenizer, AutoModel
+
+        self.model_name = model_name
+        self.batch_size = batch_size
+        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+
+        # Load model and tokenizer
+        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        self.model = AutoModel.from_pretrained(model_name).to(self.device)
+        self.model.eval()
+
+    def encode_texts(self, texts: List[str]) -> np.ndarray:
+        """
+        Encode texts to embeddings using CLS token + L2 normalization.
+
+        Returns:
+            Normalized embeddings array (num_texts, embedding_dim)
+        """
+        import torch
+
+        embeddings = []
+        for i in range(0, len(texts), self.batch_size):
+            batch = texts[i:i + self.batch_size]
+            inputs = self.tokenizer(batch, padding=True, truncation=True,
+                                   max_length=512, return_tensors="pt").to(self.device)
+
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+                # Use CLS token (first token) as sentence embedding
+                batch_embeddings = outputs.last_hidden_state[:, 0, :]
+                # L2 normalization
+                batch_embeddings = torch.nn.functional.normalize(batch_embeddings, p=2, dim=1)
+                embeddings.append(batch_embeddings.cpu().numpy())
+
+        return np.vstack(embeddings)
+
+    def retrieve(
+        self,
+        query: str,
+        documents: List[str],
+        top_k: int = 1
+    ) -> List[Tuple[int, float]]:
+        """
+        Retrieve top-K most relevant documents using BGE-M3 embeddings.
+
+        Args:
+            query: Search query
+            documents: List of document texts
+            top_k: Number of top results
+
+        Returns:
+            List of (page_index, cosine_score) tuples, sorted descending
+            Scores range: -1 to 1 (typically 0.3-0.9 for relevant docs)
+        """
+        if not documents:
+            return []
+
+        # Encode query and documents
+        query_emb = self.encode_texts([query])[0]
+        doc_embs = self.encode_texts(documents)
+
+        # Compute cosine similarities (embeddings are already normalized)
+        # cosine_sim = dot(query, doc) for normalized vectors
+        scores = np.dot(doc_embs, query_emb)
+
+        # Create (index, score) tuples and sort descending
+        results = [(idx, float(score)) for idx, score in enumerate(scores)]
+        results.sort(key=lambda x: x[1], reverse=True)
+
+        return results[:top_k]
+
+    def retrieve_with_rank(
+        self,
+        query: str,
+        documents: List[str],
+        ground_truth_idx: int,
+        top_k: int = 1
+    ) -> Tuple[List[Tuple[int, float]], int]:
+        """
+        Retrieve documents and return rank of ground truth page.
+
+        Returns:
+            (top_k_results, ground_truth_rank)
+            ground_truth_rank is 1-indexed (1 = best)
+        """
+        # Get all scores
+        all_results = self.retrieve(query, documents, top_k=len(documents))
+
+        # Find rank of ground truth (1-indexed)
+        gt_rank = None
+        for rank, (idx, _) in enumerate(all_results, start=1):
+            if idx == ground_truth_idx:
+                gt_rank = rank
+                break
+
+        return all_results[:top_k], gt_rank if gt_rank else len(documents) + 1
+
+
 class HybridRetriever:
     """
-    Hybrid retrieval combining BM25 (sparse) and dense (semantic) methods.
+    Hybrid retrieval combining BM25 (sparse) and BGE-M3 (dense).
 
-    Normalizes scores from both methods and combines them with a weighted average.
+    Fuses normalized scores with configurable weighting.
+    Aligns with VisR-Bench repository standards.
     """
 
     def __init__(
         self,
         bm25_weight: float = 0.5,
-        embedding_model: str = "text-embedding-3-small",
-        tokenizer: Optional[Callable[[str], List[str]]] = None
+        tokenizer: Optional[Callable[[str], List[str]]] = None,
+        bge_model_name: str = "BAAI/bge-m3",
+        bge_device: str = None,
+        bge_batch_size: int = 16
     ):
         """
         Initialize hybrid retriever.
 
         Args:
-            bm25_weight: Weight for BM25 scores (0-1). Dense weight = 1 - bm25_weight.
-            embedding_model: OpenAI embedding model to use.
-            tokenizer: Function to tokenize text for BM25.
+            bm25_weight: Weight for BM25 scores (default: 0.5)
+                        BGE-M3 weight = 1 - bm25_weight
+            tokenizer: BM25 tokenizer function
+            bge_model_name: BGE-M3 model name
+            bge_device: Device for BGE-M3 model
+            bge_batch_size: Batch size for BGE-M3 encoding
         """
         self.bm25_weight = bm25_weight
-        self.dense_weight = 1.0 - bm25_weight
+        self.bge_weight = 1.0 - bm25_weight
+
+        # Initialize both retrievers
         self.bm25_retriever = BM25Retriever(tokenizer=tokenizer)
-        self.dense_retriever = DenseRetriever(embedding_model=embedding_model)
+        self.bge_retriever = BGEM3Retriever(
+            model_name=bge_model_name,
+            device=bge_device,
+            batch_size=bge_batch_size
+        )
 
     def _normalize_scores(self, scores: List[float]) -> List[float]:
         """Min-max normalize scores to [0, 1] range."""
@@ -314,54 +442,41 @@ class HybridRetriever:
         top_k: int = 1
     ) -> List[Tuple[int, float]]:
         """
-        Retrieve top-K most relevant documents using hybrid method.
-
-        Args:
-            query: Search query (e.g., question text)
-            documents: List of document texts (e.g., extracted page text)
-            top_k: Number of top results to return
+        Retrieve using hybrid BM25 + BGE-M3 fusion.
 
         Returns:
-            List of (page_index, hybrid_score) tuples, sorted by score descending.
-            Hybrid scores are normalized to [0, 1] range.
-
-        Example:
-            >>> retriever = HybridRetriever(bm25_weight=0.5)
-            >>> docs = ["revenue was 100M", "expenses were 50M", "profit was 50M"]
-            >>> results = retriever.retrieve("What was the revenue?", docs, top_k=1)
-            >>> results
-            [(0, 0.92)]
+            List of (page_index, hybrid_score) tuples
         """
         if not documents:
             return []
 
-        # Get BM25 results (all documents)
+        # Get all scores from both methods
         bm25_results = self.bm25_retriever.retrieve(query, documents, top_k=len(documents))
-        bm25_scores_dict = {idx: score for idx, score in bm25_results}
+        bge_results = self.bge_retriever.retrieve(query, documents, top_k=len(documents))
 
-        # Get dense results (all documents)
-        dense_results = self.dense_retriever.retrieve(query, documents, top_k=len(documents))
-        dense_scores_dict = {idx: score for idx, score in dense_results}
+        # Create score dictionaries
+        bm25_scores = {idx: score for idx, score in bm25_results}
+        bge_scores = {idx: score for idx, score in bge_results}
 
         # Normalize scores
-        bm25_scores = [bm25_scores_dict[i] for i in range(len(documents))]
-        dense_scores = [dense_scores_dict[i] for i in range(len(documents))]
+        bm25_normalized = self._normalize_scores(list(bm25_scores.values()))
+        bge_normalized = self._normalize_scores(list(bge_scores.values()))
 
-        norm_bm25 = self._normalize_scores(bm25_scores)
-        norm_dense = self._normalize_scores(dense_scores)
-
-        # Combine scores
-        hybrid_scores = []
-        for i in range(len(documents)):
-            hybrid_score = (self.bm25_weight * norm_bm25[i] +
-                           self.dense_weight * norm_dense[i])
-            hybrid_scores.append((i, float(hybrid_score)))
+        # Compute hybrid scores
+        hybrid_scores = {}
+        for idx in range(len(documents)):
+            bm25_norm = bm25_normalized[idx]
+            bge_norm = bge_normalized[idx]
+            hybrid_scores[idx] = (
+                self.bm25_weight * bm25_norm +
+                self.bge_weight * bge_norm
+            )
 
         # Sort by hybrid score descending
-        hybrid_scores.sort(key=lambda x: x[1], reverse=True)
+        results = [(idx, score) for idx, score in hybrid_scores.items()]
+        results.sort(key=lambda x: x[1], reverse=True)
 
-        # Return top-K results
-        return hybrid_scores[:top_k]
+        return results[:top_k]
 
     def retrieve_with_rank(
         self,
