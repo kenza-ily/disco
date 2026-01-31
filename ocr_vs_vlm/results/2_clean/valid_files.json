@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-29T18:47:00.000000",
+  "generated_at": "2026-01-31T17:21:07.308928",
   "valid_files": {
     "chartqapro_mini": {
       "QA3a": {
@@ -8,15 +8,15 @@
           "row_count": 494,
           "timestamp": "20260129_063533"
         },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA3a/claude_sonnet_results_20260130_052726.csv",
+          "row_count": 494,
+          "timestamp": "20260130_052726"
+        },
         "gpt-5-mini": {
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA3a/gpt-5-mini_results_20260128_205430.csv",
           "row_count": 494,
           "timestamp": "20260128_205430"
-        },
-        "claude_sonnet": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA3a/claude_sonnet_results_20260129_043645.csv",
-          "row_count": 494,
-          "timestamp": "20260129_043645"
         }
       },
       "QA1b": {
@@ -36,9 +36,19 @@
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA2c/gpt-5-nano_results_20260129_021701.csv",
           "row_count": 494,
           "timestamp": "20260129_021701"
+        },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA2c/claude_sonnet_results_20260130_035258.csv",
+          "row_count": 494,
+          "timestamp": "20260130_035258"
         }
       },
       "QA2b": {
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA2b/claude_sonnet_results_20260129_223103.csv",
+          "row_count": 494,
+          "timestamp": "20260129_223103"
+        },
         "gpt-5-nano": {
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA2b/gpt-5-nano_results_20260128_205436.csv",
           "row_count": 494,
@@ -68,15 +78,15 @@
           "row_count": 494,
           "timestamp": "20260128_221843"
         },
+        "claude_sonnet": {
+          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA3b/claude_sonnet_results_20260130_055708.csv",
+          "row_count": 494,
+          "timestamp": "20260130_055708"
+        },
         "gpt-5-nano": {
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA3b/gpt-5-nano_results_20260129_081928.csv",
           "row_count": 494,
           "timestamp": "20260129_081928"
-        },
-        "claude_sonnet": {
-          "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA3b/claude_sonnet_results_20260129_051142.csv",
-          "row_count": 494,
-          "timestamp": "20260129_051142"
         }
       },
       "QA1a": {
@@ -104,7 +114,7 @@
         },
         "claude_sonnet": {
           "file_path": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/chartqapro_mini/QA2a/claude_sonnet_results_20260129_171420.csv",
-          "row_count": 40,
+          "row_count": 494,
           "timestamp": "20260129_171420"
         }
       }

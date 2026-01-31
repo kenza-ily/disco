@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path as _Path
+sys.path.insert(0, str(_Path(__file__).parent.parent.parent / "utils"))
+from embedding_utils import get_chunked_embed_fn
 """
 Embedding cache utilities for notebooks.
 
@@ -203,6 +207,13 @@ def store_embedding_in_cache(
     if text_type == "ground_truths":
         if 'ground_truths' not in cache[phase]:
             cache[phase]['ground_truths'] = {}
+        
+        # Check if this embedding already exists for a different key
+        for existing_key, existing_emb in cache[phase]['ground_truths'].items():
+            if existing_emb == embedding and existing_key != key:
+                logger.warning(f"Duplicate GT embedding for phase {phase}: key '{key[:50]}...' matches existing key '{existing_key[:50]}...'")
+                break
+        
         cache[phase]['ground_truths'][key] = embedding
     elif text_type == "predictions":
         if 'predictions' not in cache[phase]:
@@ -285,11 +296,14 @@ class EmbeddingCacheManager:
         cached = get_cached_embedding(self.cache, phase, "ground_truths", ground_truth)
         if cached is not None:
             self.cache_hits += 1
+            logger.debug(f"GT cache hit for phase {phase}, text length {len(ground_truth)}")
             return cached
         
         # Compute
         self.cache_misses += 1
-        result = self.calculator.embed_text(ground_truth)
+        logger.debug(f"GT cache miss for phase {phase}, computing embedding for text length {len(ground_truth)}")
+        # Use safe embedding for long texts
+        result = self.calculator.embed_text(ground_truth, safe=True, max_tokens=8000)
         embedding = result.embedding if result else []
         
         # Store in cache
@@ -326,7 +340,8 @@ class EmbeddingCacheManager:
         
         # Compute
         self.cache_misses += 1
-        result = self.calculator.embed_text(prediction)
+        # Use safe embedding for long texts
+        result = self.calculator.embed_text(prediction, safe=True, max_tokens=8000)
         embedding = result.embedding if result else []
         
         # Store in cache
@@ -364,13 +379,26 @@ class EmbeddingCacheManager:
         pred_emb = self.get_prediction_embedding(phase, prediction, sample_id, model)
         
         if not gt_emb or not pred_emb:
+            logger.warning(f"Missing embeddings for sample {sample_id}: gt_emb={len(gt_emb) if gt_emb else 0}, pred_emb={len(pred_emb) if pred_emb else 0}")
             return 0.0
+        
+        # Check if embeddings are identical (debugging)
+        if gt_emb == pred_emb:
+            logger.warning(f"Identical embeddings for sample {sample_id}, model {model}")
+            return 1.0  # Perfect match
         
         try:
             from scipy.spatial.distance import cosine
             similarity = 1 - cosine(pred_emb, gt_emb)
+            
+            # Log suspicious values for debugging
+            if similarity < 0 or similarity > 1:
+                logger.warning(f"Invalid cosine similarity {similarity} for sample {sample_id}")
+                return max(0.0, min(1.0, similarity))  # Clamp to valid range
+            
             return float(similarity)
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error computing cosine similarity for sample {sample_id}: {e}")
             return 0.0
     
     def save_new_embeddings(self) -> List[Path]:

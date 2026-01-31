@@ -9,7 +9,7 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Optional, Iterator, Tuple, Literal
+from typing import Dict, List, Optional, Iterator, Tuple, Literal, Union
 import numpy as np
 from PIL import Image
 
@@ -29,7 +29,7 @@ class Sample:
     """
     sample_id: str
     image_path: str
-    ground_truth: str
+    ground_truth: Union[str, Dict[str, str]]
     metadata: Dict
 
 
@@ -727,6 +727,7 @@ class VOC2007Dataset(Dataset):
                 'language': 'zh-CN',  # Simplified Chinese
                 'document_type': 'medical_lab_report',
                 'num_annotations': len(entry.get('annotations', [])),
+                'num_sections': len(ground_truth),
                 'image_size': self._get_image_size(image_path),
             }
             
@@ -737,38 +738,47 @@ class VOC2007Dataset(Dataset):
                 metadata=metadata
             ))
     
-    def _extract_ground_truth(self, entry: Dict) -> str:
+    def _extract_ground_truth(self, entry: Dict) -> Dict[str, str]:
         """
-        Extract all text from annotations.
+        Extract text from annotations grouped by table sections.
         
         Args:
             entry: Annotation entry with 'annotations' list
         
         Returns:
-            Concatenated text preserving structure (Unicode Chinese)
+            Dict mapping table_no (as string) to concatenated text for that section
         """
-        texts = []
+        sections = {}
         annotations = entry.get('annotations', [])
         
-        # Sort by table_no, then by y position (top to bottom), then x (left to right)
-        sorted_annotations = sorted(
-            annotations,
-            key=lambda a: (
-                int(a.get('table_no', 0)),
-                int(a.get('cell_row', 0)),
-                int(a.get('cell_line', 0)),
-                float(a.get('y', 0)),
-                float(a.get('x', 0))
-            )
-        )
-        
-        for anno in sorted_annotations:
+        # Group annotations by table_no
+        for anno in annotations:
+            table_no = str(anno.get('table_no', 0))
             text = anno.get('text', '').strip()
             if text:
-                texts.append(text)
+                if table_no not in sections:
+                    sections[table_no] = []
+                sections[table_no].append(text)
         
-        # Join texts - use newline for structure
-        return '\n'.join(texts)
+        # Sort annotations within each section by position
+        ground_truth = {}
+        for table_no, texts in sections.items():
+            # Sort texts within this section by cell_row, cell_line, y, x
+            section_annotations = [anno for anno in annotations if str(anno.get('table_no', 0)) == table_no]
+            sorted_section = sorted(
+                section_annotations,
+                key=lambda a: (
+                    int(a.get('cell_row', 0)),
+                    int(a.get('cell_line', 0)),
+                    float(a.get('y', 0)),
+                    float(a.get('x', 0))
+                )
+            )
+            # Extract sorted texts
+            sorted_texts = [anno.get('text', '').strip() for anno in sorted_section if anno.get('text', '').strip()]
+            ground_truth[table_no] = '\n'.join(sorted_texts)
+        
+        return ground_truth
     
     @staticmethod
     def _get_image_size(image_path: Path) -> Tuple[int, int]:

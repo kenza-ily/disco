@@ -78,14 +78,14 @@ class EmbeddingBatch:
 class EmbeddingCalculator:
     """
     Calculate embeddings using Azure OpenAI API.
-    
+
     Features:
     - Batch processing for efficiency
     - Automatic retry logic with exponential backoff
     - Checkpoint saving for recovery from failures
     - Caching to avoid redundant API calls
     """
-    
+
     def __init__(self, config: Optional[EmbeddingConfig] = None):
         """
         Initialize embedding calculator.
@@ -136,7 +136,7 @@ class EmbeddingCalculator:
             except Exception as e:
                 logger.warning(f"Failed to save cache: {e}")
     
-    def embed_text(self, text: str) -> EmbeddingResult:
+    def embed_text(self, text: str, safe: bool = False, max_tokens: int = 8000, encoding_name: str = "cl100k_base") -> EmbeddingResult:
         """
         Embed a single text string.
         
@@ -146,6 +146,16 @@ class EmbeddingCalculator:
         Returns:
             EmbeddingResult with embedding vector
         """
+        # If safe=True, use chunked embedding utility
+        if safe:
+            safe_embed = self.get_safe_embed_fn(max_tokens=max_tokens, encoding_name=encoding_name)
+            arr = safe_embed(text)
+            return EmbeddingResult(
+                text=text,
+                embedding=arr.tolist(),
+                model=self.config.model,
+                timestamp=datetime.now().isoformat(),
+            )
         # Check cache first
         text_hash = str(hash(text))
         if text_hash in self.cache:
@@ -156,7 +166,6 @@ class EmbeddingCalculator:
                 model=self.config.model,
                 timestamp=datetime.now().isoformat(),
             )
-        
         # Call API with retry logic
         for attempt in range(self.config.max_retries):
             try:
@@ -164,10 +173,8 @@ class EmbeddingCalculator:
                     input=text,
                     model=self.config.model,
                 )
-                
                 embedding = response.data[0].embedding
                 self.cache[text_hash] = embedding
-                
                 return EmbeddingResult(
                     text=text,
                     embedding=embedding,
@@ -175,12 +182,10 @@ class EmbeddingCalculator:
                     timestamp=datetime.now().isoformat(),
                     input_tokens=response.usage.prompt_tokens,
                 )
-            
             except RateLimitError as e:
                 wait_time = (2 ** attempt) + np.random.uniform(0, 1)
                 logger.warning(f"Rate limit hit, retrying in {wait_time:.1f}s (attempt {attempt + 1})")
                 time.sleep(wait_time)
-            
             except APIError as e:
                 if attempt < self.config.max_retries - 1:
                     wait_time = (2 ** attempt)
@@ -189,7 +194,6 @@ class EmbeddingCalculator:
                 else:
                     logger.error(f"Failed to embed text after {self.config.max_retries} attempts: {e}")
                     raise
-        
         raise RuntimeError(f"Failed to embed text after {self.config.max_retries} attempts")
     
     def embed_batch(self, texts: List[str]) -> EmbeddingBatch:
@@ -220,6 +224,21 @@ class EmbeddingCalculator:
             total_tokens=total_tokens,
             config=asdict(self.config),
         )
+
+    def get_safe_embed_fn(self, max_tokens: int = 8000, encoding_name: str = "cl100k_base"):
+        """
+        Returns a function that safely embeds any text (with chunking/aggregation if needed).
+        Usage:
+            safe_embed = self.get_safe_embed_fn(max_tokens=8000)
+            embedding = safe_embed(long_text)
+        """
+        from utils.embedding_utils import get_chunked_embed_fn
+        return get_chunked_embed_fn(self._embed_text_array, max_tokens=max_tokens, encoding_name=encoding_name)
+
+    def _embed_text_array(self, text: str):
+        """Return embedding as np.ndarray for chunked embedding utility."""
+        result = self.embed_text(text)
+        return np.array(result.embedding)
 
 
 class EmbeddingPipeline:
