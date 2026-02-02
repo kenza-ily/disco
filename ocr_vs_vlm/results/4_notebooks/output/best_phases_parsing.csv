@@ -1,0 +1,5 @@
+Dataset,Best Phase,Cosine Similarity,CER,WER
+IAM_mini,Pa,0.9358,0.088,0.3029
+ICDAR_mini,Pb,0.5335,1.944,1.8604
+VOC2007,Pa,0.9394,0.6731,0.7916
+RX-PAD,Pc,0.7993,0.6591,0.5828

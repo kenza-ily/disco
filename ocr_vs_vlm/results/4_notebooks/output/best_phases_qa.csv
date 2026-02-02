@@ -1,0 +1,5 @@
+Dataset,Best Phase,Strategy,GT in Pred,ANLS,Exact Match
+DocVQA_mini,QA3b,QA3 (Direct VQA),0.8979,0.4989,0.3744
+InfographicVQA_mini,QA3b,QA3 (Direct VQA),0.7048,0.1901,0.1203
+dude_mini,QA1c,QA1 (OCR+VLM),0.5619,0.0018,0.0
+chartqapro_mini,QA1a,QA1 (OCR+VLM),0.0,0.0096,0.0

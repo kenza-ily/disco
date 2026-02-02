@@ -1,0 +1,5 @@
+Dataset,Best Phase,Strategy,Best Model,GT in Pred,ANLS,Exact Match,Improvement vs Baseline (%)
+DocVQA_mini,QA3b,QA3 (Direct VQA),gpt-5-mini,0.908,0.6322347519175355,0.482,9.8
+InfographicVQA_mini,QA3b,QA3 (Direct VQA),gpt-5-mini,0.785140562248996,0.18642143610051995,0.10240963855421686,39.57
+dude_mini,QA1c,QA1 (OCR+VLM),azure_intelligence__gpt-5-mini,0.5618811881188119,0.0,0.0,10.46
+chartqapro_mini,QA1a,QA1 (OCR+VLM),azure_intelligence__gpt-5-mini,0.0,0.011825677447663946,0.0,0.0

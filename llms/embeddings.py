@@ -232,6 +232,12 @@ class EmbeddingCalculator:
             safe_embed = self.get_safe_embed_fn(max_tokens=8000)
             embedding = safe_embed(long_text)
         """
+        import sys
+        from pathlib import Path
+        # Ensure repo root is in path for utils.embedding_utils import
+        repo_root = Path(__file__).parent.parent
+        if str(repo_root) not in sys.path:
+            sys.path.insert(0, str(repo_root))
         from utils.embedding_utils import get_chunked_embed_fn
         return get_chunked_embed_fn(self._embed_text_array, max_tokens=max_tokens, encoding_name=encoding_name)
 
