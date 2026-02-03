@@ -43,3 +43,4 @@ ocr_vs_vlm/results/2_clean/*
 .embedding_cache_*.json
 /ocr_vs_vlm/results/4_notebooks/by_dataset/todo
 /ocr_vs_vlm/results/3_embeddings
+ocr_vs_vlm/paper_versions/*
