@@ -208,11 +208,9 @@ def store_embedding_in_cache(
         if 'ground_truths' not in cache[phase]:
             cache[phase]['ground_truths'] = {}
         
-        # Check if this embedding already exists for a different key
-        for existing_key, existing_emb in cache[phase]['ground_truths'].items():
-            if existing_emb == embedding and existing_key != key:
-                logger.warning(f"Duplicate GT embedding for phase {phase}: key '{key[:50]}...' matches existing key '{existing_key[:50]}...'")
-                break
+        # Note: Duplicate embeddings can occur when different samples have identical text
+        # (e.g., template-based medical reports). This is expected behavior - the cache
+        # key is unique per sample, but identical text produces identical embeddings.
         
         cache[phase]['ground_truths'][key] = embedding
     elif text_type == "predictions":
@@ -280,7 +278,8 @@ class EmbeddingCacheManager:
     def get_ground_truth_embedding(
         self,
         phase: str,
-        ground_truth: str
+        ground_truth: str,
+        sample_id: Optional[str] = None
     ) -> List[float]:
         """
         Get embedding for a ground truth text.
@@ -288,27 +287,34 @@ class EmbeddingCacheManager:
         Args:
             phase: Phase name
             ground_truth: Ground truth text
+            sample_id: Optional sample identifier for unique caching per sample.
+                       If provided, cache key is sample_id (recommended for section-level).
+                       If None, cache key is ground_truth text (legacy behavior).
             
         Returns:
             Embedding vector
         """
+        # Determine cache key: use sample_id if provided, otherwise use text content
+        # Using sample_id prevents cache collisions when different samples have identical text
+        cache_key = sample_id if sample_id else ground_truth
+        
         # Check cache
-        cached = get_cached_embedding(self.cache, phase, "ground_truths", ground_truth)
+        cached = get_cached_embedding(self.cache, phase, "ground_truths", cache_key)
         if cached is not None:
             self.cache_hits += 1
-            logger.debug(f"GT cache hit for phase {phase}, text length {len(ground_truth)}")
+            logger.debug(f"GT cache hit for phase {phase}, key {cache_key[:50] if len(cache_key) > 50 else cache_key}")
             return cached
         
         # Compute
         self.cache_misses += 1
-        logger.debug(f"GT cache miss for phase {phase}, computing embedding for text length {len(ground_truth)}")
+        logger.debug(f"GT cache miss for phase {phase}, computing embedding for key {cache_key[:50] if len(cache_key) > 50 else cache_key}")
         # Use safe embedding for long texts
         result = self.calculator.embed_text(ground_truth, safe=True, max_tokens=8000)
         embedding = result.embedding if result else []
         
         # Store in cache
         if embedding:
-            store_embedding_in_cache(self.cache, phase, "ground_truths", ground_truth, embedding)
+            store_embedding_in_cache(self.cache, phase, "ground_truths", cache_key, embedding)
             self.modified_phases.add(phase)
         
         return embedding
@@ -357,7 +363,8 @@ class EmbeddingCacheManager:
         ground_truth: str,
         prediction: str,
         sample_id: str,
-        model: str
+        model: str,
+        gt_sample_id: Optional[str] = None
     ) -> float:
         """
         Compute cosine similarity with caching.
@@ -366,8 +373,12 @@ class EmbeddingCacheManager:
             phase: Phase name
             ground_truth: Ground truth text
             prediction: Prediction text
-            sample_id: Sample identifier
+            sample_id: Sample identifier (used for prediction caching)
             model: Model name
+            gt_sample_id: Optional sample ID for ground truth caching.
+                          If provided, ground truth embedding is cached by this ID
+                          instead of by text content. Use for section-level analysis
+                          where different samples may have identical section text.
             
         Returns:
             Cosine similarity score (0.0 to 1.0)
@@ -375,7 +386,7 @@ class EmbeddingCacheManager:
         if not prediction or not ground_truth:
             return 0.0
         
-        gt_emb = self.get_ground_truth_embedding(phase, ground_truth)
+        gt_emb = self.get_ground_truth_embedding(phase, ground_truth, sample_id=gt_sample_id)
         pred_emb = self.get_prediction_embedding(phase, prediction, sample_id, model)
         
         if not gt_emb or not pred_emb:

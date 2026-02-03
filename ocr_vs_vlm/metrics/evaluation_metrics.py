@@ -8,9 +8,14 @@ Provides metrics including:
 - ANLS (Average Normalized Levenshtein Similarity)
 - Cosine Similarity (using embeddings)
 - Substring matching for VQA
+- Ground truth parsing with support for triple-encoded JSON
+- Multiple-choice answer normalization
 """
 
 import logging
+import json
+import ast
+import re
 from typing import List, Dict, Tuple, Optional
 import numpy as np
 from pathlib import Path
@@ -214,23 +219,45 @@ def compute_prediction_in_ground_truth(prediction: str, ground_truths: List[str]
     return 0.0
 
 
-def compute_ground_truth_in_prediction(prediction: str, ground_truths: List[str]) -> float:
+def compute_ground_truth_in_prediction(prediction: str, ground_truths: List[str], is_unanswerable: bool = False) -> float:
     """
     Check if any ground truth string appears in the prediction.
     
     Measures how much of the ground truth is covered by the prediction.
     
+    Special case: If the question is marked as unanswerable, check if the prediction
+    contains keywords indicating inability to answer: "can't", "cannot", "can not", or "not"
+    
     Args:
         prediction: Predicted answer
         ground_truths: List of acceptable ground truth answers
+        is_unanswerable: Whether the question is marked as unanswerable
         
     Returns:
-        1.0 if any ground truth is substring of prediction, 0.0 otherwise
+        1.0 if any ground truth is substring of prediction (or if unanswerable and 
+        prediction contains negation keywords), 0.0 otherwise
     """
-    if not prediction or not ground_truths:
+    if not prediction:
         return 0.0
     
     pred = prediction.lower().strip()
+    
+    # Special handling for unanswerable questions (check before requiring ground truths)
+    if is_unanswerable:
+        # Check if prediction contains keywords indicating inability to answer
+        # Keywords: "can't", "cannot", "can not", or "not" (as a word, not substring)
+        unanswerable_keywords = ["can't", "cannot", "can not"]
+        for keyword in unanswerable_keywords:
+            if keyword in pred:
+                return 1.0
+        
+        # Special check for "not" - should match as whole word or at start
+        if "not " in pred or pred.startswith("not"):
+            return 1.0
+    
+    # Standard ground truth matching (requires ground truths)
+    if not ground_truths:
+        return 0.0
     
     for gt in ground_truths:
         gt = gt.lower().strip()
@@ -459,3 +486,237 @@ def aggregate_metrics(metric_dicts: List[Dict[str, float]]) -> Dict[str, float]:
             aggregated[f'{metric}_std'] = np.std(values)
     
     return aggregated
+
+
+# ============================================================================
+# DATA PREPROCESSING AND NORMALIZATION FUNCTIONS
+# ============================================================================
+
+def parse_ground_truths(gt_string) -> List[str]:
+    """
+    Parse ground_truths from various formats to a list of strings.
+    
+    Handles multiple encoding formats:
+    - Triple-encoded JSON: "[\"['value']\"]" → ["value"]
+    - Double-encoded JSON: "["value"]" → ["value"]
+    - Python literal syntax: "['value1', 'value2']" → ["value1", "value2"]
+    - Single strings: "value" → ["value"]
+    
+    Args:
+        gt_string: Ground truth in any supported format (str, list, or encoded JSON)
+        
+    Returns:
+        List of parsed ground truth strings
+    """
+    # Handle None/NaN
+    try:
+        import pandas as pd
+        if pd.isna(gt_string):
+            return []
+    except (ImportError, TypeError):
+        if gt_string is None:
+            return []
+    
+    # Already a list
+    if isinstance(gt_string, list):
+        return [str(x).strip() for x in gt_string if x]
+    
+    gt_str = str(gt_string).strip()
+    if not gt_str:
+        return []
+    
+    # Try JSON parsing first
+    try:
+        first_parse = json.loads(gt_str)
+        
+        # If it parsed to a list, process each item
+        if isinstance(first_parse, list):
+            result = []
+            for item in first_parse:
+                if isinstance(item, str):
+                    item_stripped = item.strip()
+                    
+                    # Try JSON parsing
+                    try:
+                        inner_parse = json.loads(item_stripped)
+                        if isinstance(inner_parse, list):
+                            result.extend([str(x).strip() for x in inner_parse if x])
+                        else:
+                            result.append(str(inner_parse).strip())
+                    except (json.JSONDecodeError, ValueError):
+                        # Try Python literal eval for single-quote syntax
+                        try:
+                            inner_parse = ast.literal_eval(item_stripped)
+                            if isinstance(inner_parse, list):
+                                result.extend([str(x).strip() for x in inner_parse if x])
+                            else:
+                                result.append(str(inner_parse).strip())
+                        except (ValueError, SyntaxError):
+                            result.append(item_stripped)
+                else:
+                    result.append(str(item).strip())
+            return result
+        else:
+            return [str(first_parse).strip()]
+    
+    except (json.JSONDecodeError, ValueError):
+        # Top level is not JSON, try ast.literal_eval
+        try:
+            parsed = ast.literal_eval(gt_str)
+            if isinstance(parsed, list):
+                return [str(x).strip() for x in parsed if x]
+            return [str(parsed).strip()]
+        except (ValueError, SyntaxError):
+            # Return as-is
+            return [gt_str]
+
+
+def is_unanswerable(ground_truths: List[str]) -> bool:
+    """
+    Check if the ground truths indicate an unanswerable question.
+    
+    Args:
+        ground_truths: List of ground truth answers
+        
+    Returns:
+        True if any ground truth indicates unanswerable, False otherwise
+    """
+    unanswerable_keywords = [
+        'unanswerable',
+        'cannot',
+        'not answerable',
+        'no answer',
+        'cannot be determined',
+        'insufficient information',
+        'unknown'
+    ]
+    
+    if not ground_truths:
+        return False
+    
+    combined = ' '.join(ground_truths).lower().strip()
+    
+    for keyword in unanswerable_keywords:
+        if keyword in combined:
+            return True
+    
+    return False
+
+
+def extract_multiple_choice_answer(prediction: str) -> Optional[str]:
+    """
+    Extract the main answer letter/choice from a verbose prediction.
+    
+    For multiple-choice questions, models often return verbose explanations.
+    This extracts just the answer choice (A, B, C, D, etc.)
+    
+    Examples:
+        "b) 24%" → "B"
+        "Answer: A" → "A"
+        "The answer is C" → "C"
+        "29.73%" → None (not a multiple choice)
+    
+    Args:
+        prediction: Predicted answer (potentially verbose)
+        
+    Returns:
+        Extracted choice letter (uppercase), or None if not a multiple-choice answer
+    """
+    if not prediction:
+        return None
+    
+    pred = str(prediction).strip()
+    
+    # Pattern 1: Starts with letter + ) or .
+    # e.g., "b) 24%", "A. answer text"
+    match = re.match(r'^([a-zA-Z])[).\s]', pred)
+    if match:
+        return match.group(1).upper()
+    
+    # Pattern 2: "Answer: X" or "answer is X"
+    match = re.search(r'(?:answer|choice|option)[\s:]+([a-zA-Z])', pred, re.IGNORECASE)
+    if match:
+        return match.group(1).upper()
+    
+    # Pattern 3: Starts with lowercase and followed by ) or . with space
+    # e.g., "c) some answer"
+    match = re.match(r'^([a-zA-Z])\s*\)', pred)
+    if match:
+        return match.group(1).upper()
+    
+    return None
+
+
+def normalize_prediction_for_comparison(prediction: str, ground_truths: List[str]) -> str:
+    """
+    Normalize a prediction for better comparison with ground truths.
+    
+    Applies various normalization strategies:
+    - For multiple-choice: extract just the letter if GT is single letter
+    - Strip brackets/quotes from parsed answers
+    - Normalize whitespace
+    
+    Args:
+        prediction: Raw prediction
+        ground_truths: List of ground truths for context
+        
+    Returns:
+        Normalized prediction
+    """
+    if not prediction:
+        return ""
+    
+    pred = str(prediction).strip()
+    
+    # Check if ground truths are single letters (multiple choice)
+    if ground_truths:
+        gt_letters = [g.upper().strip() for g in ground_truths if len(g.strip()) == 1 and g.strip().isalpha()]
+        
+        if gt_letters:  # We're in multiple-choice territory
+            extracted = extract_multiple_choice_answer(pred)
+            if extracted:
+                return extracted
+    
+    # Strip common bracket patterns left from parsing
+    # e.g., "['answer']" → "answer"
+    pred = re.sub(r"^[\[\(\"']+|[\]\)\"']+$", "", pred)
+    
+    # Normalize whitespace
+    pred = ' '.join(pred.split())
+    
+    return pred
+
+
+def preprocess_qa_sample(
+    prediction: str,
+    ground_truths_raw,
+    normalize: bool = True,
+    check_unanswerable: bool = True
+) -> Tuple[str, List[str], bool]:
+    """
+    Comprehensive preprocessing for a single QA sample.
+    
+    Applies:
+    1. Parse ground truths from encoded formats
+    2. Check if question is unanswerable
+    3. Normalize prediction for comparison
+    
+    Args:
+        prediction: Raw prediction
+        ground_truths_raw: Raw ground truths (any format)
+        normalize: Whether to normalize prediction
+        check_unanswerable: Whether to flag unanswerable questions
+        
+    Returns:
+        Tuple of (normalized_prediction, parsed_gts, is_unanswerable)
+    """
+    # Parse ground truths
+    parsed_gts = parse_ground_truths(ground_truths_raw)
+    
+    # Check for unanswerable
+    is_unanswerable_q = check_unanswerable and is_unanswerable(parsed_gts)
+    
+    # Normalize prediction
+    normalized_pred = normalize_prediction_for_comparison(prediction, parsed_gts) if normalize else str(prediction).strip()
+    
+    return normalized_pred, parsed_gts, is_unanswerable_q
