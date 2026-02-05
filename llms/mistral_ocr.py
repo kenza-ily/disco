@@ -11,12 +11,12 @@ from typing import Any, Iterable, Literal
 from mistralai import Mistral
 
 
-OCRModelName = Literal["mistral-ocr-latest"]
+OCRModelName = Literal["mistral-ocr-latest", "mistral-ocr-2512"]
 
 
 @dataclass(frozen=True)
 class OCRConfig:
-    model: OCRModelName = "mistral-ocr-latest"
+    model: OCRModelName = "mistral-ocr-2512"
     table_format: Literal["html", "markdown", None] = None
     extract_header: bool = False
     extract_footer: bool = False

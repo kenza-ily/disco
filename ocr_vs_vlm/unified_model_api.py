@@ -117,6 +117,11 @@ class ModelRegistry:
             "requires": [],
             "description": "DeepSeek-OCR - Open source multilingual OCR"
         },
+        "mistral_ocr_3": {
+            "type": ModelType.OCR,
+            "requires": ["mistral_api_key"],
+            "description": "Mistral OCR 3 (2512) - Direct API ($0.001/page)"
+        },
     }
     
     # VLM Models
@@ -284,6 +289,8 @@ class UnifiedModelAPI:
             return self._ocr_azure_intelligence(image_path)
         elif model == "mistral_document_ai":
             return self._ocr_mistral_document_ai(image_path)
+        elif model == "mistral_ocr_3":
+            return self._ocr_mistral_ocr_3(image_path)
         elif model == "donut":
             return self._ocr_donut(image_path)
         elif model == "deepseek_ocr":
@@ -520,7 +527,34 @@ class UnifiedModelAPI:
             content=text,
             source=image_path,
         )
-    
+
+    def _ocr_mistral_ocr_3(self, image_path: str) -> ModelResponse:
+        """Mistral OCR 3 via direct Mistral API."""
+        from llms.mistral_ocr import MistralOCR, OCRConfig
+
+        # Use OCR 3 model (mistral-ocr-2512)
+        config = OCRConfig(
+            model="mistral-ocr-2512",  # OCR 3
+            table_format="markdown",
+            include_image_base64=False
+        )
+        ocr_client = MistralOCR(config=config)
+        response = ocr_client.ocr(image_path)
+
+        # Extract markdown from pages
+        extracted_text = ""
+        if hasattr(response, 'pages'):
+            for page in response.pages:
+                if hasattr(page, 'markdown'):
+                    extracted_text += page.markdown + "\n"
+
+        return ModelResponse(
+            model_name="mistral_ocr_3",  # Matches registry key
+            model_type=ModelType.OCR,
+            content=extracted_text.strip(),
+            source=image_path,
+        )
+
     # ========== VLM IMPLEMENTATIONS ==========
     
     def _vlm_gpt5(self, image_path: str, model: str, query: Optional[str]) -> ModelResponse:
