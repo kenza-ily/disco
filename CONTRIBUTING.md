@@ -15,19 +15,8 @@
    # Add your API keys
    ```
 
-3. Run quality checks:
-   ```bash
-   make format  # Auto-format code
-   make lint    # Check code quality
-   ```
 
-## Project Structure
 
-- `benchmarks/` - Benchmark implementations
-- `models/` - Model API wrappers
-- `datasets/` - Dataset loaders
-- `scripts/` - Command-line tools
-- `results/` - Results storage and analysis
 
 ## Adding a New Benchmark
 
@@ -52,4 +41,3 @@ uv run python scripts/run_benchmark.py \
 - Use type hints
 - Follow PEP 8 (enforced by ruff)
 - Add docstrings to public functions
-- Run `make format` before committing

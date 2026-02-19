@@ -186,10 +186,6 @@ jupyter notebook 00_master_evaluation.ipynb
 # Run tests
 make test
 
-# Format code
-make format
-
-# Lint code
 make lint
 
 # Type checking
