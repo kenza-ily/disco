@@ -1,0 +1,130 @@
+{
+  "dataset": "ICDAR_mini",
+  "start_time": null,
+  "end_time": null,
+  "by_phase": {
+    "phase_1": {
+      "phase": "phase_1",
+      "status": "completed",
+      "by_model": {
+        "azure_intelligence": {
+          "model": "azure_intelligence",
+          "status": "completed",
+          "samples_processed": 500,
+          "metrics_summary": {
+            "cer_mean": 0.8370188445333926,
+            "cer_std": 1.2957416150316987,
+            "cer_min": 0.0,
+            "cer_max": 13.333333333333334,
+            "wer_mean": 0.9403363401510365,
+            "wer_std": 0.8963590589134859,
+            "wer_min": 0.0,
+            "wer_max": 7.0
+          }
+        },
+        "donut": {
+          "model": "donut",
+          "status": "completed",
+          "samples_processed": 500,
+          "metrics_summary": {
+            "cer_mean": 2.3752110397248787,
+            "cer_std": 4.164618993414843,
+            "cer_min": 0.4761904761904761,
+            "cer_max": 46.785714285714285,
+            "wer_mean": 6.125895613840746,
+            "wer_std": 12.82638223488351,
+            "wer_min": 0.5,
+            "wer_max": 144.0
+          }
+        },
+        "mistral_document_ai": {
+          "model": "mistral_document_ai",
+          "status": "completed",
+          "samples_processed": 500,
+          "metrics_summary": {
+            "cer_mean": 1.370648297019141,
+            "cer_std": 2.420276546232223,
+            "cer_min": 0.0,
+            "cer_max": 24.11111111111111,
+            "wer_mean": 2.5404196764199067,
+            "wer_std": 5.983989678115952,
+            "wer_min": 0.0,
+            "wer_max": 75.33333333333333
+          }
+        }
+      }
+    },
+    "phase_2": {
+      "phase": "phase_2",
+      "status": "completed",
+      "by_model": {
+        "gpt-5-mini": {
+          "model": "gpt-5-mini",
+          "status": "completed",
+          "samples_processed": 500,
+          "metrics_summary": {
+            "cer_mean": 2.1970184623883187,
+            "cer_std": 18.876289988329052,
+            "cer_min": 0.0,
+            "cer_max": 340.3333333333333,
+            "wer_mean": 1.5588971874033273,
+            "wer_std": 8.742547557683688,
+            "wer_min": 0.0,
+            "wer_max": 161.0
+          }
+        },
+        "gpt-5-nano": {
+          "model": "gpt-5-nano",
+          "status": "completed",
+          "samples_processed": 500,
+          "metrics_summary": {
+            "cer_mean": 16.464997639290843,
+            "cer_std": 40.47575660044306,
+            "cer_min": 0.0,
+            "cer_max": 340.3333333333333,
+            "wer_mean": 9.471778781686917,
+            "wer_std": 21.509019592924876,
+            "wer_min": 0.0,
+            "wer_max": 161.0
+          }
+        }
+      }
+    },
+    "phase_3a_(vlm+)": {
+      "phase": "phase_3a_(vlm+)",
+      "status": "completed",
+      "by_model": {
+        "gpt-5-mini": {
+          "model": "gpt-5-mini",
+          "status": "completed",
+          "samples_processed": 500,
+          "metrics_summary": {
+            "cer_mean": 6.1455979343050275,
+            "cer_std": 32.01721991864272,
+            "cer_min": 0.0,
+            "cer_max": 340.3333333333333,
+            "wer_mean": 3.8274169787296524,
+            "wer_std": 16.401339798122727,
+            "wer_min": 0.0,
+            "wer_max": 161.0
+          }
+        },
+        "gpt-5-nano": {
+          "model": "gpt-5-nano",
+          "status": "completed",
+          "samples_processed": 500,
+          "metrics_summary": {
+            "cer_mean": 22.780773381978648,
+            "cer_std": 45.18484778913471,
+            "cer_min": 0.0,
+            "cer_max": 340.3333333333333,
+            "wer_mean": 12.920494829244829,
+            "wer_std": 24.590488948952167,
+            "wer_min": 0.0,
+            "wer_max": 226.0
+          }
+        }
+      }
+    }
+  }
+}

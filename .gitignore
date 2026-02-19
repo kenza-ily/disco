@@ -1,46 +1,45 @@
+# Environment and secrets
 .env
 .env.local
-.vscode/
-__pycache__/
-/datasets
-/sandbox/output
-/ignore
-/ocr_vs_vlm/logs
-ocr_vs_vlm/crop_tests/*
-sandbox/output/output.md
-.claude/*
-/ocr_vs_vlm/datasets/datasets_subsets
 
-/ocr_vs_vlm/results/results_analysis
-ocr_vs_vlm/results/results_postprocessing/*
-ocr_vs_vlm/results/raw/*
-ocr_vs_vlm/benchmarks/benchmark_*.py
-*.log
-/ocr_vs_vlm/benchmarks/results
-/ocr_vs_vlm/datasets_subsets
-/.hf_staging
+# IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Datasets (large files)
+/datasets
+
+# Sandbox
+/sandbox/output
+
+# Archive
+/archive
 /zzz_ignore
 zzz_ignore/*
-/ocr_vs_vlm/results/1_raw/zzz_ignore
-ocr_vs_vlm/results/1_raw/VOC2007/gpt-5-nano/execution_summary.json
-ocr_vs_vlm/results/1_raw/VOC2007/gpt-5-nano/checkpoint.json
-/ocr_vs_vlm/results/1_raw
-/ocr_vs_vlm/results/3_notebooks/zzz_archive
-*.md
-/ocr_vs_vlm/results/5_paper
-/ocr_vs_vlm/benchmarks
-/ocr_vs_vlm/ocr_vs_vlm/results/1_raw
-ocr_vs_vlm/results/raw_old/*
-ocr_vs_vlm/results/4_postprocessing/*
-claude_outputs/*
-/ocr_vs_vlm/results/paper
-/ocr_vs_vlm/results/utils
-ocr_vs_vlm/results/2_clean/*
 
-# Embeddings cache (large JSON files)
-/ocr_vs_vlm/results/3_embeddings/**/*.json
+# Results (keep structure but not data)
+results/1_raw/**/*.csv
+results/1_raw/**/*.log
+results/2_clean/**/*.csv
+results/3_embeddings/**/*.npy
+results/3_embeddings/**/*.json
+
+# Keep directory structure
+!results/1_raw/.gitkeep
+!results/2_clean/.gitkeep
+!results/3_embeddings/.gitkeep
+
+# Embeddings cache
 **/*_embeddings*.json
 .embedding_cache_*.json
-/ocr_vs_vlm/results/4_notebooks/by_dataset/todo
-/ocr_vs_vlm/results/3_embeddings
-ocr_vs_vlm/paper_versions/*
+
+# Logs
+*.log
+
+# Temporary files
+.claude/*
+claude_outputs/*

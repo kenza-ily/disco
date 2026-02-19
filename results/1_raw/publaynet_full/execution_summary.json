@@ -1,0 +1,37 @@
+{
+  "start_time": "2026-01-28T05:17:28.189716",
+  "config": {
+    "ocr_models": [
+      "azure_intelligence",
+      "mistral_document_ai"
+    ],
+    "vlm_models": [
+      "claude_sonnet"
+    ],
+    "phases": [
+      "P-C"
+    ],
+    "sample_limit": 500,
+    "batch_size": 10,
+    "results_dir": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full",
+    "checkpoint_file": "checkpoint.json",
+    "timeout_seconds": 120,
+    "retry_failed": true,
+    "max_retries": 2
+  },
+  "by_phase": {
+    "P-C": {
+      "phase": "P-C",
+      "status": "completed",
+      "by_model": {
+        "claude_sonnet": {
+          "status": "completed",
+          "samples_processed": 500,
+          "results_file": "/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/results/1_raw/publaynet_full/P-C/claude_sonnet/P-C_claude_sonnet_results_20260128_051730.csv"
+        }
+      }
+    }
+  },
+  "end_time": "2026-01-28T05:19:07.316362",
+  "total_time_seconds": 99.12667798995972
+}

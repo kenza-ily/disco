@@ -1,0 +1,4 @@
+Dataset: ICDAR
+Task: Extract all text from this document image, preserving structure and layout
+This is multi-lingual scene text. Preserve script types and directions.
+Return ONLY the extracted text.

@@ -1,7 +1,7 @@
 PY=uv run
 
 # File patterns for Python files to be included in format and linting
-FILE_PATTERNS=./app ./tests
+FILE_PATTERNS=./benchmarks ./datasets ./metrics ./models ./prompts ./utils
 
 # Add a configurable break between commands
 BR=&& echo "\n---\n"
@@ -21,7 +21,7 @@ all:  # Prepare code for committing to git. Note: suppresses "typecheck" failure
 
 .PHONY: test
 test:  # Test Python code. See additional settings in pyproject.toml
-	$(PY) pytest ./tests
+	@echo "Tests directory not yet implemented. Add tests to enable 'make test'."
 
 .PHONY: install
 install:   # Configure uv, precommit
@@ -30,7 +30,7 @@ install:   # Configure uv, precommit
 
 .PHONY: typecheck
 typecheck:  # Check for type errors in Python code.
-	$(PY) mypy ./app
+	$(PY) mypy ./benchmarks ./models
 
 .PHONY: lint
 lint:  ## Run linters
@@ -103,7 +103,16 @@ refresh-aws-credentials:  # Refresh AWS credentials from Secrets Manager (requir
 	@echo "Credentials appended to .env.local"
 
 .PHONY: setup-env
-setup-env:  # Setup environment variables from AWS secrets (requires AWS profile)
+setup-env:  # Create .env.local from template
+	@if [ ! -f .env.local ]; then \
+		cp .env.example .env.local; \
+		echo "Created .env.local from template. Edit it with your credentials."; \
+	else \
+		echo ".env.local already exists. To recreate, delete it first."; \
+	fi
+
+.PHONY: setup-env-aws
+setup-env-aws:  # [OPTIONAL] Setup environment variables from AWS Secrets Manager (requires AWS profile)
 	@PROFILE=$${PROFILE:-eu-dev}; \
 	echo "Setting up .env.local with Azure credentials using profile: $$PROFILE..."; \
 	{ \

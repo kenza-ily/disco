@@ -1,8 +1,0 @@
-Extract all text from this Medical Laboratory Report.
-
-Language: Simplified Chinese (简体中文)
-Document Type: Medical Lab Report (医学检验报告)
-
-Output text in Simplified Chinese Unicode characters (UTF-8).
-Preserve the table structure and layout.
-Return ONLY the extracted Chinese text.

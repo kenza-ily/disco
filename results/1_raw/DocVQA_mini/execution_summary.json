@@ -1,0 +1,103 @@
+{
+  "dataset": "DocVQA_mini",
+  "start_time": "2026-02-03T19:06:37.721017",
+  "config": {
+    "dataset_name": "DocVQA_mini",
+    "ocr_models": [
+      "mistral_ocr_3"
+    ],
+    "vlm_models": [
+      "gpt-5-mini",
+      "gpt-5-nano"
+    ],
+    "qa_model": "gpt-5-mini",
+    "phases": [
+      "QA1a",
+      "QA1b",
+      "QA1c"
+    ],
+    "sample_limit": null,
+    "batch_size": 10,
+    "sample_ids_file": null,
+    "sample_ids_filter": null,
+    "results_dir": "results/1_raw/DocVQA_mini",
+    "test_mode": false,
+    "retry_failed": true,
+    "max_retries": 2,
+    "compute_embeddings": false
+  },
+  "phases": {
+    "QA1a": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.4556705036992298,
+        "exact_match": 0.33,
+        "total_samples": 500,
+        "valid_samples": 500,
+        "error_rate": 0.0
+      }
+    },
+    "QA1b": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.5588840818093036,
+        "exact_match": 0.5090180360721442,
+        "total_samples": 500,
+        "valid_samples": 499,
+        "error_rate": 0.002
+      }
+    },
+    "QA1c": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.4992673441606232,
+        "exact_match": 0.37575757575757573,
+        "total_samples": 500,
+        "valid_samples": 495,
+        "error_rate": 0.01
+      }
+    }
+  },
+  "metrics_summary": {
+    "QA1a": {
+      "anls": 0.4556705036992298,
+      "exact_match": 0.33,
+      "total_samples": 500,
+      "valid_samples": 500,
+      "error_rate": 0.0
+    },
+    "QA1b": {
+      "anls": 0.5588840818093036,
+      "exact_match": 0.5090180360721442,
+      "total_samples": 500,
+      "valid_samples": 499,
+      "error_rate": 0.002
+    },
+    "QA1c": {
+      "anls": 0.4992673441606232,
+      "exact_match": 0.37575757575757573,
+      "total_samples": 500,
+      "valid_samples": 495,
+      "error_rate": 0.01
+    },
+    "by_approach": {
+      "ocr_pipeline": {
+        "avg_anls": 0.5046073098897189,
+        "avg_em": 0.40492520394324
+      },
+      "vlm_parse_pipeline": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      },
+      "direct_vqa": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      }
+    }
+  },
+  "end_time": "2026-02-03T21:56:19.383073",
+  "total_time_seconds": 10181.662073850632
+}

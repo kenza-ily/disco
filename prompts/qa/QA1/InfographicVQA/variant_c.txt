@@ -1,0 +1,16 @@
+You are analyzing a document to answer a question. This is an infographic which may require finding and combining information from different parts.
+
+Document text:
+{extracted_text}
+
+Question: {question}
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:

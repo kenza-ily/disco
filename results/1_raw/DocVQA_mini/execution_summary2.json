@@ -1,0 +1,85 @@
+{
+  "dataset": "DocVQA_mini",
+  "start_time": "2026-01-23T16:39:08.896469",
+  "config": {
+    "dataset_name": "DocVQA_mini",
+    "ocr_models": [
+      "azure_intelligence",
+      "mistral_document_ai"
+    ],
+    "vlm_models": [
+      "claude_sonnet"
+    ],
+    "qa_model": "gpt-5-mini",
+    "phases": [
+      "QA2a",
+      "QA2b",
+      "QA2c"
+    ],
+    "sample_limit": null,
+    "batch_size": 50,
+    "results_dir": "results/DocVQA_mini",
+    "retry_failed": true,
+    "max_retries": 2
+  },
+  "phases": {
+    "QA2a": {
+      "status": "failed",
+      "error": "[Errno 2] No such file or directory: '/Users/kenzabenkirane/Documents/GitHub/research-playground/ocr_vs_vlm/benchmarks/results/DocVQA_mini/QA2a/claude_sonnet_results_20260123_163908.csv'"
+    },
+    "QA2b": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.8269988990585273,
+        "exact_match": 0.744,
+        "total_samples": 500,
+        "valid_samples": 500,
+        "error_rate": 0.0
+      }
+    },
+    "QA2c": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.7273840453316479,
+        "exact_match": 0.5531062124248497,
+        "total_samples": 500,
+        "valid_samples": 499,
+        "error_rate": 0.002
+      }
+    }
+  },
+  "metrics_summary": {
+    "QA2b": {
+      "anls": 0.8269988990585273,
+      "exact_match": 0.744,
+      "total_samples": 500,
+      "valid_samples": 500,
+      "error_rate": 0.0
+    },
+    "QA2c": {
+      "anls": 0.7273840453316479,
+      "exact_match": 0.5531062124248497,
+      "total_samples": 500,
+      "valid_samples": 499,
+      "error_rate": 0.002
+    },
+    "by_approach": {
+      "ocr_pipeline": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      },
+      "vlm_parse_pipeline": {
+        "avg_anls": 0.7771914721950877,
+        "avg_em": 0.6485531062124248
+      },
+      "direct_vqa": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      }
+    }
+  },
+  "end_time": "2026-01-24T01:51:20.095797",
+  "total_time_seconds": 33131.19934010506
+}

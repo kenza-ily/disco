@@ -1,0 +1,101 @@
+sample_id,doc_id,question,question_family,answer_type,ground_truths,prediction,phase,parsing_model,qa_model,extracted_text,prompt_used,anls_score,exact_match,substring_match,prediction_in_ground_truth,ground_truth_in_prediction,embedding_similarity,inference_time_ms,error,timestamp
+466184dcc69a3429d84e1054a019972d_8f47f7420b8b6cac609146193e1a36a8,466184dcc69a3429d84e1054a019972d,What is the price of potatoes?,numeric_amount,extractive,"[""Two cents a pound.""]",Two cents a pound.,QA1a,mistral_document_ai,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","Based on the following document text, answer the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: What is the price of potatoes?
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,50980.63111305237,,2026-01-31T19:48:27.282678
+466184dcc69a3429d84e1054a019972d_b848bc0f3f2b6e2bb577bdea9cc633d3,466184dcc69a3429d84e1054a019972d,How much do potatoes cost per pound?,numeric_amount,extractive,"[""Two Cents""]",Two cents a pound.,QA1a,mistral_document_ai,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","Based on the following document text, answer the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: How much do potatoes cost per pound?
+
+Answer:",0.5,0.0,1.0,0.0,1.0,0.0,59350.560903549194,,2026-01-31T19:49:26.639850

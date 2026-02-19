@@ -1,0 +1,10 @@
+Extract ALL text from this document image.
+
+Instructions:
+- Preserve the structure and layout of the document
+- Include form labels and their values
+- Include table headers and cell contents
+- Include any handwritten text or annotations
+- Maintain reading order (top to bottom, left to right)
+
+Return ONLY the extracted text, no commentary.

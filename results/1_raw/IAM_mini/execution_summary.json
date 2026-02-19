@@ -1,0 +1,24 @@
+{
+  "start_time": "2026-01-19T23:46:52.529788",
+  "models": [
+    "claude_sonnet"
+  ],
+  "by_model": {
+    "claude_sonnet": {
+      "name": "claude_sonnet",
+      "type": "ModelType.VLM",
+      "phases_completed": {
+        "2": {
+          "status": "completed",
+          "samples_processed": 500
+        },
+        "3": {
+          "status": "completed",
+          "samples_processed": 500
+        }
+      }
+    }
+  },
+  "end_time": "2026-01-20T03:16:04.270927",
+  "total_time_seconds": 12551.741389274597
+}

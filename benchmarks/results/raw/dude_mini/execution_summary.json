@@ -1,0 +1,120 @@
+{
+  "dataset": "DUDE_mini",
+  "start_time": "2026-02-04T01:49:42.238274",
+  "config": {
+    "dataset_name": "DUDE_mini",
+    "ocr_models": [
+      "mistral_ocr_3"
+    ],
+    "vlm_models": [
+      "gpt-5-mini",
+      "gpt-5-nano"
+    ],
+    "qa_model": "gpt-5-mini",
+    "phases": [
+      "QA1a",
+      "QA1b",
+      "QA1c"
+    ],
+    "sample_limit": null,
+    "batch_size": 10,
+    "results_dir": "results/raw/dude_mini",
+    "retry_failed": true,
+    "max_retries": 2,
+    "compute_embeddings": false
+  },
+  "phases": {
+    "QA1a": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.3410628252395595,
+        "exact_match": 0.19554455445544555,
+        "substring_match": 0.5247524752475248,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA1b": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.5030189156895921,
+        "exact_match": 0.349009900990099,
+        "substring_match": 0.5074257425742574,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA1c": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.0,
+        "exact_match": 0.0,
+        "substring_match": 0.5742574257425742,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    }
+  },
+  "metrics_summary": {
+    "QA1a": {
+      "anls": 0.3410628252395595,
+      "exact_match": 0.19554455445544555,
+      "substring_match": 0.5247524752475248,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA1b": {
+      "anls": 0.5030189156895921,
+      "exact_match": 0.349009900990099,
+      "substring_match": 0.5074257425742574,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA1c": {
+      "anls": 0.0,
+      "exact_match": 0.0,
+      "substring_match": 0.5742574257425742,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "by_approach": {
+      "OCR_Pipeline": {
+        "avg_anls": 0.2813605803097172,
+        "avg_em": 0.18151815181518152,
+        "samples": 1212
+      }
+    },
+    "by_question_family": {
+      "numeric_amount": {
+        "anls": 0.2886029837624344,
+        "exact_match": 0.19298245614035087,
+        "samples": 57
+      },
+      "date_time": {
+        "anls": 0.5106888656544416,
+        "exact_match": 0.20833333333333334,
+        "samples": 48
+      },
+      "lookup_entity": {
+        "anls": 0.2904967615267898,
+        "exact_match": 0.19137749737118823,
+        "samples": 951
+      },
+      "yes_no": {
+        "anls": 0.12222222222222222,
+        "exact_match": 0.12222222222222222,
+        "samples": 90
+      },
+      "multi_hop_other": {
+        "anls": 0.19368435602315381,
+        "exact_match": 0.09090909090909091,
+        "samples": 66
+      }
+    }
+  },
+  "end_time": "2026-02-04T05:40:22.954927",
+  "total_time_seconds": 13840.716664075851
+}

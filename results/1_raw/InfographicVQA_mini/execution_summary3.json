@@ -1,0 +1,65 @@
+{
+  "dataset": "InfographicVQA_mini",
+  "start_time": "2026-01-27T17:56:54.800632",
+  "config": {
+    "dataset_name": "InfographicVQA_mini",
+    "ocr_models": [
+      "azure_intelligence",
+      "mistral_document_ai"
+    ],
+    "vlm_models": [
+      "gpt-5-mini"
+    ],
+    "qa_model": "gpt-5-mini",
+    "phases": [
+      "QA1b"
+    ],
+    "sample_limit": 10,
+    "batch_size": 50,
+    "results_dir": "results/InfographicVQA_mini",
+    "retry_failed": true,
+    "max_retries": 2
+  },
+  "phases": {
+    "QA1b": {
+      "status": "completed",
+      "samples_processed": 20,
+      "metrics": {
+        "anls": 0.45,
+        "exact_match": 0.45,
+        "total_samples": 20,
+        "valid_samples": 20,
+        "error_rate": 0.0
+      }
+    }
+  },
+  "metrics_summary": {
+    "QA1b": {
+      "anls": 0.45,
+      "exact_match": 0.45,
+      "total_samples": 20,
+      "valid_samples": 20,
+      "error_rate": 0.0
+    },
+    "by_approach": {
+      "ocr_pipeline": {
+        "avg_anls": 0.45,
+        "avg_em": 0.45
+      },
+      "vlm_parse_pipeline": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      },
+      "direct_vqa": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      },
+      "pre_extracted_ocr_pipeline": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      }
+    }
+  },
+  "end_time": "2026-01-27T18:00:57.008238",
+  "total_time_seconds": 242.20762085914612
+}

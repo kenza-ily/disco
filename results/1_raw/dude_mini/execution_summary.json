@@ -1,0 +1,226 @@
+{
+  "dataset": "DUDE_mini",
+  "start_time": "2026-01-23T18:07:28.873358",
+  "config": {
+    "dataset_name": "DUDE_mini",
+    "ocr_models": [
+      "azure_intelligence",
+      "mistral_ocr"
+    ],
+    "vlm_models": [
+      "gpt-5-mini",
+      "gpt-5-nano",
+      "claude_sonnet"
+    ],
+    "qa_model": "gpt-5-mini",
+    "phases": [
+      "QA1a",
+      "QA1b",
+      "QA1c",
+      "QA2a",
+      "QA2b",
+      "QA2c",
+      "QA3a",
+      "QA3b"
+    ],
+    "sample_limit": null,
+    "batch_size": 50,
+    "results_dir": "results/raw/dude_mini",
+    "retry_failed": true,
+    "max_retries": 2
+  },
+  "phases": {
+    "QA1a": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.3555024981476731,
+        "exact_match": 0.20544554455445543,
+        "substring_match": 0.5445544554455446,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA1b": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.5025794209315164,
+        "exact_match": 0.35396039603960394,
+        "substring_match": 0.5148514851485149,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA1c": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.0,
+        "exact_match": 0.0,
+        "substring_match": 0.5618811881188119,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA2a": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.3450510587479753,
+        "exact_match": 0.1806930693069307,
+        "substring_match": 0.5148514851485149,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA2b": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.5049282140611994,
+        "exact_match": 0.3341584158415842,
+        "substring_match": 0.4900990099009901,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA2c": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.0,
+        "exact_match": 0.0,
+        "substring_match": 0.5544554455445545,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA3a": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.36221710365976206,
+        "exact_match": 0.2079207920792079,
+        "substring_match": 0.5173267326732673,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    },
+    "QA3b": {
+      "status": "completed",
+      "samples_processed": 404,
+      "metrics": {
+        "anls": 0.3906131332280308,
+        "exact_match": 0.2301980198019802,
+        "substring_match": 0.5297029702970297,
+        "total_samples": 404,
+        "error_count": 0
+      }
+    }
+  },
+  "metrics_summary": {
+    "QA1a": {
+      "anls": 0.3555024981476731,
+      "exact_match": 0.20544554455445543,
+      "substring_match": 0.5445544554455446,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA1b": {
+      "anls": 0.5025794209315164,
+      "exact_match": 0.35396039603960394,
+      "substring_match": 0.5148514851485149,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA1c": {
+      "anls": 0.0,
+      "exact_match": 0.0,
+      "substring_match": 0.5618811881188119,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA2a": {
+      "anls": 0.3450510587479753,
+      "exact_match": 0.1806930693069307,
+      "substring_match": 0.5148514851485149,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA2b": {
+      "anls": 0.5049282140611994,
+      "exact_match": 0.3341584158415842,
+      "substring_match": 0.4900990099009901,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA2c": {
+      "anls": 0.0,
+      "exact_match": 0.0,
+      "substring_match": 0.5544554455445545,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA3a": {
+      "anls": 0.36221710365976206,
+      "exact_match": 0.2079207920792079,
+      "substring_match": 0.5173267326732673,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "QA3b": {
+      "anls": 0.3906131332280308,
+      "exact_match": 0.2301980198019802,
+      "substring_match": 0.5297029702970297,
+      "total_samples": 404,
+      "error_count": 0
+    },
+    "by_approach": {
+      "OCR_Pipeline": {
+        "avg_anls": 0.28602730635972984,
+        "avg_em": 0.18646864686468648,
+        "samples": 1212
+      },
+      "VLM_Pipeline": {
+        "avg_anls": 0.2833264242697249,
+        "avg_em": 0.1716171617161716,
+        "samples": 1212
+      },
+      "Direct_VQA": {
+        "avg_anls": 0.37641511844389647,
+        "avg_em": 0.21905940594059406,
+        "samples": 808
+      }
+    },
+    "by_question_family": {
+      "numeric_amount": {
+        "anls": 0.27809223458965965,
+        "exact_match": 0.18421052631578946,
+        "samples": 152
+      },
+      "date_time": {
+        "anls": 0.5685471880155081,
+        "exact_match": 0.203125,
+        "samples": 128
+      },
+      "lookup_entity": {
+        "anls": 0.32059048317795635,
+        "exact_match": 0.20347003154574134,
+        "samples": 2536
+      },
+      "yes_no": {
+        "anls": 0.12103174603174603,
+        "exact_match": 0.10833333333333334,
+        "samples": 240
+      },
+      "multi_hop_other": {
+        "anls": 0.21074427906271406,
+        "exact_match": 0.08522727272727272,
+        "samples": 176
+      }
+    }
+  },
+  "end_time": "2026-01-24T10:18:00.622766",
+  "total_time_seconds": 58231.749420166016
+}

@@ -1,0 +1,10 @@
+Extract ALL text from this infographic image.
+
+Instructions:
+- Include all visible text: titles, labels, data values, annotations
+- Preserve numerical data and statistics exactly as shown
+- Include text from charts, graphs, and diagrams
+- Capture any footnotes or source citations
+- Read text from all areas: headers, body, legends, captions
+
+Return ONLY the extracted text, no commentary.

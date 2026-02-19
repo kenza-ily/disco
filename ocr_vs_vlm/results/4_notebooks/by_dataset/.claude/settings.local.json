@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(uv run jupyter nbconvert:*)",
-      "Bash(uv run python:*)"
-    ]
-  }
-}

@@ -1,4 +1,0 @@
-Dataset: PubLayNet
-Task: Extract all text from this document image, preserving structure and layout
-This is a document page. Preserve document structure and layout.
-Return ONLY the extracted text.

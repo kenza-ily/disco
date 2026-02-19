@@ -1,0 +1,1633 @@
+sample_id,doc_id,question,question_family,answer_type,ground_truths,prediction,phase,parsing_model,qa_model,extracted_text,prompt_used,anls_score,exact_match,substring_match,prediction_in_ground_truth,ground_truth_in_prediction,embedding_similarity,inference_time_ms,error,timestamp
+466184dcc69a3429d84e1054a019972d_8f47f7420b8b6cac609146193e1a36a8,466184dcc69a3429d84e1054a019972d,What is the price of potatoes?,numeric_amount,extractive,"[""Two cents a pound.""]",Two cents a pound.,QA1a,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","Based on the following document text, answer the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: What is the price of potatoes?
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,28695.003986358643,,2026-02-03T18:58:00.876498
+466184dcc69a3429d84e1054a019972d_b848bc0f3f2b6e2bb577bdea9cc633d3,466184dcc69a3429d84e1054a019972d,How much do potatoes cost per pound?,numeric_amount,extractive,"[""Two Cents""]",Two cents a pound.,QA1a,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","Based on the following document text, answer the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: How much do potatoes cost per pound?
+
+Answer:",0.5,0.0,1.0,0.0,1.0,0.0,27498.63028526306,,2026-02-03T18:58:28.389530
+bd32352df9f165f089ff2741d7d04d7f_2255cf92e719e055e0ee0892ee6d7ce1,bd32352df9f165f089ff2741d7d04d7f,Who scored highest total overall?,numeric_amount,extractive,"[""Tristan""]",Tristan — he has the highest overall total (about 64.2).,QA1a,mistral_ocr_3,gpt-5-mini,"HELIOS
+
+Team Helios
+
+[tbl-0.md](tbl-0.md)","Based on the following document text, answer the question.
+
+Document text:
+HELIOS
+
+Team Helios
+
+[tbl-0.md](tbl-0.md)
+
+Question: Who scored highest total overall?
+
+Answer:",0.0,0.0,1.0,0.0,1.0,0.0,18430.070161819458,,2026-02-03T18:58:46.819967
+a4e751799acf2d9369ee89afb50e8408_83b7362879f743031741fdcf8b890974,a4e751799acf2d9369ee89afb50e8408,What is in the Page 1 and 2 under SUMMARY?,numeric_amount,extractive,"[""-Assets-Liability balance sheet""]","The ""Assets‑Liability balance sheet"" is on pages 1 and 2.",QA1a,mistral_ocr_3,gpt-5-mini,"ASSOCIATION WIKIMEDIA FRANCE
+40 Rue de Cléry
+75002 PARIS
+
+# SUMMARY
+
+[tbl-0.md](tbl-0.md)
+
+AUDITEURS &amp; CONSEILS ASSOCIES
+31 rue Henri Rochefort
+75017 PARIS
+01 47 66 77 88","Based on the following document text, answer the question.
+
+Document text:
+ASSOCIATION WIKIMEDIA FRANCE
+40 Rue de Cléry
+75002 PARIS
+
+# SUMMARY
+
+[tbl-0.md](tbl-0.md)
+
+AUDITEURS &amp; CONSEILS ASSOCIES
+31 rue Henri Rochefort
+75017 PARIS
+01 47 66 77 88
+
+Question: What is in the Page 1 and 2 under SUMMARY?
+
+Answer:",0.5087719298245614,0.0,0.0,0.0,0.0,0.0,6253.190755844116,,2026-02-03T18:58:53.073371
+466184dcc69a3429d84e1054a019972d_6850b346e360cd88e77e114a61ddc1bc,466184dcc69a3429d84e1054a019972d,What is the price of the apples?,numeric_amount,not-answerable,[],Two cents a pound.,QA1a,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","Based on the following document text, answer the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: What is the price of the apples?
+
+Answer:",0.0,0.0,0.0,0.0,0.0,0.0,30771.771907806396,,2026-02-03T18:59:23.845652
+0afbb63ded89d3335a5109f8a9ec4db7_a19fd127268fb9493257f12d53d5d53d,0afbb63ded89d3335a5109f8a9ec4db7,"According to the American Rescue Plan, what was the percentage of unemployment in New York prior to the pandemic?",numeric_amount,extractive,"[""3.9%""]",3.9%,QA1a,mistral_ocr_3,gpt-5-mini,"# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year","Based on the following document text, answer the question.
+
+Document text:
+# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year
+
+Question: According to the American Rescue Plan, what was the percentage of unemployment in New York prior to the pandemic?
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,7009.009838104248,,2026-02-03T18:59:30.855190
+c47f2a37ed5a4ba90dee2d87583cb2ce_4dad3133a5cc10342b228cea14c593b6,c47f2a37ed5a4ba90dee2d87583cb2ce,What is the cost of a pack of telphone peas?,numeric_amount,abstractive,"[""$1.25""]",$1.25 per pack.,QA1a,mistral_ocr_3,gpt-5-mini,"62.23
+1903
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - CHICAGO.
+
+All kinds of Garden, Field and Grass Seeds, Trees, Shrubs and Bulbs.
+
+## SPECIAL OFFER OF THE FOLLOWING SEEDS:
+
+[tbl-0.md](tbl-0.md)
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - Chicago.
+
+With every $25.00 Order will go 3 lb. Chicago Market Pickle at $1.50 per lb.","Based on the following document text, answer the question.
+
+Document text:
+62.23
+1903
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - CHICAGO.
+
+All kinds of Garden, Field and Grass Seeds, Trees, Shrubs and Bulbs.
+
+## SPECIAL OFFER OF THE FOLLOWING SEEDS:
+
+[tbl-0.md](tbl-0.md)
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - Chicago.
+
+With every $25.00 Order will go 3 lb. Chicago Market Pickle at $1.50 per lb.
+
+Question: What is the cost of a pack of telphone peas?
+
+Answer:",0.0,0.0,1.0,0.0,1.0,0.0,8283.05697441101,,2026-02-03T18:59:39.139053
+bfe59e9b645d794b4910c781c2c3183b_3372616fb15dfff1f81d010d5275d2cc,bfe59e9b645d794b4910c781c2c3183b,PPD affects what percentage of new mothers?,numeric_amount,extractive,"[""10 to 15""]",About 10 to 15 percent of new mothers.,QA1a,mistral_ocr_3,gpt-5-mini,"# Postpartum Depression (PPD)
+
+## What you need to know
+
+### PPD is common
+
+PPD affects 10 to 15 percent of new mothers, and up to 35 percent of certain demographic groups
+
+![img-0.jpeg](img-0.jpeg)
+
+### PPD is treatable
+
+The treatment for PPD can include pharmacotherapy and psychotherapy. Therapy focusing on the mother-infant relationship can be especially helpful.
+
+![img-1.jpeg](img-1.jpeg)
+
+### We can fight PPD
+
+Mental health assessment for new mothers should be a routine as checking the infant's height and weight, as early detection leads to better treatment outcomes.
+
+![img-2.jpeg](img-2.jpeg)
+
+### PPD can be debilitating
+
+PPD has many symptoms, including insomnia, irritability, feelings of worthlessness, anger, overwhelming sadness, and social isolation
+
+![img-3.jpeg](img-3.jpeg)
+
+### PPD is lonely
+
+Social support, including caring, understanding, and supporting the new mother, especially from the partner or close family, is crucial to the recovery process.
+
+![img-4.jpeg](img-4.jpeg)
+
+## Together, we can work towards a brighter future.
+
+Reach out, don't be afraid to say something, and don't be afraid to ask for help
+
+References
+
+Thurgood, S., Avery, D. M., &amp; Williamson, L. (2009). Postpartum Depression (PPD). American Journal of Clinical Medicine, 6(2), 17-22. http://www.aapsus.org/articles/11.pdf","Based on the following document text, answer the question.
+
+Document text:
+# Postpartum Depression (PPD)
+
+## What you need to know
+
+### PPD is common
+
+PPD affects 10 to 15 percent of new mothers, and up to 35 percent of certain demographic groups
+
+![img-0.jpeg](img-0.jpeg)
+
+### PPD is treatable
+
+The treatment for PPD can include pharmacotherapy and psychotherapy. Therapy focusing on the mother-infant relationship can be especially helpful.
+
+![img-1.jpeg](img-1.jpeg)
+
+### We can fight PPD
+
+Mental health assessment for new mothers should be a routine as checking the infant's height and weight, as early detection leads to better treatment outcomes.
+
+![img-2.jpeg](img-2.jpeg)
+
+### PPD can be debilitating
+
+PPD has many symptoms, including insomnia, irritability, feelings of worthlessness, anger, overwhelming sadness, and social isolation
+
+![img-3.jpeg](img-3.jpeg)
+
+### PPD is lonely
+
+Social support, including caring, understanding, and supporting the new mother, especially from the partner or close family, is crucial to the recovery process.
+
+![img-4.jpeg](img-4.jpeg)
+
+## Together, we can work towards a brighter future.
+
+Reach out, don't be afraid to say something, and don't be afraid to ask for help
+
+References
+
+Thurgood, S., Avery, D. M., &amp; Williamson, L. (2009). Postpartum Depression (PPD). American Journal of Clinical Medicine, 6(2), 17-22. http://www.aapsus.org/articles/11.pdf
+
+Question: PPD affects what percentage of new mothers?
+
+Answer:",0.0,0.0,1.0,0.0,1.0,0.0,8706.674098968506,,2026-02-03T18:59:47.846211
+0afbb63ded89d3335a5109f8a9ec4db7_c765b29277f8fc85f08f4560a244f5ea,0afbb63ded89d3335a5109f8a9ec4db7,"According to the document, what percent of adults are having difficulty paying their expenses?",numeric_amount,extractive,"[""38%""]",38%,QA1a,mistral_ocr_3,gpt-5-mini,"# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year","Based on the following document text, answer the question.
+
+Document text:
+# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year
+
+Question: According to the document, what percent of adults are having difficulty paying their expenses?
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,6759.857892990112,,2026-02-03T18:59:54.606396
+e30ea8f0df48ee88326107e86cdfe765_62cf11dd919700e5850009e0beb1e0ec,e30ea8f0df48ee88326107e86cdfe765,What are the share prices shown inside of the cards on page 1?,numeric_amount,extractive,"[""$100 "", "" $110"", "" $120 "", "" $130 "", "" $140 "", "" $150""]","The six share (par) values are: $100, $110, $120, $130, $140, and $150.",QA1a,mistral_ocr_3,gpt-5-mini,"[tbl-0.md](tbl-0.md)
+
+To use for game play, print 5 copies of pages 1 &amp; 2 double sided. Cut along gray lines.","Based on the following document text, answer the question.
+
+Document text:
+[tbl-0.md](tbl-0.md)
+
+To use for game play, print 5 copies of pages 1 &amp; 2 double sided. Cut along gray lines.
+
+Question: What are the share prices shown inside of the cards on page 1?
+
+Answer:",0.0,0.0,1.0,0.0,1.0,0.0,7580.219984054565,,2026-02-03T19:00:02.187205
+466184dcc69a3429d84e1054a019972d_8f47f7420b8b6cac609146193e1a36a8,466184dcc69a3429d84e1054a019972d,What is the price of potatoes?,numeric_amount,extractive,"[""Two cents a pound.""]",Two cents a pound,QA1b,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: What is the price of potatoes?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",0.9444444444444444,0.0,1.0,1.0,0.0,0.0,30102.787971496582,,2026-02-03T19:00:32.292740
+466184dcc69a3429d84e1054a019972d_b848bc0f3f2b6e2bb577bdea9cc633d3,466184dcc69a3429d84e1054a019972d,How much do potatoes cost per pound?,numeric_amount,extractive,"[""Two Cents""]",Two cents a pound,QA1b,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: How much do potatoes cost per pound?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",0.5294117647058824,0.0,1.0,0.0,1.0,0.0,29115.05627632141,,2026-02-03T19:01:01.408110
+bd32352df9f165f089ff2741d7d04d7f_2255cf92e719e055e0ee0892ee6d7ce1,bd32352df9f165f089ff2741d7d04d7f,Who scored highest total overall?,numeric_amount,extractive,"[""Tristan""]",Tristan,QA1b,mistral_ocr_3,gpt-5-mini,"HELIOS
+
+Team Helios
+
+[tbl-0.md](tbl-0.md)","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+HELIOS
+
+Team Helios
+
+[tbl-0.md](tbl-0.md)
+
+Question: Who scored highest total overall?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,19118.04509162903,,2026-02-03T19:01:20.526417
+a4e751799acf2d9369ee89afb50e8408_83b7362879f743031741fdcf8b890974,a4e751799acf2d9369ee89afb50e8408,What is in the Page 1 and 2 under SUMMARY?,numeric_amount,extractive,"[""-Assets-Liability balance sheet""]",Assets-Liability balance sheet,QA1b,mistral_ocr_3,gpt-5-mini,"ASSOCIATION WIKIMEDIA FRANCE
+40 Rue de Cléry
+75002 PARIS
+
+# SUMMARY
+
+[tbl-0.md](tbl-0.md)
+
+AUDITEURS &amp; CONSEILS ASSOCIES
+31 rue Henri Rochefort
+75017 PARIS
+01 47 66 77 88","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+ASSOCIATION WIKIMEDIA FRANCE
+40 Rue de Cléry
+75002 PARIS
+
+# SUMMARY
+
+[tbl-0.md](tbl-0.md)
+
+AUDITEURS &amp; CONSEILS ASSOCIES
+31 rue Henri Rochefort
+75017 PARIS
+01 47 66 77 88
+
+Question: What is in the Page 1 and 2 under SUMMARY?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",0.967741935483871,0.0,1.0,1.0,0.0,0.0,5737.6909255981445,,2026-02-03T19:01:26.264888
+466184dcc69a3429d84e1054a019972d_6850b346e360cd88e77e114a61ddc1bc,466184dcc69a3429d84e1054a019972d,What is the price of the apples?,numeric_amount,not-answerable,[],NOT FOUND,QA1b,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: What is the price of the apples?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",0.0,0.0,0.0,0.0,0.0,0.0,28164.30687904358,,2026-02-03T19:01:54.429639
+0afbb63ded89d3335a5109f8a9ec4db7_a19fd127268fb9493257f12d53d5d53d,0afbb63ded89d3335a5109f8a9ec4db7,"According to the American Rescue Plan, what was the percentage of unemployment in New York prior to the pandemic?",numeric_amount,extractive,"[""3.9%""]",3.9%,QA1b,mistral_ocr_3,gpt-5-mini,"# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year
+
+Question: According to the American Rescue Plan, what was the percentage of unemployment in New York prior to the pandemic?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,6545.114994049072,,2026-02-03T19:02:00.975148
+c47f2a37ed5a4ba90dee2d87583cb2ce_4dad3133a5cc10342b228cea14c593b6,c47f2a37ed5a4ba90dee2d87583cb2ce,What is the cost of a pack of telphone peas?,numeric_amount,abstractive,"[""$1.25""]",$1.25,QA1b,mistral_ocr_3,gpt-5-mini,"62.23
+1903
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - CHICAGO.
+
+All kinds of Garden, Field and Grass Seeds, Trees, Shrubs and Bulbs.
+
+## SPECIAL OFFER OF THE FOLLOWING SEEDS:
+
+[tbl-0.md](tbl-0.md)
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - Chicago.
+
+With every $25.00 Order will go 3 lb. Chicago Market Pickle at $1.50 per lb.","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+62.23
+1903
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - CHICAGO.
+
+All kinds of Garden, Field and Grass Seeds, Trees, Shrubs and Bulbs.
+
+## SPECIAL OFFER OF THE FOLLOWING SEEDS:
+
+[tbl-0.md](tbl-0.md)
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - Chicago.
+
+With every $25.00 Order will go 3 lb. Chicago Market Pickle at $1.50 per lb.
+
+Question: What is the cost of a pack of telphone peas?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,11354.815006256104,,2026-02-03T19:02:12.330451
+bfe59e9b645d794b4910c781c2c3183b_3372616fb15dfff1f81d010d5275d2cc,bfe59e9b645d794b4910c781c2c3183b,PPD affects what percentage of new mothers?,numeric_amount,extractive,"[""10 to 15""]",10 to 15 percent,QA1b,mistral_ocr_3,gpt-5-mini,"# Postpartum Depression (PPD)
+
+## What you need to know
+
+### PPD is common
+
+PPD affects 10 to 15 percent of new mothers, and up to 35 percent of certain demographic groups
+
+![img-0.jpeg](img-0.jpeg)
+
+### PPD is treatable
+
+The treatment for PPD can include pharmacotherapy and psychotherapy. Therapy focusing on the mother-infant relationship can be especially helpful.
+
+![img-1.jpeg](img-1.jpeg)
+
+### We can fight PPD
+
+Mental health assessment for new mothers should be a routine as checking the infant's height and weight, as early detection leads to better treatment outcomes.
+
+![img-2.jpeg](img-2.jpeg)
+
+### PPD can be debilitating
+
+PPD has many symptoms, including insomnia, irritability, feelings of worthlessness, anger, overwhelming sadness, and social isolation
+
+![img-3.jpeg](img-3.jpeg)
+
+### PPD is lonely
+
+Social support, including caring, understanding, and supporting the new mother, especially from the partner or close family, is crucial to the recovery process.
+
+![img-4.jpeg](img-4.jpeg)
+
+## Together, we can work towards a brighter future.
+
+Reach out, don't be afraid to say something, and don't be afraid to ask for help
+
+References
+
+Thurgood, S., Avery, D. M., &amp; Williamson, L. (2009). Postpartum Depression (PPD). American Journal of Clinical Medicine, 6(2), 17-22. http://www.aapsus.org/articles/11.pdf","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+# Postpartum Depression (PPD)
+
+## What you need to know
+
+### PPD is common
+
+PPD affects 10 to 15 percent of new mothers, and up to 35 percent of certain demographic groups
+
+![img-0.jpeg](img-0.jpeg)
+
+### PPD is treatable
+
+The treatment for PPD can include pharmacotherapy and psychotherapy. Therapy focusing on the mother-infant relationship can be especially helpful.
+
+![img-1.jpeg](img-1.jpeg)
+
+### We can fight PPD
+
+Mental health assessment for new mothers should be a routine as checking the infant's height and weight, as early detection leads to better treatment outcomes.
+
+![img-2.jpeg](img-2.jpeg)
+
+### PPD can be debilitating
+
+PPD has many symptoms, including insomnia, irritability, feelings of worthlessness, anger, overwhelming sadness, and social isolation
+
+![img-3.jpeg](img-3.jpeg)
+
+### PPD is lonely
+
+Social support, including caring, understanding, and supporting the new mother, especially from the partner or close family, is crucial to the recovery process.
+
+![img-4.jpeg](img-4.jpeg)
+
+## Together, we can work towards a brighter future.
+
+Reach out, don't be afraid to say something, and don't be afraid to ask for help
+
+References
+
+Thurgood, S., Avery, D. M., &amp; Williamson, L. (2009). Postpartum Depression (PPD). American Journal of Clinical Medicine, 6(2), 17-22. http://www.aapsus.org/articles/11.pdf
+
+Question: PPD affects what percentage of new mothers?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",0.5,0.0,1.0,0.0,1.0,0.0,8826.584815979004,,2026-02-03T19:02:21.157462
+0afbb63ded89d3335a5109f8a9ec4db7_c765b29277f8fc85f08f4560a244f5ea,0afbb63ded89d3335a5109f8a9ec4db7,"According to the document, what percent of adults are having difficulty paying their expenses?",numeric_amount,extractive,"[""38%""]",38%,QA1b,mistral_ocr_3,gpt-5-mini,"# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year
+
+Question: According to the document, what percent of adults are having difficulty paying their expenses?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",1.0,1.0,1.0,1.0,1.0,0.0,7301.924228668213,,2026-02-03T19:02:28.459895
+e30ea8f0df48ee88326107e86cdfe765_62cf11dd919700e5850009e0beb1e0ec,e30ea8f0df48ee88326107e86cdfe765,What are the share prices shown inside of the cards on page 1?,numeric_amount,extractive,"[""$100 "", "" $110"", "" $120 "", "" $130 "", "" $140 "", "" $150""]","$100, $110, $120, $130, $140, $150",QA1b,mistral_ocr_3,gpt-5-mini,"[tbl-0.md](tbl-0.md)
+
+To use for game play, print 5 copies of pages 1 &amp; 2 double sided. Cut along gray lines.","You are a document understanding assistant. Answer the question based ONLY on the provided document text.
+
+This text was extracted from a business/legal document. Documents may contain:
+- Forms with labels and values
+- Tables with headers and data
+- Handwritten annotations
+- Multiple sections with headers
+
+Look for the specific information requested in the question.
+
+Document text:
+[tbl-0.md](tbl-0.md)
+
+To use for game play, print 5 copies of pages 1 &amp; 2 double sided. Cut along gray lines.
+
+Question: What are the share prices shown inside of the cards on page 1?
+
+Instructions:
+- Answer concisely with just the requested information
+- If the answer is a number, include any units if present
+- If the answer cannot be found in the text, respond with ""NOT FOUND""
+- Do not include explanations unless specifically asked
+
+Answer:",0.0,0.0,1.0,0.0,1.0,0.0,8562.01696395874,,2026-02-03T19:02:37.022185
+466184dcc69a3429d84e1054a019972d_8f47f7420b8b6cac609146193e1a36a8,466184dcc69a3429d84e1054a019972d,What is the price of potatoes?,numeric_amount,extractive,"[""Two cents a pound.""]","1. The question asks for the price of potatoes shown in the document.
+2. Searching the document text finds the line ""AT TWO CENTS A POUND"".
+3. Extracting that gives the price.
+
+Final Answer: Two cents a pound.",QA1c,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: What is the price of potatoes?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,29486.79494857788,,2026-02-03T19:03:06.511148
+466184dcc69a3429d84e1054a019972d_b848bc0f3f2b6e2bb577bdea9cc633d3,466184dcc69a3429d84e1054a019972d,How much do potatoes cost per pound?,numeric_amount,extractive,"[""Two Cents""]","1. The question asks for the price of potatoes per pound shown in the document.  
+2. The document headline reads ""AT TWO CENTS A POUND"" indicating the price.  
+3. Extracting that phrase gives the specific amount.
+
+Final Answer: Two cents a pound.",QA1c,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: How much do potatoes cost per pound?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,28878.29303741455,,2026-02-03T19:03:35.389850
+bd32352df9f165f089ff2741d7d04d7f_2255cf92e719e055e0ee0892ee6d7ce1,bd32352df9f165f089ff2741d7d04d7f,Who scored highest total overall?,numeric_amount,extractive,"[""Tristan""]","1) The question asks which team member has the highest total overall (sum of the totals shown in the document).
+
+2) The document shows two section totals per person:
+- Educatie totals: Jeroen 27.2, Steven 34.2, Laurens 31.7, Maarten 29.2, Tristan 27.2, Iris 32.2
+- Engineering totals: Jeroen 28, Steven 28.5, Laurens 22.5, Maarten 30, Tristan 37, Iris 25
+
+3) Sum each person’s totals:
+- Jeroen: 27.2 + 28 = 55.2
+- Steven: 34.2 + 28.5 = 62.7
+- Laurens: 31.7 + 22.5 = 54.2
+- Maarten: 29.2 + 30 = 59.2
+- Tristan: 27.2 + 37 = 64.2
+- Iris: 32.2 + 25 = 57.2
+
+Final Answer: Tristan scored the highest total overall (64.2).",QA1c,mistral_ocr_3,gpt-5-mini,"HELIOS
+
+Team Helios
+
+[tbl-0.md](tbl-0.md)","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+HELIOS
+
+Team Helios
+
+[tbl-0.md](tbl-0.md)
+
+Question: Who scored highest total overall?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,23002.784967422485,,2026-02-03T19:03:58.393481
+a4e751799acf2d9369ee89afb50e8408_83b7362879f743031741fdcf8b890974,a4e751799acf2d9369ee89afb50e8408,What is in the Page 1 and 2 under SUMMARY?,numeric_amount,extractive,"[""-Assets-Liability balance sheet""]","1) The question asks which document item is listed for pages 1 and 2 under the SUMMARY.  
+2) I looked at the SUMMARY section in the document; it maps items to page numbers.  
+3) The line shows: ""Assets‑Liability balance sheet"" → pages 1 and 2.
+
+Final Answer: Pages 1 and 2 contain the Assets‑Liability balance sheet.",QA1c,mistral_ocr_3,gpt-5-mini,"ASSOCIATION WIKIMEDIA FRANCE
+40 Rue de Cléry
+75002 PARIS
+
+# SUMMARY
+
+[tbl-0.md](tbl-0.md)
+
+AUDITEURS &amp; CONSEILS ASSOCIES
+31 rue Henri Rochefort
+75017 PARIS
+01 47 66 77 88","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+ASSOCIATION WIKIMEDIA FRANCE
+40 Rue de Cléry
+75002 PARIS
+
+# SUMMARY
+
+[tbl-0.md](tbl-0.md)
+
+AUDITEURS &amp; CONSEILS ASSOCIES
+31 rue Henri Rochefort
+75017 PARIS
+01 47 66 77 88
+
+Question: What is in the Page 1 and 2 under SUMMARY?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,0.0,0.0,0.0,0.0,8031.463146209717,,2026-02-03T19:04:06.425438
+466184dcc69a3429d84e1054a019972d_6850b346e360cd88e77e114a61ddc1bc,466184dcc69a3429d84e1054a019972d,What is the price of the apples?,numeric_amount,not-answerable,[],"1. The question asks for the price of the apples.  
+2. The document does not mention apples; it shows a price for potatoes: ""AT TWO CENTS A POUND.""  
+3. Therefore the listed price is ""two cents a pound.""
+
+Final Answer: Two cents a pound.",QA1c,mistral_ocr_3,gpt-5-mini,"# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+# A CHEAP FOOD
+
+AT TWO CENTS A POUND
+*potatoes* are a cheap food
+
+WE MUST EAT
+*more potatoes* to save
+the big surplus crop
+Food must not rot on the farm
+
+MORE POTATOES
+on your table means
+more wheat for fighters
+
+Go save wheat~
+
+# EAT POTATOES
+
+*Ask for*
+Circular No. 106 - U.S. Food Leaflet No. 10
+UNITED STATES DEPARTMENT OF AGRICULTURE
+DISTRICT FOOD ADMINISTRATION COOPERATING
+
+Question: What is the price of the apples?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,0.0,0.0,0.0,0.0,30174.943685531616,,2026-02-03T19:04:36.601106
+0afbb63ded89d3335a5109f8a9ec4db7_a19fd127268fb9493257f12d53d5d53d,0afbb63ded89d3335a5109f8a9ec4db7,"According to the American Rescue Plan, what was the percentage of unemployment in New York prior to the pandemic?",numeric_amount,extractive,"[""3.9%""]","Reasoning:
+1. The question asks for the unemployment percentage in New York prior to the pandemic.
+2. Searching the document finds the line: ""The unemployment rate is 8.7%, up from 3.9% before the pandemic.""
+3. Therefore, the pre-pandemic unemployment rate is 3.9%.
+
+Final Answer: 3.9%",QA1c,mistral_ocr_3,gpt-5-mini,"# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year
+
+Question: According to the American Rescue Plan, what was the percentage of unemployment in New York prior to the pandemic?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,8324.055194854736,,2026-02-03T19:04:44.925386
+c47f2a37ed5a4ba90dee2d87583cb2ce_4dad3133a5cc10342b228cea14c593b6,c47f2a37ed5a4ba90dee2d87583cb2ce,What is the cost of a pack of telphone peas?,numeric_amount,abstractive,"[""$1.25""]","1. The question asks for the cost of a pack of Telephone peas.
+2. I searched the provided document text and image for ""Peas"" / ""Telephone.""
+3. The line reads ""Peas, Telephone ... per pk. 1.25.""
+
+Final Answer: $1.25 per pack.",QA1c,mistral_ocr_3,gpt-5-mini,"62.23
+1903
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - CHICAGO.
+
+All kinds of Garden, Field and Grass Seeds, Trees, Shrubs and Bulbs.
+
+## SPECIAL OFFER OF THE FOLLOWING SEEDS:
+
+[tbl-0.md](tbl-0.md)
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - Chicago.
+
+With every $25.00 Order will go 3 lb. Chicago Market Pickle at $1.50 per lb.","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+62.23
+1903
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - CHICAGO.
+
+All kinds of Garden, Field and Grass Seeds, Trees, Shrubs and Bulbs.
+
+## SPECIAL OFFER OF THE FOLLOWING SEEDS:
+
+[tbl-0.md](tbl-0.md)
+
+# PETER HOLLENBACH,
+12 North Halsted Street, - Chicago.
+
+With every $25.00 Order will go 3 lb. Chicago Market Pickle at $1.50 per lb.
+
+Question: What is the cost of a pack of telphone peas?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,9842.208623886108,,2026-02-03T19:04:54.768088
+bfe59e9b645d794b4910c781c2c3183b_3372616fb15dfff1f81d010d5275d2cc,bfe59e9b645d794b4910c781c2c3183b,PPD affects what percentage of new mothers?,numeric_amount,extractive,"[""10 to 15""]","1. The question asks for the percentage of new mothers affected by PPD.  
+2. I searched the document for prevalence data.  
+3. The ""PPD is common"" section states: ""PPD affects 10 to 15 percent of new mothers...""
+
+Final Answer: 10 to 15 percent of new mothers.",QA1c,mistral_ocr_3,gpt-5-mini,"# Postpartum Depression (PPD)
+
+## What you need to know
+
+### PPD is common
+
+PPD affects 10 to 15 percent of new mothers, and up to 35 percent of certain demographic groups
+
+![img-0.jpeg](img-0.jpeg)
+
+### PPD is treatable
+
+The treatment for PPD can include pharmacotherapy and psychotherapy. Therapy focusing on the mother-infant relationship can be especially helpful.
+
+![img-1.jpeg](img-1.jpeg)
+
+### We can fight PPD
+
+Mental health assessment for new mothers should be a routine as checking the infant's height and weight, as early detection leads to better treatment outcomes.
+
+![img-2.jpeg](img-2.jpeg)
+
+### PPD can be debilitating
+
+PPD has many symptoms, including insomnia, irritability, feelings of worthlessness, anger, overwhelming sadness, and social isolation
+
+![img-3.jpeg](img-3.jpeg)
+
+### PPD is lonely
+
+Social support, including caring, understanding, and supporting the new mother, especially from the partner or close family, is crucial to the recovery process.
+
+![img-4.jpeg](img-4.jpeg)
+
+## Together, we can work towards a brighter future.
+
+Reach out, don't be afraid to say something, and don't be afraid to ask for help
+
+References
+
+Thurgood, S., Avery, D. M., &amp; Williamson, L. (2009). Postpartum Depression (PPD). American Journal of Clinical Medicine, 6(2), 17-22. http://www.aapsus.org/articles/11.pdf","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+# Postpartum Depression (PPD)
+
+## What you need to know
+
+### PPD is common
+
+PPD affects 10 to 15 percent of new mothers, and up to 35 percent of certain demographic groups
+
+![img-0.jpeg](img-0.jpeg)
+
+### PPD is treatable
+
+The treatment for PPD can include pharmacotherapy and psychotherapy. Therapy focusing on the mother-infant relationship can be especially helpful.
+
+![img-1.jpeg](img-1.jpeg)
+
+### We can fight PPD
+
+Mental health assessment for new mothers should be a routine as checking the infant's height and weight, as early detection leads to better treatment outcomes.
+
+![img-2.jpeg](img-2.jpeg)
+
+### PPD can be debilitating
+
+PPD has many symptoms, including insomnia, irritability, feelings of worthlessness, anger, overwhelming sadness, and social isolation
+
+![img-3.jpeg](img-3.jpeg)
+
+### PPD is lonely
+
+Social support, including caring, understanding, and supporting the new mother, especially from the partner or close family, is crucial to the recovery process.
+
+![img-4.jpeg](img-4.jpeg)
+
+## Together, we can work towards a brighter future.
+
+Reach out, don't be afraid to say something, and don't be afraid to ask for help
+
+References
+
+Thurgood, S., Avery, D. M., &amp; Williamson, L. (2009). Postpartum Depression (PPD). American Journal of Clinical Medicine, 6(2), 17-22. http://www.aapsus.org/articles/11.pdf
+
+Question: PPD affects what percentage of new mothers?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,13498.985052108765,,2026-02-03T19:05:08.267487
+0afbb63ded89d3335a5109f8a9ec4db7_c765b29277f8fc85f08f4560a244f5ea,0afbb63ded89d3335a5109f8a9ec4db7,"According to the document, what percent of adults are having difficulty paying their expenses?",numeric_amount,extractive,"[""38%""]","1. The question asks for the percent of adults having difficulty paying their expenses.  
+2. I searched the document for statements about adults and difficulty covering expenses.  
+3. The document states: ""An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.""
+
+Reasoning:
+- The relevant bullet explicitly gives both the number of adults (5,311,000) and the percentage (38%) who report difficulty covering household expenses.  
+- Therefore the percent is taken directly from that line.
+
+Final Answer: 38%",QA1c,mistral_ocr_3,gpt-5-mini,"# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+# AMERICAN RESCUE PLAN
+
+## The American Rescue Plan: Impacts on New York
+
+## The Need for Action in New York
+
+The pandemic and the associated economic crisis have had a severe impact on New York. The need for action is clear:
+
+- Since the pandemic began, more than 1,698,819 people have been infected with COVID-19 and more than 48,104 people have died.
+- The unemployment rate is 8.7%, up from 3.9% before the pandemic.
+- Since February 2020, more than 652,185 fewer people are employed.
+- 1,673,000 adults – 13% of all adults in the state – report not having enough food to eat. This includes 357,000 adults living with children, or 8% of all adults living with children, who report that the children in their household do not have enough to eat.
+- An estimated 1,326,000 renters or 22% of renters are not caught up on rent.
+- An estimated 5,311,000 adults or 38% of all adults statewide report having difficulty covering normal household expenses.
+
+## The Effect of the American Rescue Plan on New York
+
+President Biden’s American Rescue Plan will provide New York with:
+
+- $12.825 billion in state fiscal relief
+- $9.948 billion in local fiscal relief
+- More than $9.174 billion in relief for K-12 schools
+- Economic impact payments of up to $1,400 per person (above the $600 per person provided in December) for more than 11,344,500 adults and 4,403,300 children. This is 82% of all adults in the state and 82% of all children in the state.
+- Additional relief of up to $1,600 per child through the Child Tax Credit to the families of 3,564,000 children, lifting 242,000 children out of poverty
+- Additional relief of up to nearly $1,000 through the Earned Income Tax Credit to 915,000 childless workers, including many in frontline jobs
+- Marketplace health insurance premiums that are $663 lower per month for a 60-year old couple earning $75,000 per year
+
+Question: According to the document, what percent of adults are having difficulty paying their expenses?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,9446.834087371826,,2026-02-03T19:05:17.714696
+e30ea8f0df48ee88326107e86cdfe765_62cf11dd919700e5850009e0beb1e0ec,e30ea8f0df48ee88326107e86cdfe765,What are the share prices shown inside of the cards on page 1?,numeric_amount,extractive,"[""$100 "", "" $110"", "" $120 "", "" $130 "", "" $140 "", "" $150""]","Reasoning:
+1. The question asks for the share (par) prices printed on the cards on page 1.
+2. I examined the six stock certificate cards on the page and read the ""PAR VALUE"" amounts shown on each.
+3. Extracted the par values for each card.
+
+Final Answer:
+- Motion Pictures: $100
+- Allied Steamships: $110
+- National Utilities: $120
+- General Radio: $130
+- United Railways: $140
+- American Motors: $150",QA1c,mistral_ocr_3,gpt-5-mini,"[tbl-0.md](tbl-0.md)
+
+To use for game play, print 5 copies of pages 1 &amp; 2 double sided. Cut along gray lines.","You are analyzing a document to answer a question. This is a document which may have structured information in tables, forms, or sections.
+
+Document text:
+[tbl-0.md](tbl-0.md)
+
+To use for game play, print 5 copies of pages 1 &amp; 2 double sided. Cut along gray lines.
+
+Question: What are the share prices shown inside of the cards on page 1?
+
+Let's solve this step by step:
+1. First, identify what information the question is asking for
+2. Search the document text for relevant information
+3. Extract the specific answer
+
+Reasoning:
+[Your step-by-step reasoning here]
+
+Final Answer:",0.0,0.0,1.0,0.0,1.0,0.0,10651.415824890137,,2026-02-03T19:05:28.366798

@@ -1,0 +1,107 @@
+{
+  "dataset": "InfographicVQA_mini",
+  "start_time": "2026-02-03T21:56:30.032613",
+  "config": {
+    "dataset_name": "InfographicVQA_mini",
+    "ocr_models": [
+      "mistral_ocr_3"
+    ],
+    "vlm_models": [
+      "gpt-5-mini",
+      "gpt-5-nano"
+    ],
+    "qa_model": "gpt-5-mini",
+    "phases": [
+      "QA1a",
+      "QA1b",
+      "QA1c"
+    ],
+    "sample_limit": null,
+    "batch_size": 10,
+    "sample_ids_file": null,
+    "sample_ids_filter": null,
+    "results_dir": "results/1_raw/InfographicVQA_mini",
+    "test_mode": false,
+    "retry_failed": true,
+    "max_retries": 2,
+    "compute_embeddings": false
+  },
+  "phases": {
+    "QA1a": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.23339749931123643,
+        "exact_match": 0.16265060240963855,
+        "total_samples": 500,
+        "valid_samples": 498,
+        "error_rate": 0.004
+      }
+    },
+    "QA1b": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.170099239704207,
+        "exact_match": 0.14688128772635814,
+        "total_samples": 500,
+        "valid_samples": 497,
+        "error_rate": 0.006
+      }
+    },
+    "QA1c": {
+      "status": "completed",
+      "samples_processed": 500,
+      "metrics": {
+        "anls": 0.2552420138862536,
+        "exact_match": 0.18108651911468812,
+        "total_samples": 500,
+        "valid_samples": 497,
+        "error_rate": 0.006
+      }
+    }
+  },
+  "metrics_summary": {
+    "QA1a": {
+      "anls": 0.23339749931123643,
+      "exact_match": 0.16265060240963855,
+      "total_samples": 500,
+      "valid_samples": 498,
+      "error_rate": 0.004
+    },
+    "QA1b": {
+      "anls": 0.170099239704207,
+      "exact_match": 0.14688128772635814,
+      "total_samples": 500,
+      "valid_samples": 497,
+      "error_rate": 0.006
+    },
+    "QA1c": {
+      "anls": 0.2552420138862536,
+      "exact_match": 0.18108651911468812,
+      "total_samples": 500,
+      "valid_samples": 497,
+      "error_rate": 0.006
+    },
+    "by_approach": {
+      "ocr_pipeline": {
+        "avg_anls": 0.21957958430056568,
+        "avg_em": 0.16353946975022826
+      },
+      "vlm_parse_pipeline": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      },
+      "direct_vqa": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      },
+      "pre_extracted_ocr_pipeline": {
+        "avg_anls": 0.0,
+        "avg_em": 0.0
+      }
+    }
+  },
+  "end_time": "2026-02-04T01:49:36.572652",
+  "total_time_seconds": 13986.540056705475
+}

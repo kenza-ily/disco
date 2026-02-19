@@ -1,0 +1,5 @@
+Look at this document image and answer the question.
+
+Question: {question}
+
+Answer:

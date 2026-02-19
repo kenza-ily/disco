@@ -1,8 +1,0 @@
-Based on the following document text, answer the question.
-
-Document text:
-{extracted_text}
-
-Question: {question}
-
-Answer:
