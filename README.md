@@ -1,8 +1,8 @@
-# DISCO - Document Intelligence Suite Comparison
+# DISCO: Document Intelligence Suite for COmparative Evaluation
 
 Benchmark OCR and Vision-Language Models for document understanding tasks.
 
-**Research Question:** To what extent do OCRs remain key parsing tools, and in which ways are VLMs better suited for specific tasks?
+**Research Question:** When should practitioners use OCR pipelines versus end-to-end VLMs for document intelligence tasks?
 
 ## Quick Start
 
@@ -40,13 +40,13 @@ huggingface-cli login
 ```bash
 # Option 1: Use unified runner (recommended)
 uv run python scripts/run_benchmark.py \
-    --dataset publaynet \
+    --dataset docvqa \
     --models claude_sonnet \
     --phases P-B \
     --sample-limit 10
 
 # Option 2: Call benchmark directly
-uv run python -m benchmarks.dataset_specific.benchmark_publaynet \
+uv run python -m benchmarks.dataset_specific.benchmark_docvqa \
     --models claude_sonnet \
     --phases P-B \
     --sample-limit 10
@@ -54,57 +54,61 @@ uv run python -m benchmarks.dataset_specific.benchmark_publaynet \
 
 ## Supported Models
 
-### Vision-Language Models (VLMs)
-- **Claude Sonnet 4** - High-accuracy vision LLM (Direct API or AWS Bedrock)
-- **Claude Haiku 4** - Fast vision LLM (Direct API or AWS Bedrock)
-- **GPT-5 mini/nano** - Azure OpenAI vision models
-- **Qwen-VL** - Open source vision-language model
+### Models Evaluated in the Paper
 
-### OCR Models
-- **Azure Document Intelligence** - Enterprise-grade OCR
-- **Mistral OCR 3** - Advanced document parsing with markdown tables
+**Vision-Language Models (VLMs):**
+- **GPT-5 mini** (`gpt-5-mini`) - Azure OpenAI vision model (primary)
+- **GPT-5 nano** (`gpt-5-nano`) - Lightweight Azure OpenAI vision model
+- **Claude 3.5 Sonnet** (`claude-3-5-sonnet`) - Anthropic vision-language model
+
+**OCR Systems:**
+- **Azure Document Intelligence** (`azure-ai-documentintelligence`) - Enterprise-grade OCR with layout analysis
+- **Mistral OCR 2** (`mistral-ocr-2505`) - Document parsing with markdown output
+- **Mistral OCR 3** (`mistral-ocr-2512`) - Newer Mistral OCR version
+
+### Additional Models Supported by the Codebase
+
+- **Claude Sonnet / Haiku** - Via Anthropic Direct API or AWS Bedrock
+- **Qwen-VL** - Open source vision-language model
 - **Donut** - Open source document understanding
 - **DeepSeek-OCR** - Multilingual OCR model
 
 ## Datasets
 
-All datasets load automatically from HuggingFace (no local storage needed):
+All datasets load automatically from HuggingFace (no local storage needed). Full collection: [kenza-ily/disco](https://huggingface.co/collections/kenza-ily/disco)
 
 | Dataset | Task | Samples | HuggingFace URL |
 |---------|------|---------|-----------------|
 | IAM | Handwriting recognition | 500 | `kenza-ily/iam_disco` |
 | DocVQA | Document question answering | 500 | `kenza-ily/docvqa_disco` |
 | InfographicVQA | Infographic QA | 500 | `kenza-ily/infographicvqa_disco` |
-| DUDE | Diverse documents QA | 500 | `kenza-ily/dude_disco` |
-| ChartQA Pro | Chart question answering | 500 | `kenza-ily/chartqapro_disco` |
+| DUDE | Diverse documents QA | 404 | `kenza-ily/dude_disco` |
+| ChartQA Pro | Chart question answering | 494 | `kenza-ily/chartqapro_disco` |
 | PubLayNet | Document layout parsing | 500 | `kenza-ily/publaynet_disco` |
-| VisRBench | Visual reasoning | 500 | `kenza-ily/visrbench_disco` |
-| ICDAR | Multilingual OCR | 500 | `kenza-ily/icdar_disco` |
+| VisRBench | Visual reasoning (multi-page) | 498 | `kenza-ily/visrbench_disco` |
+| ICDAR | Multilingual OCR (10 languages) | 500 | `kenza-ily/icdar_disco` |
+| RxPad | Medical prescription parsing (French) | 200 | `kenza-ily/rxpad_disco` |
 
 ## Benchmark Pipeline
 
-The evaluation follows a three-phase approach:
+The evaluation separates **text parsing** from **downstream question answering** across three pipeline architectures:
 
-- **Phase P-A**: OCR baseline - pure OCR models extract text
-- **Phase P-B**: VLM baseline - VLMs with generic prompts
-- **Phase P-C**: VLM + context - VLMs with task-aware prompts
+### Parsing Pipelines (IAM, ICDAR, RxPad, PubLayNet)
 
-### Phase Naming Conventions
+| Paper Name | Code Phase | Description |
+|-----------|-----------|-------------|
+| P_OCR | P-A | Pure OCR baseline — specialized OCR extracts text |
+| P_VLM-base | P-B | VLM with generic text extraction prompt |
+| P_VLM-task | P-C | VLM with task-aware, domain-specific prompt |
 
-**QA Benchmarks (DocVQA, InfographicVQA, DUDE, ChartQA):**
-- **QA1a**: OCR extraction → simple QA prompt
-- **QA1b**: OCR extraction → detailed QA prompt
-- **QA1c**: OCR extraction → chain-of-thought QA
-- **QA2a**: Direct VLM with simple prompt
-- **QA2b**: Direct VLM with detailed prompt
-- **QA3a**: Hybrid (OCR + VLM reasoning)
-- **QA4a**: Multi-page with retrieval (VisRBench only)
+### QA Pipelines (DocVQA, InfographicVQA, DUDE, ChartQA, VisRBench)
 
-**Parsing Benchmarks (PubLayNet, RX-PAD, IAM, VOC2007, ICDAR):**
-- **P-A**: Pure OCR baseline
-- **P-B**: Direct VLM extraction
-- **P-C**: Hybrid (OCR + VLM refinement)
-- **1, 2, 3**: IAM uses integer phases (equivalent to P-A, P-B, P-C)
+| Paper Name | Code Phase | Description |
+|-----------|-----------|-------------|
+| QA_OCR | QA1a/QA1b/QA1c | Specialized OCR → LLM reasoning (with simple, detailed, or CoT prompt) |
+| QA_VLM-2stage | QA2a/QA2b | VLM extracts text → VLM performs QA (two-stage) |
+| QA_VLM-direct | QA3a | Single-step VLM answers directly from the image |
+| Multi-page retrieval | QA4a | Multi-page with retrieval (VisRBench only) |
 
 ### Example: Run Full DocVQA Benchmark
 
@@ -124,6 +128,24 @@ uv run python -m benchmarks.benchmark_publaynet \
     --phases P-B \
     --sample-limit 100
 ```
+
+## Key Findings
+
+Empirical guidance from our evaluation across 9 datasets:
+
+| Document Type | Recommended Approach | Notes |
+|--------------|---------------------|-------|
+| Handwritten text (IAM) | OCR pipeline | VLMs lag by 5–9% CER even with task-aware prompting |
+| Multilingual documents (ICDAR) | VLM (generic prompt) | 87% CER reduction vs OCR; OCR fails on non-Latin scripts |
+| Single-page visual QA (DocVQA, InfographicVQA) | Direct VQA | Highest GT-in-Pred (~0.91); fewer error propagation stages |
+| Multi-page documents (DUDE) | OCR pipeline | More reliable text grounding; VLMs struggle with long context |
+| Medical prescriptions (RxPad) | Either | Similar accuracy; VLMs produce structured key-value output |
+
+**Additional insights:**
+- Task-aware prompting yields **heterogeneous effects** — substantially improves multilingual parsing but can degrade performance on diverse inputs
+- **OCR system selection matters**: Azure Document Intelligence consistently outperforms Mistral OCR on structured documents
+- Mistral OCR 3 (2512) shows a **23-point regression** vs Mistral OCR 2 (2505) on DocVQA — a newer version number does not guarantee improvement
+- Direct VQA achieves the best **speed-accuracy frontier** (0.87–0.91 GT-in-Pred, 4–10s latency vs 17–35s for two-stage pipelines)
 
 ## Results Analysis
 
@@ -173,11 +195,12 @@ jupyter notebook 00_master_evaluation.ipynb
 
 ## Evaluation Metrics
 
-- **CER** (Character Error Rate) - Character-level edit distance
+- **GT-in-Pred** (Ground-Truth-in-Prediction) - Primary QA metric; binary indicator whether the ground-truth answer appears in the model's prediction
+- **CER** (Character Error Rate) - Character-level edit distance; primary parsing metric
 - **WER** (Word Error Rate) - Word-level edit distance
-- **ANLS** (Average Normalized Levenshtein Similarity) - Standard VQA metric
-- **EM** (Exact Match) - Binary exact match
+- **ANLS** (Average Normalized Levenshtein Similarity) - String similarity for format compliance
 - **Cosine Similarity** - Semantic similarity using embeddings
+- **EM** (Exact Match) - Binary exact match
 - **Substring Match** - Fuzzy matching for VQA
 
 ## Development
@@ -231,10 +254,11 @@ MISTRAL_API_KEY=your-key-here
 If you use this benchmark suite in your research, please cite:
 
 ```bibtex
-@misc{disco2026,
-  title={DISCO: Document Intelligence Suite Comparison},
-  author={Your Name},
+@misc{benkirane2026disco,
+  title={DISCO: Document Intelligence Suite for COmparative Evaluation},
+  author={Benkirane, Kenza and Goldwater, Dan and Asenov, Martin and Ghodsi, Aneiss},
   year={2026},
+  note={ICLR 2026 submission},
   url={https://github.com/kenza-ily/disco}
 }
 ```
